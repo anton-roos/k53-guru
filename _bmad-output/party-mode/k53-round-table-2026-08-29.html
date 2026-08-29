@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>K53 Guru — The Round Table · 2026-08-29</title>
+<style>
+  :root{
+    --ink:#12151c; --paper:#f4f1e9; --card:#fbfaf6; --line:#e2dccd;
+    --accent:#d64545; --accent2:#2f6f4f; --amber:#e8a72e; --blue:#2f5f8f;
+    --muted:#6b6456;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--paper);color:var(--ink);
+    font-family:"Segoe UI",Roboto,Helvetica,Arial,sans-serif;line-height:1.55}
+  .wrap{max-width:820px;margin:0 auto;padding:0 20px 80px}
+
+  header{position:relative;text-align:center;padding:64px 20px 40px;overflow:hidden}
+  .road{position:absolute;inset:0;z-index:0;opacity:.12}
+  .dash{stroke-dasharray:14 16;animation:roll 2.4s linear infinite}
+  @keyframes roll{to{stroke-dashoffset:-60}}
+  header h1{position:relative;z-index:1;margin:0;font-size:2.5rem;letter-spacing:-.5px}
+  header .sub{position:relative;z-index:1;color:var(--muted);margin-top:8px;font-size:1.05rem}
+  .badge{position:relative;z-index:1;display:inline-block;margin-top:18px;padding:6px 16px;
+    border:2px solid var(--accent);border-radius:40px;color:var(--accent);
+    font-weight:600;font-size:.82rem;letter-spacing:1px;text-transform:uppercase}
+
+  h2.section{font-size:.85rem;letter-spacing:2px;text-transform:uppercase;color:var(--muted);
+    margin:56px 0 18px;padding-bottom:8px;border-bottom:1px solid var(--line)}
+
+  .cast{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px}
+  .who{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;
+    transition:transform .2s ease,box-shadow .2s ease}
+  .who:hover{transform:translateY(-3px);box-shadow:0 10px 24px rgba(0,0,0,.08)}
+  .who .ic{font-size:1.7rem}
+  .who .nm{font-weight:700;margin-top:4px}
+  .who .ti{color:var(--accent);font-size:.8rem;font-weight:600;text-transform:uppercase;letter-spacing:.5px}
+  .who p{margin:8px 0 0;font-size:.9rem;color:var(--muted)}
+
+  .turn{display:flex;gap:12px;margin:16px 0;opacity:0;transform:translateY(10px);
+    animation:rise .6s ease forwards}
+  .turn:nth-child(1){animation-delay:.05s}.turn:nth-child(2){animation-delay:.15s}
+  .turn:nth-child(3){animation-delay:.25s}.turn:nth-child(4){animation-delay:.35s}
+  .turn:nth-child(5){animation-delay:.45s}.turn:nth-child(6){animation-delay:.55s}
+  @keyframes rise{to{opacity:1;transform:none}}
+  .turn .av{flex:0 0 40px;height:40px;border-radius:50%;display:grid;place-items:center;
+    font-size:1.2rem;background:#efe9db;border:1px solid var(--line)}
+  .turn .bub{background:var(--card);border:1px solid var(--line);border-radius:4px 14px 14px 14px;
+    padding:10px 14px;font-size:.94rem}
+  .turn .bub b{color:var(--ink)}
+  .turn .who-nm{font-weight:700;font-size:.82rem;color:var(--accent);display:block;margin-bottom:2px}
+
+  .beat{background:linear-gradient(180deg,#fff,#fbf7ee);border-left:4px solid var(--amber);
+    border-radius:0 12px 12px 0;padding:14px 18px;margin:14px 0}
+  .beat .q{font-size:1.05rem;font-style:italic}
+  .beat .a{font-size:.82rem;color:var(--muted);margin-top:6px}
+
+  table{width:100%;border-collapse:collapse;background:var(--card);border-radius:12px;overflow:hidden;
+    border:1px solid var(--line);font-size:.9rem}
+  th,td{padding:10px 12px;text-align:left;border-bottom:1px solid var(--line)}
+  th{background:#efe9db;font-size:.78rem;text-transform:uppercase;letter-spacing:.5px;color:var(--muted)}
+  tr:last-child td{border-bottom:none}
+
+  .caps{list-style:none;padding:0;margin:0;display:grid;gap:8px}
+  .caps li{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 14px;font-size:.92rem}
+  .caps .id{display:inline-block;font-weight:700;color:var(--accent2);margin-right:8px}
+
+  .flag{background:#fff6f4;border:1px solid #f2c9c2;border-radius:12px;padding:14px 18px;font-size:.9rem}
+  footer{text-align:center;color:var(--muted);font-size:.82rem;margin-top:60px}
+  .strike{text-decoration:line-through;color:#b9b1a0}
+</style>
+</head>
+<body>
+<header>
+  <svg class="road" viewBox="0 0 800 260" preserveAspectRatio="none">
+    <rect width="800" height="260" fill="#12151c"/>
+    <line x1="0" y1="130" x2="800" y2="130" stroke="#e8a72e" stroke-width="6" class="dash"/>
+  </svg>
+  <h1>The Round Table</h1>
+  <div class="sub">An exploration of the <b>K53 Learner's Licence Practice App</b></div>
+  <div class="badge">Session · 29 August 2026</div>
+</header>
+
+<div class="wrap">
+
+  <h2 class="section">Who was in the room</h2>
+  <div class="cast">
+    <div class="who"><div class="ic">🛵</div><div class="nm">Thabo</div><div class="ti">The Learner</div>
+      <p>Failed by two marks. The user made flesh. Every win got tied back to him.</p></div>
+    <div class="who"><div class="ic">📋</div><div class="nm">Priya</div><div class="ti">Product Lead</div>
+      <p>Fidelity zealot. Walked in demanding realism everywhere, walked out wiser.</p></div>
+    <div class="who"><div class="ic">🧾</div><div class="nm">Oom Retief</div><div class="ti">Ex-K53 Examiner</div>
+      <p>Thirty years in the testing centre. Trusted no app. Corrected his own numbers.</p></div>
+    <div class="who"><div class="ic">🛠️</div><div class="nm">Kobus</div><div class="ti">The Engineer</div>
+      <p>Builds the .NET + Flutter without getting sued. Turned philosophy into schema.</p></div>
+    <div class="who"><div class="ic">🎨</div><div class="nm">Naledi</div><div class="ti">UX Designer · walk-on, kept</div>
+      <p>Reframed content problems as goal problems. Won Priya over. Earned a permanent seat.</p></div>
+    <div class="who"><div class="ic">📏</div><div class="nm">Level</div><div class="ti">Claim Checker</div>
+      <p>Kept the numbers honest. High confidence on shape, hedged the counts.</p></div>
+  </div>
+
+  <h2 class="section">The exchange that turned the whole thing</h2>
+  <div class="turn"><div class="av">🧾</div><div class="bub"><span class="who-nm">Oom Retief</span>
+    Miss the pass mark in <b>one</b> section and the whole thing fails — even if your total is brilliant. <b>That's</b> how Thabo actually failed.</div></div>
+  <div class="turn"><div class="av">🛵</div><div class="bub"><span class="who-nm">Thabo</span>
+    ...wait, that's why? I thought it was total.</div></div>
+  <div class="turn"><div class="av">🧾</div><div class="bub"><span class="who-nm">Oom Retief</span>
+    Everyone thinks it's total. It's per-section. <b>That's</b> your product, if you're clever.</div></div>
+  <div class="turn"><div class="av">🎨</div><div class="bub"><span class="who-nm">Naledi</span>
+    The <b>test</b> has to feel real. The <b>app around it</b> doesn't have to feel like Home Affairs at 7am.</div></div>
+  <div class="turn"><div class="av">📋</div><div class="bub"><span class="who-nm">Priya</span>
+    ...fine. It's not fidelity-vs-friendly. It's fidelity <b>fenced off</b> inside a friendly app. That's better than what I walked in with.</div></div>
+  <div class="turn"><div class="av">🃏</div><div class="bub"><span class="who-nm">Naledi → Thabo</span>
+    We just fixed your two marks, kid.</div></div>
+
+  <h2 class="section">Best takeaways</h2>
+  <div class="beat"><div class="q">“The admin panel's real user is Oom-the-examiner, not the product owner.”</div>
+    <div class="a">The reframe that reshaped CAP-1, CAP-2 and the whole authoring surface.</div></div>
+  <div class="beat"><div class="q">The combination test is one booking, graded <b>per code</b> — with partial passes.</div>
+    <div class="a">Anton's LL1 memory + the CLLT spec overturned our monolithic-ticket model. Pass Code 1, fail Code 3, keep the bike licence, re-test only the truck.</div></div>
+  <div class="beat"><div class="q">Two deliberate modes: warm <b>Practice</b>, cold <b>Test</b>. The contrast <em>is</em> the pedagogy.</div>
+    <div class="a">Rehearses the emotional shift of the real day, not just the questions.</div></div>
+
+  <h2 class="section">What we learned about the real test (CLLT)</h2>
+  <table>
+    <tr><th>Section</th><th>Questions</th><th>Pass</th></tr>
+    <tr><td>Rules of the Road</td><td>28–30</td><td>22</td></tr>
+    <tr><td>Road Signs &amp; Markings</td><td>28–30</td><td>23</td></tr>
+    <tr><td>Vehicle Controls</td><td>8–12</td><td>6/8 or 10/12</td></tr>
+  </table>
+  <p style="font-size:.85rem;color:var(--muted)">Three independent cut-offs · 1,200+ question bank · valid combos <b>1+2</b> or <b>1+3</b> only. Time limit still unconfirmed.</p>
+
+  <h2 class="section">The spec that grew — 9 capabilities</h2>
+  <ul class="caps">
+    <li><span class="id">CAP-1</span>Admin authors K53-format tests</li>
+    <li><span class="id">CAP-2</span>Import tests via CSV / JSON</li>
+    <li><span class="id">CAP-3</span>Road-sign catalog with legislation codes</li>
+    <li><span class="id">CAP-4</span>API randomises per attempt (intra-section)</li>
+    <li><span class="id">CAP-5</span>Single code or valid combination sitting</li>
+    <li><span class="id">CAP-6</span>Faithful CLLT simulation, per-code result</li>
+    <li><span class="id">CAP-7</span>Import validation — reject broken rows</li>
+    <li><span class="id">CAP-8</span>Practice mode vs Test mode</li>
+    <li><span class="id">CAP-9</span>Anonymous self-custodied UUID profile</li>
+  </ul>
+
+  <h2 class="section">The one thing no research can replace</h2>
+  <div class="flag">🧾 <b>Oom's parting shot:</b> confirm the exact counts, the combined-paper handling, and the time limit
+    <b>at a real testing centre</b> before you bet a learner's morning on it. The engine reads these from config, so it's a table edit — but trust the boy who failed, not the study sites.</div>
+
+  <footer>
+    K53 Guru · the round table remembers · 29 August 2026<br>
+    <span style="opacity:.6">Naledi kept her seat. Level was already family.</span>
+  </footer>
+</div>
+</body>
+</html>
