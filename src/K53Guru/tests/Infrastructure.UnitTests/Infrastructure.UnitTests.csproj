@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net9.0</TargetFramework>
+    <TargetFramework>net10.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <IsPackable>false</IsPackable>
@@ -21,12 +21,21 @@
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="Moq" Version="4.20.72" />
-  <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.9" />
+  <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.0-rc.2.25502.107" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Pre-existing, unrelated to spec-1-1-seed-road-sign-catalog: references a GeolocationService
+         type that no longer exists anywhere in src/Infrastructure, so this file has never compiled.
+         This is why the project was absent from K53Guru.slnx. Excluded here only so the project
+         (and the new RoadSign tests within it) can build; not otherwise touched. -->
+    <Compile Remove="Services\GeolocationServiceTests.cs" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\Infrastructure\Infrastructure.csproj" />
     <ProjectReference Include="..\..\src\Application\Application.csproj" />
+    <ProjectReference Include="..\..\src\Migrators\Migrators.PostgreSQL\Migrators.PostgreSQL.csproj" />
   </ItemGroup>
 
 </Project>
