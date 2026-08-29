@@ -1,0 +1,59 @@
+@using K53Guru.Application.Features.RoadSigns.DTOs
+
+<MudDialog>
+    <DialogContent>
+        <MudGrid Spacing="3" Class="readonly-grid">
+            <MudItem xs="12" Class="d-flex justify-center">
+                @if (ImageUrl is not null)
+                {
+                    <MudImage Src="@ImageUrl"
+                              Width="160"
+                              Height="160"
+                              ObjectFit="ObjectFit.ScaleDown"
+                              Class="rounded-lg">
+                    </MudImage>
+                }
+                else
+                {
+                    <MudPaper Outlined="true"
+                              Class="d-flex align-center justify-center rounded-lg"
+                              Style="width:160px;height:160px;">
+                        <MudIcon Icon="@Icons.Material.Filled.Image" Size="Size.Large" Color="Color.Default" />
+                    </MudPaper>
+                }
+            </MudItem>
+            <MudItem xs="12">
+                <ReadOnlyField Label="@Model.GetMemberDescription(x => x.LegislationCode)" Value="Model.LegislationCode"></ReadOnlyField>
+            </MudItem>
+            <MudItem xs="12">
+                <ReadOnlyField Label="@Model.GetMemberDescription(x => x.Description)" Value="Model.Description"></ReadOnlyField>
+            </MudItem>
+            <MudItem xs="12">
+                <ReadOnlyField Label="@Model.GetMemberDescription(x => x.ImageAssetKey)" Value="Model.ImageAssetKey"></ReadOnlyField>
+            </MudItem>
+        </MudGrid>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Close">@AppStrings.Close</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter] private IMudDialogInstance MudDialog { get; set; } = default!;
+
+    [EditorRequired] [Parameter] public RoadSignDto Model { get; set; } = null!;
+
+    private string? ImageUrl
+    {
+        get
+        {
+            if (string.IsNullOrWhiteSpace(Model.ImageAssetKey))
+                return null;
+
+            var escapedSegments = Model.ImageAssetKey.Split('/').Select(Uri.EscapeDataString);
+            return $"/img/{string.Join('/', escapedSegments)}";
+        }
+    }
+
+    private void Close() => MudDialog.Close(DialogResult.Ok(true));
+}

@@ -127,6 +127,12 @@ public class MenuService : IMenuService
                         },
                         new()
                         {
+                            Title = "Road Signs",
+                            Href = "/system/roadsigns",
+                            PageStatus = PageStatus.Completed
+                        },
+                        new()
+                        {
                             Title = "Audit Trails",
                             Href = "/system/audittrails",
                             PageStatus = PageStatus.Completed

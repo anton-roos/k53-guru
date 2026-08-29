@@ -18,6 +18,7 @@ public interface IApplicationDbContext: IAsyncDisposable
     DbSet<Tenant> Tenants { get; set; }
     DbSet<TenantUser> TenantUsers { get; set; }
     DbSet<Contact> Contacts { get; set; }
+    DbSet<RoadSign> RoadSigns { get; set; }
     DbSet<LoginAudit> LoginAudits { get; set; }
     DbSet<UserLoginRiskSummary> UserLoginRiskSummaries { get; set; }
     ChangeTracker ChangeTracker { get; }
