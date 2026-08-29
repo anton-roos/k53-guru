@@ -65,7 +65,7 @@ Clean Architecture template for Blazor Server targeting production-ready line-of
 - Realtime and UX: SignalR hub for notifications and activity; MudBlazor for UI components; ApexCharts for analytics.
 
 ## Important Constraints
-- Target framework is `net10.0` across projects (one test project, `Infrastructure.UnitTests`, still targets `net9.0`); use SDK 10.x locally and in CI. Microsoft packages are currently pinned to `10.0.0-rc.2`; move to stable `10.0.x` before production.
+- Target framework is `net10.0` across all projects; use SDK 10.x locally and in CI. Microsoft packages are currently pinned to `10.0.0-rc.2`; move to stable `10.0.x` before production.
 - Supported DB providers: `sqlite`, `sqlserver`, `npgsql`; selectable via `DatabaseSettings.DBProvider` and migrations assemblies.
 - Default Hangfire storage is in-memory; configure persistent storage for production.
 - SignalR max receive message size set to 64 KB; adjust if sending larger payloads.
