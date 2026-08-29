@@ -316,5 +316,40 @@ public class ApplicationDbContextInitializer
             await _context.Products.AddRangeAsync(products);
             await _context.SaveChangesAsync();
         }
+
+        await SeedRoadSignsAsync();
+    }
+
+    private async Task SeedRoadSignsAsync()
+    {
+        if (await _context.RoadSigns.AnyAsync()) return;
+
+        _logger.LogInformation("Seeding road signs...");
+        var signs = new[]
+        {
+            new RoadSign { LegislationCode = "R1", Description = "Stop", ImageAssetKey = "signs/r1.png" },
+            new RoadSign { LegislationCode = "R1.1", Description = "Stop/Yield", ImageAssetKey = "signs/r1-1.png" },
+            new RoadSign { LegislationCode = "R2", Description = "Yield", ImageAssetKey = "signs/r2.png" },
+            new RoadSign { LegislationCode = "R2.1", Description = "Yield to pedestrians", ImageAssetKey = "signs/r2-1.png" },
+            new RoadSign { LegislationCode = "R3", Description = "No entry", ImageAssetKey = "signs/r3.png" },
+            new RoadSign { LegislationCode = "R4", Description = "No parking", ImageAssetKey = "signs/r4.png" },
+            new RoadSign { LegislationCode = "R5", Description = "No stopping", ImageAssetKey = "signs/r5.png" },
+            new RoadSign { LegislationCode = "R6", Description = "No overtaking", ImageAssetKey = "signs/r6.png" },
+            new RoadSign { LegislationCode = "R101", Description = "Speed limit (general)", ImageAssetKey = "signs/r101.png" },
+            new RoadSign { LegislationCode = "R106", Description = "Keep left", ImageAssetKey = "signs/r106.png" },
+            new RoadSign { LegislationCode = "R201", Description = "Speed limit 60 km/h", ImageAssetKey = "signs/r201.png" },
+            new RoadSign { LegislationCode = "R202", Description = "Speed limit 80 km/h", ImageAssetKey = "signs/r202.png" },
+            new RoadSign { LegislationCode = "R210", Description = "Speed limit 120 km/h", ImageAssetKey = "signs/r210.png" },
+            new RoadSign { LegislationCode = "W1", Description = "Dangerous curve to left", ImageAssetKey = "signs/w1.png" },
+            new RoadSign { LegislationCode = "W2", Description = "Dangerous curve to right", ImageAssetKey = "signs/w2.png" },
+            new RoadSign { LegislationCode = "W3", Description = "Winding road ahead", ImageAssetKey = "signs/w3.png" },
+            new RoadSign { LegislationCode = "W4", Description = "Sharp descent", ImageAssetKey = "signs/w4.png" },
+            new RoadSign { LegislationCode = "W5", Description = "Steep ascent", ImageAssetKey = "signs/w5.png" },
+            new RoadSign { LegislationCode = "GS1", Description = "Freeway begins", ImageAssetKey = "signs/gs1.png" },
+            new RoadSign { LegislationCode = "GS2", Description = "Freeway ends", ImageAssetKey = "signs/gs2.png" },
+        };
+
+        await _context.RoadSigns.AddRangeAsync(signs);
+        await _context.SaveChangesAsync();
     }
 }

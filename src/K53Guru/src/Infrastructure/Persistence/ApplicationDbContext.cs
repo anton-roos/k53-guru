@@ -28,6 +28,7 @@ public class ApplicationDbContext : IdentityDbContext<
     public DbSet<PicklistSet> PicklistSets { get; set; }
     public DbSet<Product> Products { get; set; }
     public DbSet<Contact> Contacts { get; set; }
+    public DbSet<RoadSign> RoadSigns { get; set; }
     public DbSet<LoginAudit> LoginAudits { get; set; }
     public DbSet<UserLoginRiskSummary> UserLoginRiskSummaries { get; set; }
     public DbSet<DataProtectionKey> DataProtectionKeys { get; set; }

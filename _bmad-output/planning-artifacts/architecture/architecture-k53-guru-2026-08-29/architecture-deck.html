@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>K53 Guru — Architecture Walkthrough</title>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<style>
+  :root{
+    --bg:#0d1117; --panel:#161b22; --panel2:#1c2330; --ink:#e6edf3; --muted:#8b949e;
+    --accent:#4cc2ff; --accent2:#7ee787; --warn:#f0b429; --danger:#ff7b72; --line:#30363d;
+    --shadow:0 10px 40px rgba(0,0,0,.45);
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%}
+  body{background:var(--bg);color:var(--ink);font:16px/1.55 -apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;overflow:hidden}
+  #deck{height:100vh;width:100vw;position:relative}
+  .slide{position:absolute;inset:0;display:none;flex-direction:column;padding:4vh 6vw 9vh;overflow:auto}
+  .slide.active{display:flex;animation:fade .35s ease}
+  @keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+  h1{font-size:clamp(28px,4.5vw,52px);margin:0 0 .2em;line-height:1.05}
+  h2{font-size:clamp(22px,3vw,34px);margin:0 0 .6em;color:var(--ink)}
+  .kicker{color:var(--accent);font-weight:700;letter-spacing:.12em;text-transform:uppercase;font-size:13px;margin-bottom:14px}
+  .sub{color:var(--muted);font-size:clamp(15px,1.6vw,19px);max-width:70ch}
+  .grid{display:grid;gap:16px;margin-top:8px}
+  .g2{grid-template-columns:1fr 1fr}
+  .g3{grid-template-columns:repeat(3,1fr)}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px 20px;box-shadow:var(--shadow)}
+  .card h3{margin:0 0 6px;font-size:18px}
+  .card p{margin:0;color:var(--muted);font-size:14.5px}
+  .pill{display:inline-block;padding:2px 10px;border-radius:999px;font-size:12px;font-weight:700;border:1px solid var(--line)}
+  .pill.a{color:var(--accent);border-color:#20506b;background:#0e2230}
+  .pill.g{color:var(--accent2);border-color:#245c33;background:#0f2417}
+  .pill.w{color:var(--warn);border-color:#5c471a;background:#241d0c}
+  .pill.d{color:var(--danger);border-color:#5c2622;background:#2a1513}
+  ul{margin:.3em 0;padding-left:1.15em}
+  li{margin:.32em 0}
+  code{background:#0b0f16;border:1px solid var(--line);border-radius:6px;padding:1px 6px;font-size:13px;color:var(--accent2)}
+  .mermaid{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px;box-shadow:var(--shadow);display:flex;justify-content:center}
+  .ad{background:var(--panel2);border-left:3px solid var(--accent);border-radius:8px;padding:10px 14px}
+  .ad b{color:var(--ink)} .ad small{color:var(--muted)}
+  .two{display:grid;grid-template-columns:1.1fr .9fr;gap:22px;align-items:start}
+  table{border-collapse:collapse;width:100%;font-size:14px}
+  th,td{border:1px solid var(--line);padding:7px 10px;text-align:left}
+  th{background:#0b0f16;color:var(--accent)}
+  td code{font-size:12.5px}
+  .disc{background:linear-gradient(135deg,#111a24,#0d1117);border:1px dashed #2b5069}
+  .foot{position:fixed;left:0;right:0;bottom:0;height:52px;display:flex;align-items:center;justify-content:space-between;padding:0 22px;background:rgba(13,17,23,.85);border-top:1px solid var(--line);backdrop-filter:blur(6px)}
+  .foot .nm{color:var(--muted);font-size:13px}
+  .dots{display:flex;gap:6px}
+  .dot{width:9px;height:9px;border-radius:50%;background:#2b3240;cursor:pointer;transition:.2s}
+  .dot.on{background:var(--accent);transform:scale(1.25)}
+  .nav{display:flex;gap:8px}
+  button.n{background:var(--panel);color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:6px 14px;cursor:pointer;font-size:14px}
+  button.n:hover{border-color:var(--accent);color:var(--accent)}
+  .bar{position:fixed;top:0;left:0;height:3px;background:var(--accent);z-index:10;transition:width .3s}
+  .tag{font-size:11px;color:var(--warn);font-weight:700}
+  .lead{font-size:clamp(17px,1.9vw,22px);color:var(--ink);max-width:60ch}
+  .num{font-size:13px;color:var(--muted)}
+  .split3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+</style>
+</head>
+<body>
+<div class="bar" id="bar"></div>
+<div id="deck">
+
+  <!-- 1 -->
+  <section class="slide active">
+    <div class="kicker">Architecture Spine · Feature Altitude</div>
+    <h1>K53&nbsp;Guru</h1>
+    <p class="lead">A faithful practice simulator for the South African computerised learner's-licence test — an admin-authored content backend and a Flutter mobile client.</p>
+    <div class="grid g3" style="margin-top:28px">
+      <div class="card"><h3>Two-sided</h3><p>Blazor Admin Panel authors content; a Flutter app delivers exam-like sittings.</p></div>
+      <div class="card"><h3>Brownfield + greenfield</h3><p>Ratifies an existing .NET 10 Clean Architecture backend; adds a new content API + client.</p></div>
+      <div class="card"><h3>Fidelity is the bar</h3><p>Every call resolves against matching the real CLLT exam — format, mix, scoring.</p></div>
+    </div>
+    <p class="sub" style="margin-top:26px">Source: <code>SPEC-k53-learners-app</code> + <code>test-structure.md</code> · 14 architecture decisions · CAP-1…9</p>
+  </section>
+
+  <!-- 2 -->
+  <section class="slide">
+    <div class="kicker">The system at a glance</div>
+    <h2>How the pieces connect</h2>
+    <div class="mermaid">
+flowchart LR
+  Expert["K53 Domain Expert"] -->|authors / imports| AdminUI["Server.UI · Blazor Admin"]
+  Learner["Learner"] -->|takes tests| App["Flutter Mobile Client"]
+  App -->|"HTTPS / JSON"| Api["Content API · /api/v1"]
+  AdminUI --> AppLayer["Application · CQRS/MediatR"]
+  Api --> AppLayer
+  AppLayer --> Infra["Infrastructure · EF Core"]
+  Infra --> DB[("PostgreSQL")]
+  Infra --> Obj[("MinIO · sign assets")]
+    </div>
+    <p class="sub">The Admin Panel and the new API are two front doors onto the <b>same</b> Application layer — so composition and scoring can only ever be computed one way.</p>
+  </section>
+
+  <!-- 3 -->
+  <section class="slide">
+    <div class="kicker">Design paradigm</div>
+    <h2>Clean Architecture + CQRS — ratified, not reinvented</h2>
+    <div class="two">
+      <div class="mermaid">
+flowchart TD
+  Flutter["Flutter Client"] -->|"HTTP · DTO contract only"| Api["Api (/api/v1)"]
+  ServerUI["Server.UI (Blazor Admin)"] --> Application
+  Api --> Application
+  Infrastructure --> Application
+  Application --> Domain
+  Infrastructure --> Domain
+      </div>
+      <div>
+        <div class="ad"><b>Dependencies point inward.</b><br><small>Domain ← Application ← {Infrastructure, Server.UI, Api}. All business logic lives in Application.</small></div>
+        <div class="ad" style="margin-top:12px;border-color:var(--accent2);border-left-color:var(--accent2)"><b>Client is a separate bounded context.</b><br><small>The Flutter app depends only on the versioned DTO contract — never the DB, Blazor, or domain types.</small></div>
+        <p class="num" style="margin-top:14px">Backend layers already exist as a .NET 10 template. This spine adds only the <b>Api</b> project and the <b>Flutter</b> client.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4 -->
+  <section class="slide">
+    <div class="kicker">The three calls that matter most</div>
+    <h2>If we get only three things right…</h2>
+    <div class="grid g3" style="margin-top:10px">
+      <div class="card"><span class="pill a">AD-2 · AD-3 · AD-12</span><h3 style="margin-top:12px">One API boundary</h3><p>The client talks only to a versioned REST API that delegates to the shared Application layer. No bundled content, no second code path.</p></div>
+      <div class="card"><span class="pill g">AD-4 · AD-5 · AD-6 · AD-11</span><h3 style="margin-top:12px">Server owns fidelity</h3><p>Composition, randomisation, scoring, pass/fail, and timing are computed server-side. The client renders and collects — never grades.</p></div>
+      <div class="card"><span class="pill w">AD-10 · AD-13</span><h3 style="margin-top:12px">Anonymous by design</h3><p>A self-custodied UUID is the learner's whole identity — no accounts, no PII. Admin auth stays a separate domain.</p></div>
+    </div>
+    <p class="sub" style="margin-top:24px">Everything else in the spine protects one of these three from drifting.</p>
+  </section>
+
+  <!-- 5 -->
+  <section class="slide">
+    <div class="kicker">The heart — test fidelity</div>
+    <h2>Why grading never happens on the phone</h2>
+    <div class="split3" style="margin-top:6px">
+      <div class="ad"><b>AD-4 — Server computes</b><br><small>Composition + scoring live in Domain/Application. Client renders results verbatim; never re-computes or caches a grade.</small></div>
+      <div class="ad"><b>AD-5 — Immutable snapshot</b><br><small>An attempt freezes its questions + a per-section <code>display_order</code> at start. Resume returns the identical order; edits never touch a live attempt.</small></div>
+      <div class="ad"><b>AD-6 — Answers withheld</b><br><small>Test mode ships no correct keys; the server returns only per-section/per-code results. Practice may show correctness — still server-owned.</small></div>
+    </div>
+    <div class="ad" style="margin-top:14px;border-left-color:var(--warn)"><b>AD-11 — Config, not code · server clock authoritative</b><br><small>Counts, pass marks, time limits, sections are seeded data. Elapsed time is computed server-side from <code>started_at</code>; a client <code>submitted_at</code> is diagnostic only.</small></div>
+    <p class="sub" style="margin-top:16px">These four were tightened by the adversarial review to close cross-team divergence (randomisation authority, results shape, timing, Practice grading).</p>
+  </section>
+
+  <!-- 6 -->
+  <section class="slide">
+    <div class="kicker">Content & the sign catalog</div>
+    <h2>One authoritative source of truth for content</h2>
+    <div class="grid g2">
+      <div class="card"><span class="pill g">AD-7</span><h3 style="margin-top:10px">Signs are seeded reference data</h3><p><code>legislation_code</code> is a unique key. Questions reference a sign by <code>sign_ref</code> — resolved exactly-once, never an embedded image or ad-hoc label.</p></div>
+      <div class="card"><span class="pill g">AD-8</span><h3 style="margin-top:10px">Import validates before it stores</h3><p>Every CSV/JSON row is checked against schema <b>and</b> catalog. A bad row is rejected with its position — never partially stored.</p></div>
+      <div class="card"><span class="pill a">AD-9</span><h3 style="margin-top:10px">Two-axis content model</h3><p>Each question carries its code(s) and a shared/code-specific class, plus a <code>language_code</code>. Sections are fixed order; randomisation is intra-section only.</p></div>
+      <div class="card"><span class="pill a">AD-9</span><h3 style="margin-top:10px">Combinations compose once</h3><p>Code 1+2 or 1+3 answer the shared sections once and add one Vehicle-Controls module per selected code — graded independently.</p></div>
+    </div>
+  </section>
+
+  <!-- 7 -->
+  <section class="slide">
+    <div class="kicker">Core entities</div>
+    <h2>The shapes worth fixing at cold-start</h2>
+    <div class="mermaid">
+erDiagram
+  RoadSign ||--o{ Question : "referenced by sign_ref"
+  Question ||--|{ AnswerOption : has
+  TestConfig ||--|{ SectionRule : "defines cut-offs"
+  LearnerProfile ||--o{ Attempt : owns
+  Attempt ||--|{ AttemptQuestion : "snapshots at start"
+  AttemptQuestion }o--|| Question : "immutable copy of"
+  Attempt ||--|{ CodeResult : "grades per code"
+  CodeResult ||--|{ SectionResult : "per section"
+    </div>
+    <p class="sub">Names and relationships only — attribute-level detail is owned by the code. Note the <b>snapshot</b> split: <code>AttemptQuestion</code> is an immutable copy, so live content edits can't reach an in-flight sitting.</p>
+  </section>
+
+  <!-- 8 -->
+  <section class="slide">
+    <div class="kicker">Traceability</div>
+    <h2>Every capability has a home</h2>
+    <table>
+      <tr><th>Capability</th><th>Lives in</th><th>Governed by</th></tr>
+      <tr><td>CAP-1 authoring</td><td>Server.UI + Features/Questions</td><td>AD-1, AD-3, AD-13</td></tr>
+      <tr><td>CAP-2 import</td><td>Features/Questions (import)</td><td>AD-8, AD-7</td></tr>
+      <tr><td>CAP-3 sign catalog</td><td>Infrastructure seed + Domain</td><td>AD-7</td></tr>
+      <tr><td>CAP-4 randomised delivery</td><td>Features/Tests + Api</td><td>AD-3, AD-4, AD-5</td></tr>
+      <tr><td>CAP-5 single/combination</td><td>Features/Tests</td><td>AD-9, AD-4</td></tr>
+      <tr><td>CAP-6 faithful scoring</td><td>Features/Attempts</td><td>AD-4, AD-5, AD-6, AD-11</td></tr>
+      <tr><td>CAP-7 import validation</td><td>Features/Questions</td><td>AD-8, AD-7</td></tr>
+      <tr><td>CAP-8 Practice vs Test</td><td>Api + Features/Attempts</td><td>AD-6, AD-4</td></tr>
+      <tr><td>CAP-9 anonymous UUID</td><td>Features/Profiles + Api</td><td>AD-10, AD-13</td></tr>
+    </table>
+  </section>
+
+  <!-- 9 -->
+  <section class="slide">
+    <div class="kicker">Stack & operations</div>
+    <h2>What we build on</h2>
+    <div class="two">
+      <div>
+        <table>
+          <tr><th>Layer</th><th>Choice</th></tr>
+          <tr><td>Runtime</td><td><code>net10.0</code> <span class="tag">packages on rc.2 → stable</span></td></tr>
+          <tr><td>API / ORM</td><td>ASP.NET Core 10 · EF Core 10 (Npgsql)</td></tr>
+          <tr><td>Prod DB</td><td>PostgreSQL 16+</td></tr>
+          <tr><td>Assets</td><td>MinIO object store</td></tr>
+          <tr><td>Client</td><td>Flutter 3.47.2 · Dart 3.13.2</td></tr>
+          <tr><td>Client state</td><td>Riverpod 3.x</td></tr>
+        </table>
+      </div>
+      <div>
+        <div class="ad" style="border-left-color:var(--accent2)"><b>AD-14 — Operational envelope</b><br><small>Containerized via docker-compose · Postgres prod · EF Core migrations through the Migrator projects (no <code>EnsureCreated</code> in prod) · env config via <code>IOptions&lt;T&gt;</code> · HTTPS + per-UUID rate limiting on the public API.</small></div>
+        <p class="num" style="margin-top:12px">The version check caught that the codebase already targets <b>net10.0</b> — the persistent-facts doc said net9.0. Worth correcting <code>project.md</code>.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 10 -->
+  <section class="slide">
+    <div class="kicker">Deferred & open</div>
+    <h2>What we deliberately did not decide</h2>
+    <div class="grid g2">
+      <div class="card"><h3>Deferred down</h3><p>Entity attribute schemas · endpoint/DTO field lists · Riverpod provider graph · widget structure → epic/story spines. Package upgrade rc.2 → stable. Exact rate-limit thresholds → security epic.</p></div>
+      <div class="card"><h3>Open questions</h3><p>Offline test-taking (v1 is online-first) · multi-language (v1 English, axis reserved) · admin role model · official CLLT counts/time limits (confirm vs live terminal) · question-bank copyright.</p></div>
+    </div>
+    <p class="sub" style="margin-top:20px">AD-11 makes the fidelity numbers configurable, so the unconfirmed counts and time limits can land late without a structural change.</p>
+  </section>
+
+  <!-- 11 -->
+  <section class="slide">
+    <div class="kicker">Let's discuss</div>
+    <h2>Decisions to pressure-test together</h2>
+    <div class="grid g2">
+      <div class="card disc"><h3>1 · Offline sittings</h3><p>Online-first keeps grading server-authoritative. Is offline practice a v1 need? It would add a client attempt store and a sync boundary.</p></div>
+      <div class="card disc"><h3>2 · Sign assets</h3><p>Images from MinIO vs bundled in the app? Affects app size, offline, and the sign-catalog delivery contract.</p></div>
+      <div class="card disc"><h3>3 · Admin auth model</h3><p>Who may author vs publish vs import? AD-13 assumes "authenticated admin" — the real role split is still open.</p></div>
+      <div class="card disc"><h3>4 · Fidelity numbers</h3><p>Counts, pass marks, time limits are provisional. Who confirms them against a live DLTC/CLLT terminal, and when?</p></div>
+    </div>
+  </section>
+
+  <!-- 12 -->
+  <section class="slide">
+    <div class="kicker">Next</div>
+    <h2>Where this goes from here</h2>
+    <div class="grid g3">
+      <div class="card"><span class="pill a">1</span><h3 style="margin-top:10px">Adopt as spec companion</h3><p>Fold the spine into <code>SPEC-k53-learners-app</code> (bmad-spec) — AD IDs stay stable for downstream citation.</p></div>
+      <div class="card"><span class="pill g">2</span><h3 style="margin-top:10px">Break into epics & stories</h3><p>bmad-create-epics-and-stories — the sign catalog is the prerequisite first epic.</p></div>
+      <div class="card"><span class="pill w">3</span><h3 style="margin-top:10px">Build</h3><p>Each epic inherits this spine as binding invariants; per-story detail is decided below it.</p></div>
+    </div>
+    <p class="sub" style="margin-top:26px">Spine: <code>ARCHITECTURE-SPINE.md</code> · Reviews: <code>reviews/review-summary.md</code> · Memlog: <code>.memlog.md</code></p>
+  </section>
+
+</div>
+
+<div class="foot">
+  <span class="nm" id="title">K53 Guru — Architecture Walkthrough</span>
+  <div class="dots" id="dots"></div>
+  <div class="nav"><button class="n" onclick="go(-1)">← Prev</button><span class="num" id="count"></span><button class="n" onclick="go(1)">Next →</button></div>
+</div>
+
+<script>
+  mermaid.initialize({startOnLoad:true,theme:'dark',themeVariables:{
+    primaryColor:'#1c2330',primaryTextColor:'#e6edf3',primaryBorderColor:'#4cc2ff',
+    lineColor:'#4cc2ff',secondaryColor:'#161b22',tertiaryColor:'#0d1117',fontSize:'15px'}});
+  const slides=[...document.querySelectorAll('.slide')];
+  const dots=document.getElementById('dots');
+  slides.forEach((_,i)=>{const d=document.createElement('div');d.className='dot'+(i?'':' on');d.onclick=()=>show(i);dots.appendChild(d);});
+  let cur=0;
+  function show(i){cur=Math.max(0,Math.min(slides.length-1,i));
+    slides.forEach((s,k)=>s.classList.toggle('active',k===cur));
+    [...dots.children].forEach((d,k)=>d.classList.toggle('on',k===cur));
+    document.getElementById('bar').style.width=((cur+1)/slides.length*100)+'%';
+    document.getElementById('count').textContent=(cur+1)+' / '+slides.length;}
+  function go(d){show(cur+d);}
+  document.addEventListener('keydown',e=>{
+    if(e.key==='ArrowRight'||e.key===' '||e.key==='PageDown')go(1);
+    if(e.key==='ArrowLeft'||e.key==='PageUp')go(-1);
+    if(e.key==='Home')show(0); if(e.key==='End')show(slides.length-1);});
+  show(0);
+</script>
+</body>
+</html>

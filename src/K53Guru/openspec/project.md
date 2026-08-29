@@ -4,9 +4,9 @@
 Clean Architecture template for Blazor Server targeting production-ready line-of-business apps. It provides opinionated building blocks for authentication/authorization, multi-tenancy, data access, caching, background jobs, reporting, observability, and UI scaffolding so teams can focus on domain features rather than plumbing.
 
 ## Tech Stack
-- .NET 9, C# (LangVersion: default; Nullable: enable)
+- .NET 10, C# (LangVersion: default; Nullable: enable)
 - Blazor Server (Razor Components with interactive server render mode)
-- EF Core 9 with providers: SQLite, SQL Server, PostgreSQL; EFCore.NamingConventions
+- EF Core 10 with providers: SQLite, SQL Server, PostgreSQL; EFCore.NamingConventions
 - Identity: ASP.NET Core Identity (custom AuditSignInManager, multi-tenant claims factory)
 - CQRS/Messaging: MediatR with pre-processors and pipeline behaviors
 - Validation: FluentValidation
@@ -52,7 +52,7 @@ Clean Architecture template for Blazor Server targeting production-ready line-of
 - Run locally with `dotnet test` at the solution level. CI currently builds; tests can be added to workflow if needed.
 
 ### Git Workflow
-- Default branch: `main`. Build workflow runs on push/PR to `main` with .NET 9 SDK.
+- Default branch: `main`. Build workflow runs on push/PR to `main` with .NET 10 SDK.
 - CodeQL security analysis runs on push/PR to `main` and weekly on a schedule.
 - Use feature branches and PRs for changes; keep changes scoped and ensure build passes. No enforced commit message convention specified.
 
@@ -65,7 +65,7 @@ Clean Architecture template for Blazor Server targeting production-ready line-of
 - Realtime and UX: SignalR hub for notifications and activity; MudBlazor for UI components; ApexCharts for analytics.
 
 ## Important Constraints
-- Target framework is `net9.0` across projects; use SDK 9.x locally and in CI.
+- Target framework is `net10.0` across projects (one test project, `Infrastructure.UnitTests`, still targets `net9.0`); use SDK 10.x locally and in CI. Microsoft packages are currently pinned to `10.0.0-rc.2`; move to stable `10.0.x` before production.
 - Supported DB providers: `sqlite`, `sqlserver`, `npgsql`; selectable via `DatabaseSettings.DBProvider` and migrations assemblies.
 - Default Hangfire storage is in-memory; configure persistent storage for production.
 - SignalR max receive message size set to 64 KB; adjust if sending larger payloads.
