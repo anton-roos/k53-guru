@@ -1,0 +1,72 @@
+using System.Security.Claims;
+using K53Guru.Application.Common.ExceptionHandlers;
+using K53Guru.Application.Common.Interfaces;
+using K53Guru.Application.Common.Interfaces.Identity;
+using K53Guru.Application.Common.Security;
+using K53Guru.Domain.Identity;
+using Microsoft.AspNetCore.Identity;
+using ZiggyCreatures.Caching.Fusion;
+
+namespace K53Guru.Server.UI.Services.Identity;
+
+/// <inheritdoc />
+public class RolePermissionAssignmentService : IPermissionAssignmentService
+{
+    private readonly RoleManager<ApplicationRole> _roleManager;
+    private readonly IPermissionHelper _permissionHelper;
+    private readonly IFusionCache _cache;
+    private readonly ILogger<RolePermissionAssignmentService> _logger;
+    private const string CacheKeyPrefix = "get-claims-by-";
+
+    public RolePermissionAssignmentService(RoleManager<ApplicationRole> roleManager,
+        IPermissionHelper permissionHelper,
+        IFusionCache cache,
+        ILogger<RolePermissionAssignmentService> logger)
+    {
+        _roleManager = roleManager;
+        _permissionHelper = permissionHelper;
+        _cache = cache;
+        _logger = logger;
+    }
+
+    public async Task<IList<PermissionModel>> LoadAsync(string entityId)
+    {
+        return await _permissionHelper.GetAllPermissionsByRoleId(entityId);
+    }
+
+    public async Task AssignAsync(PermissionModel model)
+    {
+        var roleId = model.RoleId ?? throw new ArgumentNullException(nameof(model.RoleId));
+        var role = await _roleManager.FindByIdAsync(roleId) ??
+                   throw new NotFoundException($"Role not found: {roleId}");
+        var claim = new Claim(model.ClaimType, model.ClaimValue);
+        if (model.Assigned)
+            await _roleManager.AddClaimAsync(role, claim);
+        else
+            await _roleManager.RemoveClaimAsync(role, claim);
+        InvalidateCache(roleId);
+    }
+
+    public async Task AssignBulkAsync(IEnumerable<PermissionModel> models)
+    {
+        var list = models.ToList();
+        if (!list.Any()) return;
+        var roleId = list.First().RoleId ?? string.Empty;
+        var role = await _roleManager.FindByIdAsync(roleId) ??
+                   throw new NotFoundException($"Role not found: {roleId}");
+        foreach (var model in list)
+        {
+            var claim = new Claim(model.ClaimType, model.ClaimValue);
+            if (model.Assigned)
+                await _roleManager.AddClaimAsync(role, claim);
+            else
+                await _roleManager.RemoveClaimAsync(role, claim);
+        }
+        InvalidateCache(roleId);
+    }
+
+    private void InvalidateCache(string roleId)
+    {
+        _cache.Remove($"{CacheKeyPrefix}{roleId}");
+    }
+} 

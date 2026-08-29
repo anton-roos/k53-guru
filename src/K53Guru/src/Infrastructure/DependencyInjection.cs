@@ -1,0 +1,387 @@
+﻿// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the MIT license.
+
+using System.Reflection;
+using K53Guru.Application.Common.Constants;
+using K53Guru.Application.Common.Interfaces; // IDataSourceService
+using K53Guru.Application.Common.Models;
+using K53Guru.Application.Common.Security;
+using K53Guru.Application.Features.Identity.DTOs;
+using K53Guru.Application.Features.PicklistSets.DTOs;
+using K53Guru.Application.Features.Tenants.DTOs;
+using K53Guru.Domain.Identity;
+using K53Guru.Infrastructure.Configurations;
+using K53Guru.Infrastructure.Persistence.Interceptors;
+using K53Guru.Infrastructure.Services;
+using K53Guru.Infrastructure.Services.Circuits;
+using K53Guru.Infrastructure.Services.Gemini;
+using K53Guru.Infrastructure.Services.Identity;
+using K53Guru.Infrastructure.Services.MultiTenant;
+using MaxMind.GeoIP2;
+using Microsoft.AspNetCore.Components.Server.Circuits;
+using Microsoft.AspNetCore.DataProtection;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.SignalR;
+using Microsoft.EntityFrameworkCore.Diagnostics;
+using Microsoft.Extensions.Configuration;
+using ZiggyCreatures.Caching.Fusion;
+
+namespace K53Guru.Infrastructure;
+
+public static class DependencyInjection
+{
+    private const string IDENTITY_SETTINGS_KEY = "IdentitySettings";
+    private const string APP_CONFIGURATION_SETTINGS_KEY = "AppConfigurationSettings";
+    private const string DATABASE_SETTINGS_KEY = "DatabaseSettings";
+    private const string SMTP_CLIENT_OPTIONS_KEY = "SmtpClientOptions";
+    // Removed UseInMemoryDatabase and in-memory database name constants (feature deprecated)
+    private const string NPGSQL_ENABLE_LEGACY_TIMESTAMP_BEHAVIOR = "Npgsql.EnableLegacyTimestampBehavior";
+    private const string POSTGRESQL_MIGRATIONS_ASSEMBLY = "K53Guru.Migrators.PostgreSQL";
+    private const string MSSQL_MIGRATIONS_ASSEMBLY = "K53Guru.Migrators.MSSQL";
+    private const string SQLITE_MIGRATIONS_ASSEMBLY = "K53Guru.Migrators.SqLite";
+    private const string SMTP_CLIENT_OPTIONS_DEFAULT_FROM_EMAIL = "SmtpClientOptions:DefaultFromEmail";
+    private const string EMAIL_TEMPLATES_PATH = "Resources/EmailTemplates";
+    private const string DEFAULT_FROM_EMAIL = "noreply@blazorserver.com";
+    private const string LOGIN_PATH = "/account/login";
+    private const int DEFAULT_LOCKOUT_TIME_SPAN_MINUTES = 5;
+    private const int MAX_FAILED_ACCESS_ATTEMPTS = 5;
+
+    public static IServiceCollection AddInfrastructure(this IServiceCollection services,
+        IConfiguration configuration)
+    {
+        return services
+            .AddApplicationSettings(configuration)
+            .AddDatabaseServices(configuration)
+            .AddIdentityAndSecurity(configuration)
+            .AddBusinessServices(configuration)
+            .AddCachingServices()
+            .AddNotificationServices(configuration)
+            .AddSessionManagement();
+
+    }
+
+    #region Configuration and Settings
+    private static IServiceCollection AddApplicationSettings(this IServiceCollection services,
+        IConfiguration configuration)
+    {
+        services.Configure<IdentitySettings>(configuration.GetSection(IDENTITY_SETTINGS_KEY))
+            .AddSingleton(s => s.GetRequiredService<IOptions<IdentitySettings>>().Value)
+            .AddSingleton<IIdentitySettings>(s => s.GetRequiredService<IOptions<IdentitySettings>>().Value);
+
+        services.Configure<AppConfigurationSettings>(configuration.GetSection(APP_CONFIGURATION_SETTINGS_KEY))
+            .AddSingleton(s => s.GetRequiredService<IOptions<AppConfigurationSettings>>().Value)
+            .AddSingleton<IApplicationSettings>(s => s.GetRequiredService<IOptions<AppConfigurationSettings>>().Value);
+
+        services.Configure<DatabaseSettings>(configuration.GetSection(DATABASE_SETTINGS_KEY))
+            .AddSingleton(s => s.GetRequiredService<IOptions<DatabaseSettings>>().Value);
+
+        services.Configure<MinioOptions>(configuration.GetSection(MinioOptions.Key))
+            .AddSingleton(s => s.GetRequiredService<IOptions<MinioOptions>>().Value);
+
+        services.Configure<AISettings>(configuration.GetSection(AISettings.Key))
+            .AddSingleton(s => s.GetRequiredService<IOptions<AISettings>>().Value)
+            .AddSingleton<IAISettings>(s => s.GetRequiredService<IOptions<AISettings>>().Value);
+
+       
+        return services;
+    }
+    #endregion
+
+    #region Database and Persistence
+    private static IServiceCollection AddDatabaseServices(this IServiceCollection services,
+        IConfiguration configuration)
+    {
+        services.AddScoped<ISaveChangesInterceptor, AuditableEntityInterceptor>()
+            .AddScoped<ISaveChangesInterceptor, DispatchDomainEventsInterceptor>();
+
+        // Always configure the real database provider (in-memory option removed).
+        services.AddDbContext<ApplicationDbContext>((p, m) =>
+        {
+            var databaseSettings = p.GetRequiredService<IOptions<DatabaseSettings>>().Value;
+            m.AddInterceptors(p.GetServices<ISaveChangesInterceptor>());
+            m.UseExceptionProcessor(databaseSettings.DBProvider);
+            m.UseDatabase(databaseSettings.DBProvider, databaseSettings.ConnectionString);
+        });
+
+        // Keep factory registration for components that require explicit context creation.
+        services.AddDbContextFactory<ApplicationDbContext>((p, m) =>
+        {
+            var databaseSettings = p.GetRequiredService<IOptions<DatabaseSettings>>().Value;
+            m.AddInterceptors(p.GetServices<ISaveChangesInterceptor>());
+            m.UseExceptionProcessor(databaseSettings.DBProvider);
+            m.UseDatabase(databaseSettings.DBProvider, databaseSettings.ConnectionString);
+        }, ServiceLifetime.Scoped);
+
+        services.AddScoped<IApplicationDbContextFactory, ApplicationDbContextFactory>();
+        services.AddScoped<ApplicationDbContextInitializer>();
+        return services;
+    }
+
+    private static DbContextOptionsBuilder UseDatabase(this DbContextOptionsBuilder builder, string dbProvider,
+        string connectionString)
+    {
+        switch (dbProvider.ToLowerInvariant())
+        {
+            case DbProviderKeys.Npgsql:
+                AppContext.SetSwitch(NPGSQL_ENABLE_LEGACY_TIMESTAMP_BEHAVIOR, true);
+                return builder.UseNpgsql(connectionString,
+                        e => e.MigrationsAssembly(POSTGRESQL_MIGRATIONS_ASSEMBLY))
+                    .UseSnakeCaseNamingConvention();
+
+            case DbProviderKeys.SqlServer:
+                return builder.UseSqlServer(connectionString,
+                    e => e.MigrationsAssembly(MSSQL_MIGRATIONS_ASSEMBLY));
+
+            case DbProviderKeys.SqLite:
+                return builder.UseSqlite(connectionString,
+                    e => e.MigrationsAssembly(SQLITE_MIGRATIONS_ASSEMBLY));
+
+            default:
+                throw new InvalidOperationException($"DB Provider {dbProvider} is not supported.");
+        }
+    }
+
+    private static DbContextOptionsBuilder UseExceptionProcessor(this DbContextOptionsBuilder builder, string dbProvider)
+    {
+
+        switch (dbProvider.ToLowerInvariant())
+        {
+            case DbProviderKeys.Npgsql:
+                EntityFramework.Exceptions.PostgreSQL.ExceptionProcessorExtensions.UseExceptionProcessor(builder);
+                return builder;
+
+            case DbProviderKeys.SqlServer:
+                EntityFramework.Exceptions.SqlServer.ExceptionProcessorExtensions.UseExceptionProcessor(builder);
+                return builder;
+
+
+            case DbProviderKeys.SqLite:
+                EntityFramework.Exceptions.Sqlite.ExceptionProcessorExtensions.UseExceptionProcessor(builder);
+                return builder;
+
+            default:
+                throw new InvalidOperationException($"DB Provider {dbProvider} is not supported.");
+        }
+    }
+    #endregion
+
+    #region Business Services
+    private static IServiceCollection AddBusinessServices(this IServiceCollection services, IConfiguration configuration)
+    {
+        // Auto-discover and register all IDataSourceService<T> implementations
+        services.AddDataSourceServices();
+        services.AddScoped<IRoleService, RoleService>();
+        services.AddScoped<ITenantSwitchService, TenantSwitchService>();
+
+
+
+
+        // Configure SecurityAnalysisService with options
+        services.Configure<WebServiceClientOptions>(configuration.GetSection("MaxMind"));
+        services.AddHttpClient<WebServiceClient>();
+
+        services.Configure<SecurityAnalysisOptions>(configuration.GetSection(SecurityAnalysisOptions.SectionName));
+        services.AddScoped<ISecurityAnalysisService, SecurityAnalysisService>();
+       
+        return services
+            .AddScoped<IValidationService, ValidationService>()
+            .AddScoped<IDateTime, DateTimeService>()
+            .AddScoped<IExcelService, ExcelService>()
+            .AddScoped<IUploadService, MinioUploadService>()
+            .AddScoped<IPDFService, PDFService>()
+            .AddTransient<IDocumentOcrJob, DocumentOcrJob>();
+    }
+    #endregion
+
+    /// <summary>
+    /// Scans the Infrastructure assembly for concrete implementations of IDataSourceService<T>
+    /// and registers them with scoped lifetime. Avoids duplicate registrations.
+    /// </summary>
+    /// <remarks>
+    /// Pattern: any non-abstract class implementing IDataSourceService&lt;T&gt; will be registered.
+    /// If an implementation was already registered manually, it will be skipped.
+    /// </remarks>
+    private static IServiceCollection AddDataSourceServices(this IServiceCollection services)
+    {
+        var openGeneric = typeof(IDataSourceService<>);
+        var assembly = typeof(DependencyInjection).Assembly;
+        foreach (var type in assembly.GetTypes())
+        {
+            if (!type.IsClass || type.IsAbstract) continue;
+            var implementedDataSourceInterfaces = type.GetInterfaces()
+                .Where(i => i.IsGenericType && i.GetGenericTypeDefinition() == openGeneric);
+            foreach (var iface in implementedDataSourceInterfaces)
+            {
+                // Skip if already registered
+                if (services.Any(s => s.ServiceType == iface)) continue;
+                services.AddScoped(iface, type);
+            }
+        }
+        return services;
+    }
+
+    #region Notification Services
+    private static IServiceCollection AddNotificationServices(this IServiceCollection services,
+        IConfiguration configuration)
+    {
+        var smtpClientOptions = new SmtpClientOptions();
+        configuration.GetSection(SMTP_CLIENT_OPTIONS_KEY).Bind(smtpClientOptions);
+        services.Configure<SmtpClientOptions>(configuration.GetSection(SMTP_CLIENT_OPTIONS_KEY));
+
+        services.AddSingleton(smtpClientOptions);
+        services.AddScoped<IMailService, MailService>();
+
+        return services;
+    }
+    #endregion
+
+    #region Identity and Security
+    private static IServiceCollection AddIdentityAndSecurity(this IServiceCollection services,
+        IConfiguration configuration)
+    {
+
+
+        services.AddIdentityCore<ApplicationUser>()
+            .AddRoles<ApplicationRole>()
+            .AddEntityFrameworkStores<ApplicationDbContext>()
+            .AddSignInManager()
+            .AddClaimsPrincipalFactory<MultiTenantUserClaimsPrincipalFactory>()
+            .AddDefaultTokenProviders();
+
+
+        // Replace the default SignInManager with AuditSignInManager
+        var signInManagerDescriptor = services.FirstOrDefault(d => d.ServiceType == typeof(SignInManager<ApplicationUser>));
+        if (signInManagerDescriptor != null)
+        {
+            services.Remove(signInManagerDescriptor);
+        }
+        services.AddScoped<SignInManager<ApplicationUser>, AuditSignInManager<ApplicationUser>>();
+
+        services.Configure<IdentityOptions>(options =>
+        {
+            var identitySettings = configuration.GetRequiredSection(IDENTITY_SETTINGS_KEY).Get<IdentitySettings>();
+            identitySettings = identitySettings ?? new IdentitySettings();
+            // Password settings
+            options.Password.RequireDigit = identitySettings.RequireDigit;
+            options.Password.RequiredLength = identitySettings.RequiredLength;
+            options.Password.RequireNonAlphanumeric = identitySettings.RequireNonAlphanumeric;
+            options.Password.RequireUppercase = identitySettings.RequireUpperCase;
+            options.Password.RequireLowercase = identitySettings.RequireLowerCase;
+
+            // Lockout settings
+            options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(DEFAULT_LOCKOUT_TIME_SPAN_MINUTES);
+            options.Lockout.MaxFailedAccessAttempts = MAX_FAILED_ACCESS_ATTEMPTS;
+            options.Lockout.AllowedForNewUsers = true;
+
+            // Default SignIn settings.
+            options.SignIn.RequireConfirmedEmail = true;
+            options.SignIn.RequireConfirmedPhoneNumber = false;
+            options.SignIn.RequireConfirmedAccount = true;
+
+            // User settings
+            options.User.RequireUniqueEmail = true;
+            //options.Tokens.EmailConfirmationTokenProvider = "Email";
+
+        });
+
+        services.AddScoped<IIdentityService, IdentityService>()
+            .AddScoped<IUserProfileState, UserProfileState>()
+            .AddAuthorizationCore(options =>
+            {
+                options.AddPolicy("CanPurge", policy => policy.RequireUserName(Users.Administrator));
+                // Here I stored necessary permissions/roles in a constant
+                foreach (var prop in typeof(Permissions).GetNestedTypes().SelectMany(c =>
+                             c.GetFields(BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy)))
+                {
+                    var propertyValue = prop.GetValue(null);
+                    if (propertyValue is not null)
+                        options.AddPolicy((string)propertyValue,
+                            policy => policy.RequireClaim(ApplicationClaimTypes.Permission, (string)propertyValue));
+                }
+            })
+            .AddAuthentication(options =>
+            {
+                options.DefaultScheme = IdentityConstants.ApplicationScheme;
+                options.DefaultSignInScheme = IdentityConstants.ExternalScheme;
+            })
+            .AddMicrosoftAccount(microsoftOptions =>
+            {
+                microsoftOptions.ClientId = configuration.GetValue<string>("Authentication:Microsoft:ClientId") ?? "disabled";
+                microsoftOptions.ClientSecret = configuration.GetValue<string>("Authentication:Microsoft:ClientSecret") ?? "disabled";
+                //microsoftOptions.CallbackPath = new PathString("/pages/authentication/ExternalLogin"); # dotn't set this parameter!!
+            })
+            .AddGoogle(googleOptions =>
+            {
+                googleOptions.ClientId = configuration.GetValue<string>("Authentication:Google:ClientId") ?? "disabled";
+                googleOptions.ClientSecret = configuration.GetValue<string>("Authentication:Google:ClientSecret") ?? "disabled";
+            }
+            )
+
+            .AddIdentityCookies(options => { });
+
+        services.ConfigureApplicationCookie(options =>
+        {
+            options.ExpireTimeSpan = TimeSpan.FromDays(15);
+            options.SlidingExpiration = true;
+            options.SessionStore = new MemoryCacheTicketStore();
+            options.LoginPath = LOGIN_PATH;
+            options.Cookie.SameSite = SameSiteMode.Strict;
+            options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+        });
+        services.AddDataProtection().PersistKeysToDbContext<ApplicationDbContext>();
+
+        
+
+        return services;
+    }
+    #endregion
+
+    #region Caching Services
+    private static IServiceCollection AddCachingServices(this IServiceCollection services)
+    {
+        services.AddMemoryCache();
+        services.AddFusionCache()
+                .WithDefaultEntryOptions(new FusionCacheEntryOptions
+                {
+                    // Absolute TTL for the item
+                    Duration = TimeSpan.FromMinutes(60),
+
+                    // ---- Resilience: fail-safe & timeouts ----
+                    IsFailSafeEnabled = true,                        // Serve a recent value if the backend is flaky
+                    FailSafeMaxDuration = TimeSpan.FromHours(3),    // Allow using a stale value for up to 3h during incidents
+                    FailSafeThrottleDuration = TimeSpan.FromSeconds(30), // After a failure, keep serving stale for 30s to avoid hammering deps
+
+                    // Factory (loader) timeouts: keep requests snappy under slow dependencies
+                    FactorySoftTimeout = TimeSpan.FromMilliseconds(300), // ~your P95 latency to the data source
+                    FactoryHardTimeout = TimeSpan.FromSeconds(2),        // 1.5–2s hard cap; fail fast rather than dragging the request
+
+                    // ---- Anti-stampede ----
+                    JitterMaxDuration = TimeSpan.FromSeconds(30),  // Spread expirations (~10% of Duration; cap at 30s)
+                    LockTimeout = TimeSpan.FromMilliseconds(800),  // Wait briefly for a single refresher; others don’t dog-pile
+
+                    // ---- Proactive refresh ----
+                    EagerRefreshThreshold = 0.8f, // When 80% of TTL has elapsed, return current value and refresh in background
+                });
+        return services;
+    }
+    #endregion
+
+    #region Session Management
+    private static IServiceCollection AddSessionManagement(this IServiceCollection services)
+    {
+        // User context management
+        services.AddSingleton<IHubFilter, UserContextHubFilter>();
+        services.AddSingleton<IUserContextAccessor, UserContextAccessor>();
+        services.AddSingleton<IUserContextLoader, UserContextLoader>();
+
+        // Circuit and state management
+        services.AddScoped<CircuitHandler, UserSessionCircuitHandler>();
+        services.AddSingleton<IUsersStateContainer, UsersStateContainer>();
+        services.AddScoped<IPermissionService, PermissionService>();
+
+        return services;
+    }
+    #endregion
+
+
+}

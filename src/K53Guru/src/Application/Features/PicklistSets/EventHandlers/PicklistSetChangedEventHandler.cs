@@ -1,0 +1,31 @@
+﻿// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the MIT license.
+
+using K53Guru.Application.Common.Interfaces; // IDataSourceService
+using K53Guru.Application.Features.PicklistSets.DTOs;
+
+namespace K53Guru.Application.Features.PicklistSets.EventHandlers;
+
+public class PicklistSetChangedEventHandler : INotificationHandler<UpdatedEvent<PicklistSet>>
+{
+    private readonly ILogger<PicklistSetChangedEventHandler> _logger;
+    private readonly IDataSourceService<PicklistSetDto> _picklistService;
+
+    public PicklistSetChangedEventHandler(
+        IDataSourceService<PicklistSetDto> picklistService,
+        ILogger<PicklistSetChangedEventHandler> logger
+    )
+    {
+        _picklistService = picklistService;
+        _logger = logger;
+    }
+
+    public async Task Handle(UpdatedEvent<PicklistSet> notification, CancellationToken cancellationToken)
+    {
+        _logger.LogInformation("Handled domain event '{EventType}' for PicklistSet ID: {PicklistSetId}",
+             notification.GetType().Name,
+             notification.Entity?.Id);
+        await _picklistService.RefreshAsync();
+   
+    }
+}

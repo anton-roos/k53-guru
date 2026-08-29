@@ -1,0 +1,37 @@
+<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <TargetFramework>net10.0</TargetFramework>
+        <RootNamespace>K53Guru.Application</RootNamespace>
+        <AssemblyName>K53Guru.Application</AssemblyName>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <LangVersion>default</LangVersion>
+    </PropertyGroup>
+    <ItemGroup>
+        <PackageReference Include="MaxMind.GeoIP2" Version="5.3.0" />
+        <PackageReference Include="AutoMapper" Version="14.0.0" />
+        <PackageReference Include="SixLabors.ImageSharp" Version="3.1.12" />
+        <PackageReference Include="Ardalis.Specification" Version="9.3.1" />
+        <PackageReference Include="Ardalis.Specification.EntityFrameworkCore" Version="9.3.1" />
+        <PackageReference Include="ClosedXML" Version="0.105.0" />
+    
+        <PackageReference Include="MailKit" Version="4.14.1" />
+        <PackageReference Include="MimeKit" Version="4.14.0" />
+        <PackageReference Include="Scriban" Version="6.5.0" />
+        
+        <PackageReference Include="FluentValidation" Version="12.1.0" />
+        <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="12.1.0" />
+        <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="10.0.0-rc.2.25502.107" />
+        <PackageReference Include="Microsoft.Extensions.Localization.Abstractions" Version="10.0.0-rc.2.25502.107" />
+        <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
+        <PackageReference Include="Hangfire.Core" Version="1.8.22" />
+        <PackageReference Include="ZiggyCreatures.FusionCache" Version="2.4.0" />
+     
+    </ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\Domain\Domain.csproj" />
+    </ItemGroup>
+    <ItemGroup>
+      <Folder Include="Common\Interfaces\MultiTenant\" />
+    </ItemGroup>
+</Project>

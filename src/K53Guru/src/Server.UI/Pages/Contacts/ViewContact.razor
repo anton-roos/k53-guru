@@ -1,0 +1,91 @@
+@page "/pages/contacts/view/{id:int}"
+@using K53Guru.Application.Features.Contacts.Commands.Delete
+@using K53Guru.Application.Features.Contacts.DTOs
+@using K53Guru.Application.Features.Contacts.Queries.GetById
+@inherits MudComponentBase
+@inject IStringLocalizer<Contacts> L
+@attribute [Authorize(Policy = Permissions.Contacts.View)]
+<PageTitle>@Title</PageTitle>
+<Breadcrumbs  OnGoEditClick="GoEdit" OnDeleteClick="Delete" BreadcrumbItems="_breadcrumbItems"></Breadcrumbs>
+
+@if (_model != null)
+{
+    <MudCard Class="pa-2">
+        <MudCardHeader>
+            <CardHeaderContent>
+                 <MudText Typo="Typo.h6">@L["Contact"]</MudText>
+            </CardHeaderContent>
+        </MudCardHeader>
+        <MudCardContent>
+            <MudGrid Spacing="3" Class="readonly-grid">
+                <MudItem xs="12" md="6"> 
+                        <ReadOnlyField Label="@L[_model.GetMemberDescription(x=>x.Name)]" Value="_model.Name"></ReadOnlyField>
+                </MudItem> 
+<MudItem xs="12" md="6"> 
+                        <ReadOnlyField Label="@L[_model.GetMemberDescription(x=>x.Description)]" Value="_model.Description"></ReadOnlyField>
+                </MudItem> 
+<MudItem xs="12" md="6"> 
+                        <ReadOnlyField Label="@L[_model.GetMemberDescription(x=>x.Email)]" Value="_model.Email"></ReadOnlyField>
+                </MudItem> 
+<MudItem xs="12" md="6"> 
+                        <ReadOnlyField Label="@L[_model.GetMemberDescription(x=>x.PhoneNumber)]" Value="_model.PhoneNumber"></ReadOnlyField>
+                </MudItem> 
+<MudItem xs="12" md="6"> 
+                        <ReadOnlyField Label="@L[_model.GetMemberDescription(x=>x.Country)]" Value="_model.Country"></ReadOnlyField>
+                </MudItem> 
+
+            </MudGrid>
+        </MudCardContent>
+        <MudCardActions></MudCardActions>
+    </MudCard>
+ }
+
+ 
+
+@code {
+    public string? Title { get; private set; }
+    [Parameter]
+    public int Id { get; set; }
+    private List<BreadcrumbItem>? _breadcrumbItems; 
+    private ContactDto? _model;
+    protected override async Task OnInitializedAsync()
+    {
+        Title =$"{ApplicationSettings.AppName} - { L["Contact"]}";
+        _breadcrumbItems = new List<BreadcrumbItem>
+        {
+            new BreadcrumbItem(L["Home"], href: "/"),
+            new BreadcrumbItem(L["Contacts"], href: "/pages/contacts")
+        };
+        var result = await Mediator.Send(new GetContactByIdQuery() { Id = Id });
+        result.Map(data =>
+        {
+            _model = data;
+            return data;
+        }).Match(data =>
+        {
+            _breadcrumbItems.Add(new BreadcrumbItem(data.Name, null, disabled: true));
+        }, errors =>
+        {
+            Snackbar.Add(errors, MudBlazor.Severity.Error);
+        });
+
+    }
+    void GoEdit()
+    {
+        Navigation.NavigateTo($"/pages/Contacts/edit/{Id}");
+    }
+    async Task Delete()
+    {
+        if (_model == null)
+            return;
+        var contentText = string.Format(AppStrings.DeleteConfirmation, _model.Name ?? string.Empty);
+        var command = new DeleteContactCommand(new int[] { _model.Id });
+        await DialogServiceHelper.ShowDeleteConfirmationDialogAsync(command, AppStrings.DeleteConfirmationTitle, contentText, async () =>
+        {
+            await InvokeAsync(() =>
+            {
+                Navigation.NavigateTo($"/pages/Contacts");
+            });
+        });
+    }
+}

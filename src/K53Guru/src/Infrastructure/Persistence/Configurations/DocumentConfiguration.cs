@@ -1,0 +1,28 @@
+// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the MIT license.
+
+
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
+
+namespace K53Guru.Infrastructure.Persistence.Configurations;
+
+public class DocumentConfiguration : IEntityTypeConfiguration<Document>
+{
+    public void Configure(EntityTypeBuilder<Document> builder)
+    {
+        builder.Property(t => t.DocumentType).HasConversion<string>();
+        builder.Property(x => x.Content).HasMaxLength(4000);
+        builder.Ignore(e => e.DomainEvents);
+        builder.HasOne(x => x.CreatedBy)
+            .WithMany()
+            .HasForeignKey(x => x.CreatedById)
+            .OnDelete(DeleteBehavior.Restrict);
+        builder.HasOne(x => x.LastModifiedBy)
+            .WithMany()
+            .HasForeignKey(x => x.LastModifiedById)
+            .OnDelete(DeleteBehavior.Restrict);
+        builder.Navigation(e => e.CreatedBy).AutoInclude();
+        builder.Navigation(e => e.LastModifiedBy).AutoInclude();
+        builder.Navigation(e => e.Tenant).AutoInclude();
+    }
+}

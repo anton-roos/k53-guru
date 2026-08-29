@@ -1,0 +1,27 @@
+<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <TargetFramework>net10.0</TargetFramework>
+        <RootNamespace>K53Guru.Infrastructure</RootNamespace>
+        <AssemblyName>K53Guru.Infrastructure</AssemblyName>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <LangVersion>default</LangVersion>
+    </PropertyGroup>
+    <ItemGroup>
+       
+        <PackageReference Include="Microsoft.AspNetCore.Authentication.Google" Version="10.0.0-rc.2.25502.107" />
+        <PackageReference Include="Microsoft.AspNetCore.Authentication.MicrosoftAccount" Version="10.0.0-rc.2.25502.107" />
+        <PackageReference Include="Minio" Version="7.0.0" />
+        <PackageReference Include="QuestPDF" Version="2025.12.0-alpha3" />
+        <PackageReference Include="Serilog.AspNetCore" Version="9.0.0" />
+        <PackageReference Include="Serilog.Sinks.MSSqlServer" Version="9.0.3-dev-00153" />
+        <PackageReference Include="Serilog.Sinks.Postgresql.Alternative" Version="4.2.0" />
+        <PackageReference Include="Serilog.Sinks.Async" Version="2.1.0" />
+        <PackageReference Include="Serilog.Sinks.Console" Version="6.1.1" />
+        <PackageReference Include="Blazor.Serilog.Sinks.SQLite" Version="1.0.8" />
+        <PackageReference Include="Serilog.Sinks.Seq" Version="9.0.0" />
+    </ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\Application\Application.csproj" />
+    </ItemGroup>
+</Project>

@@ -1,0 +1,63 @@
+@using System.Net.Http
+@using System.Net.Http.Json
+@using System.Reflection
+@using System.Text
+@using System.ComponentModel
+@using K53Guru.Server.UI.Services
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.Forms
+@using Microsoft.AspNetCore.Components.Routing
+@using Microsoft.AspNetCore.Components.Web
+@using Microsoft.AspNetCore.Components.Web.Virtualization
+@using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.Extensions.DependencyInjection
+@using Microsoft.Extensions.Configuration
+@using Microsoft.Extensions.Localization
+@using Microsoft.EntityFrameworkCore
+@using Microsoft.AspNetCore.Identity
+@using Microsoft.JSInterop
+@using MudBlazor
+@using MediatR
+@using AutoMapper
+@using AutoMapper.QueryableExtensions
+@using FluentValidation;
+@using K53Guru.Domain
+@using K53Guru.Application.Common.ExceptionHandlers
+@using K53Guru.Application.Common.Extensions
+@using K53Guru.Application.Common.Interfaces
+@using K53Guru.Application.Common.Models
+@using K53Guru.Application.Features.Identity.DTOs
+@using K53Guru.Application.Common.Interfaces.Identity
+@using K53Guru.Application.Common.Security;
+@using K53Guru.Application.Common.Constants
+@using K53Guru.Server.UI.Models
+@using K53Guru.Server.UI
+@using K53Guru.Server.UI.Shared
+@using K53Guru.Server.UI.Components
+@using K53Guru.Server.UI.Components.Forms
+@using K53Guru.Server.UI.Components.Breadcrumbs
+@using K53Guru.Server.UI.Components.Autocompletes
+@using K53Guru.Server.UI.Components.Dialogs
+@using K53Guru.Server.UI.Components.Identity
+@using K53Guru.Server.UI.Components.Localization
+@using K53Guru.Server.UI.Components.Redirections
+@using K53Guru.Server.UI.Components.Shared
+@using K53Guru.Server.UI.Components.Shared.Themes
+@using K53Guru.Server.UI.Components.Shared.Layout
+@using K53Guru.Server.UI.Services.Layout
+@using K53Guru.Server.UI.Extensions
+@using K53Guru.Server.UI.Services.JsInterop
+@using Severity=MudBlazor.Severity
+@using Color = MudBlazor.Color
+@inject IApplicationSettings ApplicationSettings
+@inject ISnackbar Snackbar
+@inject IDialogService DialogService
+@inject IAuthorizationService AuthService 
+@inject IValidationService Validator
+@inject IJSRuntime JS
+@inject IMediator Mediator
+@inject NavigationManager Navigation
+@inject DialogServiceHelper DialogServiceHelper
+@inject IPermissionService PermissionService
+@inject IPermissionHelper PermissionHelper
+@inject IMapper Mapper

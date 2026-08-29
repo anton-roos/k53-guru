@@ -1,0 +1,11 @@
+﻿namespace K53Guru.Application.Features.Products.Specifications;
+
+public enum ProductListView
+{
+    [Description("All")] All,
+    [Description("My Products")] My,
+    [Description("Created Today")] TODAY,
+
+    [Description("Created the last 30 days")]
+    LAST_30_DAYS
+}

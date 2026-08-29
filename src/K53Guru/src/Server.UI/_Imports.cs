@@ -1,0 +1,9 @@
+global using System.Data;
+global using K53Guru.Application.Common.Interfaces;
+global using K53Guru.Application.Common.Models;
+global using K53Guru.Application.Common.Extensions;
+global using K53Guru.Domain.Entities;
+global using FluentValidation;
+global using Microsoft.AspNetCore.Components;
+global using MudBlazor;
+global using Microsoft.EntityFrameworkCore;
