@@ -16,6 +16,9 @@ public static partial class Permissions
 
         [Description("Allows editing existing tests")]
         public const string Edit = "Permissions.Tests.Edit";
+
+        [Description("Allows publishing and unpublishing tests")]
+        public const string Publish = "Permissions.Tests.Publish";
     }
 }
 
@@ -24,4 +27,5 @@ public class TestsAccessRights
     public bool View { get; set; }
     public bool Create { get; set; }
     public bool Edit { get; set; }
+    public bool Publish { get; set; }
 }
