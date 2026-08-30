@@ -1,9 +1,11 @@
+using K53Guru.Application.Common.Constants;
 using K53Guru.Application.Features.Tests.Caching;
 using K53Guru.Application.Features.Tests.DTOs;
 using K53Guru.Domain.Enums;
 
 namespace K53Guru.Application.Features.Tests.Commands.AddEdit;
 
+[RequestAuthorize(Roles = Roles.Admin)]
 public class AddEditTestCommand : ICacheInvalidatorRequest<Result<int>>
 {
     public int Id { get; set; }

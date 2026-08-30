@@ -1,8 +1,10 @@
+using K53Guru.Application.Common.Constants;
 using K53Guru.Application.Features.Tests.Caching;
 using K53Guru.Domain.Enums;
 
 namespace K53Guru.Application.Features.Tests.Commands.Unpublish;
 
+[RequestAuthorize(Roles = Roles.Admin)]
 public class UnpublishTestCommand : ICacheInvalidatorRequest<Result>
 {
     public int Id { get; set; }

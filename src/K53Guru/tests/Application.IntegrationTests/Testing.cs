@@ -32,6 +32,7 @@ public class Testing
     private static IServiceScopeFactory _scopeFactory;
     private static Respawner _checkpoint;
     private static string _currentUserId;
+    private static string[] _currentUserRoles = Array.Empty<string>();
 
     [OneTimeSetUp]
     public async Task RunBeforeAnyTests()
@@ -70,11 +71,17 @@ public class Testing
         services.AddSingleton<IUserContextAccessor>(provider =>
         {
             var mockUserContextAccessor = new Mock<IUserContextAccessor>();
-            if (!string.IsNullOrEmpty(_currentUserId))
-            {
-                var userContext = new UserContext(_currentUserId, "admin", null, "admin@example.com");
-                mockUserContextAccessor.Setup(x => x.Current).Returns(userContext);
-            }
+            // This accessor is registered as a singleton (matching the real UserContextAccessor's
+            // lifetime), so this factory only runs once for the whole test run. Current must
+            // therefore be evaluated lazily (Returns(Func<>)) rather than baked in as a fixed
+            // value here - otherwise it would freeze at whichever user/roles were current the
+            // first time any test resolved this service, ignoring every later
+            // RunAsAdministratorAsync()/RunAsDefaultUserAsync() call.
+            mockUserContextAccessor.Setup(x => x.Current).Returns(() =>
+                string.IsNullOrEmpty(_currentUserId)
+                    ? null
+                    : new UserContext(_currentUserId, "admin", null, "admin@example.com",
+                        Roles: _currentUserRoles));
             return mockUserContextAccessor.Object;
         });
 
@@ -134,6 +141,7 @@ public class Testing
         if (result.Succeeded)
         {
             _currentUserId = user.Id;
+            _currentUserRoles = roles;
             return _currentUserId;
         }
 
@@ -145,6 +153,7 @@ public class Testing
     {
         await _checkpoint.ResetAsync(_configuration.GetValue<string>("DatabaseSettings:ConnectionString"));
         _currentUserId = null;
+        _currentUserRoles = Array.Empty<string>();
     }
 
     public static async Task<TEntity> FindAsync<TEntity>(params object[] keyValues)

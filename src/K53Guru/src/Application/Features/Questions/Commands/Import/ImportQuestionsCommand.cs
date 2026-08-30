@@ -1,12 +1,14 @@
 using System.Text;
 using CsvHelper;
 using CsvHelper.Configuration;
+using K53Guru.Application.Common.Constants;
 using K53Guru.Application.Features.Questions.Caching;
 using K53Guru.Application.Features.Questions.Commands.AddEdit;
 using K53Guru.Domain.Enums;
 
 namespace K53Guru.Application.Features.Questions.Commands.Import;
 
+[RequestAuthorize(Roles = Roles.Admin)]
 public class ImportQuestionsCommand : ICacheInvalidatorRequest<Result>
 {
     public ImportQuestionsCommand(string fileName, byte[] data)
