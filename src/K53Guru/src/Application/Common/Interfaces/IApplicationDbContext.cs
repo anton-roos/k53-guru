@@ -21,6 +21,8 @@ public interface IApplicationDbContext: IAsyncDisposable
     DbSet<RoadSign> RoadSigns { get; set; }
     DbSet<Question> Questions { get; set; }
     DbSet<AnswerOption> AnswerOptions { get; set; }
+    DbSet<Test> Tests { get; set; }
+    DbSet<TestQuestion> TestQuestions { get; set; }
     DbSet<LoginAudit> LoginAudits { get; set; }
     DbSet<UserLoginRiskSummary> UserLoginRiskSummaries { get; set; }
     ChangeTracker ChangeTracker { get; }
