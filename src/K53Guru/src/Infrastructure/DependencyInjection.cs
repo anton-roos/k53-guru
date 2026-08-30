@@ -92,7 +92,8 @@ public static class DependencyInjection
         IConfiguration configuration)
     {
         services.AddScoped<ISaveChangesInterceptor, AuditableEntityInterceptor>()
-            .AddScoped<ISaveChangesInterceptor, DispatchDomainEventsInterceptor>();
+            .AddScoped<ISaveChangesInterceptor, DispatchDomainEventsInterceptor>()
+            .AddScoped<ISaveChangesInterceptor, QuestionValidationInterceptor>();
 
         // Always configure the real database provider (in-memory option removed).
         services.AddDbContext<ApplicationDbContext>((p, m) =>
