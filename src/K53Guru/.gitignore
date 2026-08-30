@@ -170,7 +170,9 @@ DocProject/Help/Html2
 DocProject/Help/html
 
 # Click-Once directory
-publish/
+# Anchored to repo root (not "publish/" unanchored) so this doesn't also match source
+# directories named "Publish" anywhere in the tree, e.g. a CQRS Commands/Publish/ folder.
+/publish/
 
 # Publish Web Output
 *.[Pp]ublish.xml
