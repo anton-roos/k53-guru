@@ -357,6 +357,51 @@ public class ImportQuestionsCommandHandlerTests : IDisposable
     }
 
     [Fact]
+    public async Task CsvTemplate_RoundTrip_ExampleRowImportsSuccessfully()
+    {
+        // Arrange: seed the RoadSign the template's example row's SignRef ("R1") refers to, so the
+        // template's own example row can pass the reused AddEditQuestionCommandValidator's SignRef
+        // resolution rule. This is the test that would have caught the header/data-row positional
+        // drift bug in CreateQuestionsImportTemplateCommand.BuildCsvTemplate.
+        SeedRoadSign("R1");
+        var templateHandler = new CreateQuestionsImportTemplateCommandHandler();
+        var templateResult = await templateHandler.Handle(
+            new CreateQuestionsImportTemplateCommand { Format = "csv" }, CancellationToken.None);
+        Assert.True(templateResult.Succeeded);
+        Assert.NotNull(templateResult.Data);
+
+        var importHandler = CreateHandler();
+
+        // Act
+        var result = await importHandler.Handle(
+            new ImportQuestionsCommand("template.csv", templateResult.Data!), CancellationToken.None);
+
+        // Assert
+        Assert.True(result.Succeeded);
+
+        await using var verifyContext = new ApplicationDbContext(_options);
+        var saved = await verifyContext.Questions.Include(q => q.AnswerOptions).ToListAsync();
+        Assert.Single(saved);
+        Assert.Equal("What does this sign mean?", saved[0].Stem);
+        Assert.Equal("R1", saved[0].SignRef);
+    }
+
+    [Fact]
+    public async Task Import_UnsupportedFileExtension_ReturnsFailureIdentifyingFormat()
+    {
+        // Arrange
+        var handler = CreateHandler();
+
+        // Act
+        var result = await handler.Handle(
+            new ImportQuestionsCommand("bank.txt", Encoding.UTF8.GetBytes("irrelevant")), CancellationToken.None);
+
+        // Assert
+        Assert.False(result.Succeeded);
+        Assert.Contains(result.Errors, e => e.Contains(".txt", StringComparison.OrdinalIgnoreCase));
+    }
+
+    [Fact]
     public async Task RequestJsonTemplate_ReturnsNonEmptyValidJsonMatchingDocumentedShape()
     {
         // Arrange

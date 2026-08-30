@@ -79,6 +79,11 @@ public class ImportQuestionsCommandHandler : IRequestHandler<ImportQuestionsComm
                     $"Unsupported file type '{extension}'. Only .csv and .json files can be imported.");
         }
 
+        if (parsedRows.Count == 0 && failures.Count == 0)
+        {
+            return await Result.FailureAsync("No rows found to import.");
+        }
+
         // Phase 1: validate every row through the exact same validator Story 2.1's dialog uses.
         // Every failure - parse or validation - across every row is collected before any
         // decision is made; the DbContext is not touched at all in this phase.
@@ -148,6 +153,10 @@ public class ImportQuestionsCommandHandler : IRequestHandler<ImportQuestionsComm
         }
 
         var section = Enum.Parse<SectionType>(row.Section ?? string.Empty, ignoreCase: true);
+        if (!Enum.IsDefined(typeof(SectionType), section))
+        {
+            throw new FormatException($"Invalid Section value '{row.Section}'.");
+        }
 
         return new AddEditQuestionCommand
         {
@@ -201,12 +210,20 @@ public class ImportQuestionsCommandHandler : IRequestHandler<ImportQuestionsComm
         using var reader = new StreamReader(stream, Encoding.UTF8);
         using var csv = new CsvReader(reader, config);
 
-        if (!csv.Read())
+        try
         {
+            if (!csv.Read())
+            {
+                return rows;
+            }
+
+            csv.ReadHeader();
+        }
+        catch (Exception ex)
+        {
+            failures.Add($"Unable to read CSV header: {ex.Message}");
             return rows;
         }
-
-        csv.ReadHeader();
 
         var position = 0;
         while (true)

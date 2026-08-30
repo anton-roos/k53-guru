@@ -2,7 +2,7 @@
 title: 'Import a question bank via CSV/JSON with reject-on-error validation'
 type: 'feature'
 created: '2026-08-30'
-status: 'in-review'
+status: 'done'
 baseline_commit: 'fe0f585cd0e89a39c9ccf6889f1a9e855548a64d'
 review_loop_iteration: 0
 context:
@@ -60,17 +60,22 @@ context:
 - `src/K53Guru/src/Application/Features/Questions/Commands/Import/QuestionImportRow.cs` -- New. Shared row DTO (`Stem`, `Codes` as `List<string>`, `Section`, `LanguageCode`, `SignRef`, `List<(string Text, bool IsCorrect)> AnswerOptions`) that both the CSV and JSON parsers produce, so phase-1/phase-2 logic is format-agnostic past the parse step.
 - `src/K53Guru/src/Server.UI/Pages/Questions/Questions.razor` -- Modify (Story 2.1 file). Add an import `MudFileUpload` (`Accept=".csv,.json"`) mirroring `Products.razor`'s `OnFileImport`, and a template-download button (`Mediator.Send(new CreateQuestionsImportTemplateCommand{...})` -> `BlazorDownloadFileService.DownloadFileAsync`). Gated by the existing `Permissions.Questions.Create` right (import is a bulk-create action).
 - `src/K53Guru/tests/Infrastructure.UnitTests/Features/Questions/ImportQuestionsCommandHandlerTests.cs` -- New. Covers all 7 matrix rows via SQLite in-memory, mirroring `AddEditQuestionCommandHandlerTests.cs`'s harness.
+- Review fix: `Questions.razor`'s `OnFileImport`/`OnDownloadTemplate` gained `try/finally` around their bodies so `_uploading`/`_downloadingTemplate` reset even if the send/download throws (mirroring `PicklistSets.razor`'s `OnImportData`).
+- Review fix: `ImportQuestionsCommand.cs`'s handler gained an empty-parse guard (header-only CSV / JSON `[]` now rejected as "No rows found to import." instead of silently "succeeding" with zero rows), a try/catch around the CSV header read (previously only per-row reads were caught), and an `Enum.IsDefined` check on `Section` (previously an out-of-range numeric string like `"99"` parsed successfully into an undefined enum value).
+- Review fix: `ImportQuestionsCommandValidator.cs` gained a `FileName` `NotEmpty()` rule (previously only `Data` was validated; a null/empty `FileName` could NRE inside the handler instead of failing cleanly).
+- Review fix: `CreateQuestionsImportTemplateCommand.cs`'s `BuildCsvTemplate()` was rewritten so the example data row is keyed by the same `QuestionImportCsvColumns` constants that drive the header row and written by iterating `AllHeaders()`, closing a drift risk where the header list and hand-written positional data row could silently diverge (caught by the verification-gap review layer).
+- Review fix: `ImportQuestionsCommandHandlerTests.cs` gained a template round-trip test (generates the CSV template, feeds it back through the real import handler, asserts success) and an unsupported-file-extension test.
 
 ## Tasks & Acceptance
 
 **Execution:**
-- [ ] Add `CsvHelper` package reference to `Application.csproj`.
-- [ ] `QuestionImportRow.cs` -- create the shared, format-agnostic row DTO.
-- [ ] `ImportQuestionsCommand.cs` (+handler) -- create the two-phase import command with CSV and JSON parsing.
-- [ ] `ImportQuestionsCommandValidator.cs` -- create the shallow command-level validator.
-- [ ] `CreateQuestionsImportTemplateCommand.cs` (+handler) -- create the template-download command for both formats.
-- [ ] `Questions.razor` -- add the import upload control and template-download button.
-- [ ] `ImportQuestionsCommandHandlerTests.cs` -- add tests covering all 7 matrix rows.
+- [x] Add `CsvHelper` package reference to `Application.csproj`.
+- [x] `QuestionImportRow.cs` -- create the shared, format-agnostic row DTO.
+- [x] `ImportQuestionsCommand.cs` (+handler) -- create the two-phase import command with CSV and JSON parsing.
+- [x] `ImportQuestionsCommandValidator.cs` -- create the shallow command-level validator.
+- [x] `CreateQuestionsImportTemplateCommand.cs` (+handler) -- create the template-download command for both formats.
+- [x] `Questions.razor` -- add the import upload control and template-download button.
+- [x] `ImportQuestionsCommandHandlerTests.cs` -- add tests covering all 7 matrix rows.
 
 **Acceptance Criteria:**
 - Given a well-formed CSV or JSON file, when I import it, then every row is ingested with options and correct answers intact, indistinguishable from a hand-authored question.
@@ -85,3 +90,50 @@ context:
 
 **Manual checks (if no CLI):**
 - Sign in as an Admin, navigate to `/system/questions`, download the CSV template, fill in two valid rows and one invalid row, import it, confirm the whole import is rejected with a per-row error message, fix the invalid row, re-import, confirm both questions now appear in the grid.
+
+## Suggested Review Order
+
+**Commands (the core of this story)**
+
+- Entry point: extension-based format dispatch, empty-parse guard, two-phase validate-then-save.
+  [`ImportQuestionsCommand.cs:63`](../../src/K53Guru/src/Application/Features/Questions/Commands/Import/ImportQuestionsCommand.cs#L63)
+
+- Review fix: empty file (header-only CSV / JSON `[]`) now rejected instead of silently "succeeding" with zero rows.
+  [`ImportQuestionsCommand.cs:84`](../../src/K53Guru/src/Application/Features/Questions/Commands/Import/ImportQuestionsCommand.cs#L84)
+
+- Row-to-command mapping, reusing `AddEditQuestionCommandValidator` per row via DI.
+  [`ImportQuestionsCommand.cs:147`](../../src/K53Guru/src/Application/Features/Questions/Commands/Import/ImportQuestionsCommand.cs#L147)
+
+- Review fix: `Enum.IsDefined` guard against an out-of-range numeric `Section` value silently parsing.
+  [`ImportQuestionsCommand.cs:156`](../../src/K53Guru/src/Application/Features/Questions/Commands/Import/ImportQuestionsCommand.cs#L156)
+
+- CSV parsing: manual `Read`/`ReadHeader`, now try/catch-wrapped (review fix), then per-row parse-exception isolation.
+  [`ImportQuestionsCommand.cs:199`](../../src/K53Guru/src/Application/Features/Questions/Commands/Import/ImportQuestionsCommand.cs#L199)
+
+- Review fix: header-read failure now folds into the failure list instead of an unhandled exception.
+  [`ImportQuestionsCommand.cs:224`](../../src/K53Guru/src/Application/Features/Questions/Commands/Import/ImportQuestionsCommand.cs#L224)
+
+- JSON parsing counterpart: array-of-elements, per-element try/catch.
+  [`ImportQuestionsCommand.cs:310`](../../src/K53Guru/src/Application/Features/Questions/Commands/Import/ImportQuestionsCommand.cs#L310)
+
+- Review fix (verification-gap finding): template's example data row now keyed by the same header constants that drive the header row, closing the header/data drift risk.
+  [`CreateQuestionsImportTemplateCommand.cs:32`](../../src/K53Guru/src/Application/Features/Questions/Commands/Import/CreateQuestionsImportTemplateCommand.cs#L32)
+
+- Review fix: `FileName` now validated `NotEmpty()` alongside `Data`.
+  [`ImportQuestionsCommandValidator.cs:12`](../../src/K53Guru/src/Application/Features/Questions/Commands/Import/ImportQuestionsCommandValidator.cs#L12)
+
+**Admin Panel UI**
+
+- Import upload + template-download menu, gated by `Permissions.Questions.Create`.
+  [`Questions.razor:50`](../../src/K53Guru/src/Server.UI/Pages/Questions/Questions.razor#L50)
+
+- Review fix: `try/finally` around `OnFileImport`/`OnDownloadTemplate` so the busy flags always reset.
+  [`Questions.razor:190`](../../src/K53Guru/src/Server.UI/Pages/Questions/Questions.razor#L190), [`Questions.razor:218`](../../src/K53Guru/src/Server.UI/Pages/Questions/Questions.razor#L218)
+
+**Test coverage (peripherals)**
+
+- All 7 matrix rows plus 2 review-fix regression tests (template round-trip, unsupported extension) against a SQLite in-memory context, invoking the real handler directly.
+  [`ImportQuestionsCommandHandlerTests.cs:41`](../../src/K53Guru/tests/Infrastructure.UnitTests/Features/Questions/ImportQuestionsCommandHandlerTests.cs#L41)
+
+- Review fix: template round-trip test -- the exact regression guard for the verification-gap finding above.
+  [`ImportQuestionsCommandHandlerTests.cs:360`](../../src/K53Guru/tests/Infrastructure.UnitTests/Features/Questions/ImportQuestionsCommandHandlerTests.cs#L360)

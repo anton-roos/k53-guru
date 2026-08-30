@@ -47,3 +47,19 @@
 - source_spec: `C:\Users\farro\src\k53-guru\_bmad-output\implementation-artifacts\spec-2-2-organise-questions-into-test.md`
   summary: `TestFormDialog.razor`'s question multi-select (`GetAllQuestionsQuery`) loads every `Question` in the bank into one dropdown with no search, filter, or paging.
   evidence: Flagged by the blind-hunter review layer. Fine at current content volume; will need addressing once Story 2.1/2.4 (authoring + CSV/JSON import) grow the question bank past what's comfortable in a single unfiltered dropdown.
+
+- source_spec: `C:\Users\farro\src\k53-guru\_bmad-output\implementation-artifacts\spec-2-4-import-question-bank.md`
+  summary: `ImportQuestionsCommandHandler.ParseCsv` configures CsvHelper with `MissingFieldFound = null` and `BadDataFound = null`, which silences CsvHelper's own structural diagnostics for a genuinely malformed or wrong-header file. Such a file degrades into confusing downstream messages (e.g. a generic "Stem is required" for every row) rather than a clear "this file doesn't match the expected column layout" error.
+  evidence: Flagged by the blind-hunter review layer. Chosen deliberately so a file authored against an older/narrower version of the template (e.g. missing the `SignRef` column entirely, or a row with fewer than 4 option slots) still parses leniently rather than throwing hard on read — this permissiveness is desired for the common "template evolves, users' saved copies lag" case. The failure mode only degrades UX for a completely wrong file, it doesn't lose or corrupt data. Worth adding a post-`ReadHeader` check (e.g. confirm at least `Stem`/`Codes` header names are present) if this proves confusing in practice.
+
+- source_spec: `C:\Users\farro\src\k53-guru\_bmad-output\implementation-artifacts\spec-2-4-import-question-bank.md`
+  summary: Per-row `Enum.Parse` failures (for `Codes`/`Section`/answer-option booleans) surface the raw CLR exception `.Message` verbatim in the `"Row {position}: {message}"` failure string, which is functionally correct (identifies the row, gives a reason) but not maximally readable (e.g. "Requested value 'xyz' was not found." rather than naming the legal values).
+  evidence: Flagged by the blind-hunter review layer. A nicer message would require building a per-field "legal values" lookup table; deferred as a message-quality polish, not a functional defect.
+
+- source_spec: `C:\Users\farro\src\k53-guru\_bmad-output\implementation-artifacts\spec-2-4-import-question-bank.md`
+  summary: `ImportQuestionsCommandHandler` has no enforced upper bound on row count or file size, and its CSV/JSON parse loops don't propagate a `CancellationToken`, so a very large file (well beyond the documented "tens to low hundreds of rows" v1 target) ties up the request with no way to cancel it mid-parse.
+  evidence: Flagged by both the blind-hunter and edge-case-hunter review layers. Consciously deferred alongside the already-accepted N+1 `sign_ref` resolution (see the Story 1.3 N+1 entry above) — both are volume-scaling concerns out of scope for v1's documented expected import size.
+
+- source_spec: `C:\Users\farro\src\k53-guru\_bmad-output\implementation-artifacts\spec-2-4-import-question-bank.md`
+  summary: A CSV row supplying more than 4 answer options (columns beyond `Option4Text`/`Option4Correct`) has its excess data silently dropped with no warning or diagnostic — the row imports "successfully" using only the first 4 options.
+  evidence: Flagged by the blind-hunter review layer. The 4-option cap itself is an intentional, documented boundary of CSV's flat row shape (this story's own spec: "CSV's flat row shape caps answer options at 4 via fixed columns"), so a 5th column simply isn't part of the format — but silently discarding data a submitter may have intended to include, with no signal that anything was dropped, is worth a future warning (e.g. a non-blocking note appended to the per-row result) rather than staying silent.

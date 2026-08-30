@@ -190,39 +190,51 @@
     private async Task OnFileImport(IBrowserFile file)
     {
         _uploading = true;
-        var stream = new MemoryStream();
-        await file.OpenReadStream(GlobalVariables.MaxAllowedSize).CopyToAsync(stream);
-        var command = new ImportQuestionsCommand(file.Name, stream.ToArray());
-        var result = await Mediator.Send(command);
-        if (result.Succeeded)
+        try
         {
-            await _questionsGrid.ReloadServerData();
-            Snackbar.Add($"{AppStrings.ImportSuccess}", Severity.Info);
-        }
-        else
-        {
-            foreach (var msg in result.Errors)
+            var stream = new MemoryStream();
+            await file.OpenReadStream(GlobalVariables.MaxAllowedSize).CopyToAsync(stream);
+            var command = new ImportQuestionsCommand(file.Name, stream.ToArray());
+            var result = await Mediator.Send(command);
+            if (result.Succeeded)
             {
-                Snackbar.Add($"{msg}", Severity.Error);
+                await _questionsGrid.ReloadServerData();
+                Snackbar.Add($"{AppStrings.ImportSuccess}", Severity.Info);
+            }
+            else
+            {
+                foreach (var msg in result.Errors)
+                {
+                    Snackbar.Add($"{msg}", Severity.Error);
+                }
             }
         }
-        _uploading = false;
+        finally
+        {
+            _uploading = false;
+        }
     }
 
     private async Task OnDownloadTemplate(string format)
     {
         _downloadingTemplate = true;
-        var result = await Mediator.Send(new CreateQuestionsImportTemplateCommand { Format = format });
-        if (result.Succeeded)
+        try
         {
-            var extension = format.Equals("json", StringComparison.OrdinalIgnoreCase) ? "json" : "csv";
-            await BlazorDownloadFileService.DownloadFileAsync(
-                $"{L["Questions"]}-template.{extension}", result.Data!, "application/octet-stream");
+            var result = await Mediator.Send(new CreateQuestionsImportTemplateCommand { Format = format });
+            if (result.Succeeded)
+            {
+                var extension = format.Equals("json", StringComparison.OrdinalIgnoreCase) ? "json" : "csv";
+                await BlazorDownloadFileService.DownloadFileAsync(
+                    $"{L["Questions"]}-template.{extension}", result.Data!, "application/octet-stream");
+            }
+            else
+            {
+                Snackbar.Add($"{result.ErrorMessage}", Severity.Error);
+            }
         }
-        else
+        finally
         {
-            Snackbar.Add($"{result.ErrorMessage}", Severity.Error);
+            _downloadingTemplate = false;
         }
-        _downloadingTemplate = false;
     }
 }

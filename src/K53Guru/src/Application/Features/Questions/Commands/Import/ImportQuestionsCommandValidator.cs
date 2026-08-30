@@ -9,6 +9,7 @@ public class ImportQuestionsCommandValidator : AbstractValidator<ImportQuestions
 {
     public ImportQuestionsCommandValidator()
     {
+        RuleFor(x => x.FileName).NotEmpty();
         RuleFor(x => x.Data).NotNull().NotEmpty();
     }
 }

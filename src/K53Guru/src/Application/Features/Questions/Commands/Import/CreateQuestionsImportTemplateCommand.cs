@@ -31,31 +31,42 @@ public class CreateQuestionsImportTemplateCommandHandler
 
     private static byte[] BuildCsvTemplate()
     {
+        // Keyed by the same header constants QuestionImportCsvColumns.AllHeaders() yields, so the
+        // example row is written by header name below - it can never drift out of alignment with
+        // the header row even if the header list changes. Options 3 and 4 are left blank (CSV caps
+        // options at 4 via fixed columns; unused slots are blank).
+        var exampleRow = new Dictionary<string, string>
+        {
+            [QuestionImportCsvColumns.Stem] = "What does this sign mean?",
+            [QuestionImportCsvColumns.Codes] = "Code1;Code2",
+            [QuestionImportCsvColumns.Section] = nameof(SectionType.Signs),
+            [QuestionImportCsvColumns.LanguageCode] = "en",
+            [QuestionImportCsvColumns.SignRef] = "R1",
+            [QuestionImportCsvColumns.OptionText(1)] = "Stop",
+            [QuestionImportCsvColumns.OptionCorrect(1)] = "true",
+            [QuestionImportCsvColumns.OptionText(2)] = "Yield",
+            [QuestionImportCsvColumns.OptionCorrect(2)] = "false",
+            [QuestionImportCsvColumns.OptionText(3)] = string.Empty,
+            [QuestionImportCsvColumns.OptionCorrect(3)] = string.Empty,
+            [QuestionImportCsvColumns.OptionText(4)] = string.Empty,
+            [QuestionImportCsvColumns.OptionCorrect(4)] = string.Empty
+        };
+
         using var stream = new MemoryStream();
         using (var writer = new StreamWriter(stream, Encoding.UTF8, leaveOpen: true))
         using (var csv = new CsvWriter(writer, new CsvConfiguration(CultureInfo.InvariantCulture)))
         {
-            foreach (var header in QuestionImportCsvColumns.AllHeaders())
+            var headers = QuestionImportCsvColumns.AllHeaders().ToList();
+            foreach (var header in headers)
             {
                 csv.WriteField(header);
             }
             csv.NextRecord();
 
-            // One filled-in example row - options 3 and 4 left blank (CSV caps options at 4 via
-            // fixed columns; unused slots are blank).
-            csv.WriteField("What does this sign mean?");
-            csv.WriteField("Code1;Code2");
-            csv.WriteField(nameof(SectionType.Signs));
-            csv.WriteField("en");
-            csv.WriteField("R1");
-            csv.WriteField("Stop");
-            csv.WriteField("true");
-            csv.WriteField("Yield");
-            csv.WriteField("false");
-            csv.WriteField(string.Empty);
-            csv.WriteField(string.Empty);
-            csv.WriteField(string.Empty);
-            csv.WriteField(string.Empty);
+            foreach (var header in headers)
+            {
+                csv.WriteField(exampleRow.TryGetValue(header, out var value) ? value : string.Empty);
+            }
             csv.NextRecord();
         }
 
