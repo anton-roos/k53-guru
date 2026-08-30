@@ -4,10 +4,12 @@
 @using K53Guru.Application.Features.Questions.Queries.GetById
 @using K53Guru.Application.Features.Questions.Caching
 @using K53Guru.Application.Features.Questions.Commands.AddEdit
+@using K53Guru.Application.Features.Questions.Commands.Import
 @using K53Guru.Server.UI.Pages.Questions.Components
 
 @attribute [Authorize(Policy = Permissions.Questions.View)]
 @inject IStringLocalizer<Questions> L
+@inject BlazorDownloadFileService BlazorDownloadFileService
 
 <PageTitle>@Title</PageTitle>
 
@@ -36,6 +38,28 @@
                                OnClick="OnCreateQuestion">
                         @AppStrings.New
                     </MudButton>
+                    <MudMenu Icon="@Icons.Material.Filled.MoreVert" Direction="Direction.Bottom" AnchorOrigin="Origin.BottomRight">
+                        <MudMenuItem OnClick="@(() => OnDownloadTemplate("csv"))" Disabled="@_downloadingTemplate">
+                            @L["Download CSV Template"]
+                        </MudMenuItem>
+                        <MudMenuItem OnClick="@(() => OnDownloadTemplate("json"))" Disabled="@_downloadingTemplate">
+                            @L["Download JSON Template"]
+                        </MudMenuItem>
+                        <MudMenuItem>
+                            <MudFileUpload T="IBrowserFile"
+                                           FilesChanged="OnFileImport"
+                                           Accept=".csv,.json">
+                                <ActivatorContent>
+                                    <MudButton Class="pa-0 ma-0"
+                                               Style="font-weight:400;text-transform:none;"
+                                               Variant="Variant.Text"
+                                               Disabled="@_uploading">
+                                        @AppStrings.Import
+                                    </MudButton>
+                                </ActivatorContent>
+                            </MudFileUpload>
+                        </MudMenuItem>
+                    </MudMenu>
                 }
             </MudStack>
         </MudStack>
@@ -82,6 +106,8 @@
     private readonly QuestionDto _currentDto = new();
     private QuestionsAccessRights _accessRights = new();
     private bool _loading;
+    private bool _uploading;
+    private bool _downloadingTemplate;
     private int _defaultPageSize = 15;
 
     private QuestionsWithPaginationQuery _questionsQuery { get; } = new();
@@ -159,5 +185,44 @@
             Snackbar.Add(errors, Severity.Error);
             return Task.CompletedTask;
         });
+    }
+
+    private async Task OnFileImport(IBrowserFile file)
+    {
+        _uploading = true;
+        var stream = new MemoryStream();
+        await file.OpenReadStream(GlobalVariables.MaxAllowedSize).CopyToAsync(stream);
+        var command = new ImportQuestionsCommand(file.Name, stream.ToArray());
+        var result = await Mediator.Send(command);
+        if (result.Succeeded)
+        {
+            await _questionsGrid.ReloadServerData();
+            Snackbar.Add($"{AppStrings.ImportSuccess}", Severity.Info);
+        }
+        else
+        {
+            foreach (var msg in result.Errors)
+            {
+                Snackbar.Add($"{msg}", Severity.Error);
+            }
+        }
+        _uploading = false;
+    }
+
+    private async Task OnDownloadTemplate(string format)
+    {
+        _downloadingTemplate = true;
+        var result = await Mediator.Send(new CreateQuestionsImportTemplateCommand { Format = format });
+        if (result.Succeeded)
+        {
+            var extension = format.Equals("json", StringComparison.OrdinalIgnoreCase) ? "json" : "csv";
+            await BlazorDownloadFileService.DownloadFileAsync(
+                $"{L["Questions"]}-template.{extension}", result.Data!, "application/octet-stream");
+        }
+        else
+        {
+            Snackbar.Add($"{result.ErrorMessage}", Severity.Error);
+        }
+        _downloadingTemplate = false;
     }
 }
