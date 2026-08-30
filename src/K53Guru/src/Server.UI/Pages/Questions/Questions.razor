@@ -1,0 +1,163 @@
+@page "/system/questions"
+@using K53Guru.Application.Features.Questions.DTOs
+@using K53Guru.Application.Features.Questions.Queries.Pagination
+@using K53Guru.Application.Features.Questions.Queries.GetById
+@using K53Guru.Application.Features.Questions.Caching
+@using K53Guru.Application.Features.Questions.Commands.AddEdit
+@using K53Guru.Server.UI.Pages.Questions.Components
+
+@attribute [Authorize(Policy = Permissions.Questions.View)]
+@inject IStringLocalizer<Questions> L
+
+<PageTitle>@Title</PageTitle>
+
+<MudDataGrid ServerData="@(ServerReload)"
+             T="QuestionDto"
+             FixedHeader="true"
+             FixedFooter="false"
+             @bind-RowsPerPage="_defaultPageSize"
+             Loading="@_loading"
+             Hover="true" @ref="_questionsGrid">
+    <ToolBarContent>
+        <MudStack Row Spacing="0" Class="flex-grow-1" Justify="Justify.SpaceBetween">
+            <MudStack Row AlignItems="AlignItems.Center">
+                <MudIcon Icon="@Icons.Material.Filled.QuestionAnswer" Size="Size.Large" />
+                <MudText Typo="Typo.subtitle2">@L[_currentDto.GetClassDescription()]</MudText>
+            </MudStack>
+            <MudStack Row AlignItems="AlignItems.Center" Spacing="1">
+                <MudButton Disabled="@_loading"
+                           OnClick="@(() => OnRefresh())"
+                           StartIcon="@Icons.Material.Outlined.Refresh">
+                    @AppStrings.Refresh
+                </MudButton>
+                @if (_accessRights.Create)
+                {
+                    <MudButton StartIcon="@Icons.Material.Outlined.Add"
+                               OnClick="OnCreateQuestion">
+                        @AppStrings.New
+                    </MudButton>
+                }
+            </MudStack>
+        </MudStack>
+    </ToolBarContent>
+    <Columns>
+        <TemplateColumn HeaderStyle="width:60px" Title="@AppStrings.Actions" Sortable="false">
+            <CellTemplate>
+                @if (_accessRights.Edit)
+                {
+                    <MudTooltip Text="@AppStrings.Edit" Delay="300">
+                        <MudIconButton Icon="@Icons.Material.Filled.Edit"
+                                       Size="Size.Small"
+                                       Color="Color.Info"
+                                       OnClick="@(() => OnEditQuestion(context.Item))">
+                        </MudIconButton>
+                    </MudTooltip>
+                }
+            </CellTemplate>
+        </TemplateColumn>
+        <PropertyColumn Property="x => x.Stem" Title="@L[_currentDto.GetMemberDescription(x => x.Stem)]" />
+        <PropertyColumn Property="x => x.Codes" Title="@L[_currentDto.GetMemberDescription(x => x.Codes)]" />
+        <PropertyColumn Property="x => x.Section" Title="@L[_currentDto.GetMemberDescription(x => x.Section)]" />
+        <PropertyColumn Property="x => x.SignRef" Title="@L[_currentDto.GetMemberDescription(x => x.SignRef)]" />
+        <TemplateColumn Title="@L["Options"]" Sortable="false">
+            <CellTemplate>
+                @context.Item.AnswerOptions.Count
+            </CellTemplate>
+        </TemplateColumn>
+    </Columns>
+    <NoRecordsContent>
+        <MudText>@AppStrings.NoRecords</MudText>
+    </NoRecordsContent>
+    <LoadingContent>
+        <MudText>@AppStrings.Loading</MudText>
+    </LoadingContent>
+    <PagerContent>
+        <MudDataGridPager PageSizeOptions="@(new[] { 10, 15, 30, 50, 100 })" />
+    </PagerContent>
+</MudDataGrid>
+
+@code {
+    public string? Title { get; private set; }
+    private MudDataGrid<QuestionDto> _questionsGrid = default!;
+    private readonly QuestionDto _currentDto = new();
+    private QuestionsAccessRights _accessRights = new();
+    private bool _loading;
+    private int _defaultPageSize = 15;
+
+    private QuestionsWithPaginationQuery _questionsQuery { get; } = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        Title = $"{ApplicationSettings.AppName} - {L[_currentDto.GetClassDescription()]}";
+        _accessRights = await PermissionService.GetAccessRightsAsync<QuestionsAccessRights>();
+    }
+
+    private async Task<GridData<QuestionDto>> ServerReload(GridState<QuestionDto> state)
+    {
+        try
+        {
+            _loading = true;
+            _questionsQuery.OrderBy = state.SortDefinitions.FirstOrDefault()?.SortBy ?? "Id";
+            _questionsQuery.SortDirection = state.SortDefinitions.FirstOrDefault()?.Descending ?? true
+                                                ? SortDirection.Descending.ToString()
+                                                : SortDirection.Ascending.ToString();
+            _questionsQuery.PageNumber = state.Page + 1;
+            _questionsQuery.PageSize = state.PageSize;
+            var result = await Mediator.Send(_questionsQuery).ConfigureAwait(false);
+            return new GridData<QuestionDto> { TotalItems = result.TotalItems, Items = result.Items };
+        }
+        finally
+        {
+            _loading = false;
+        }
+    }
+
+    private async Task OnRefresh()
+    {
+        QuestionCacheKey.Refresh();
+        await _questionsGrid.ReloadServerData();
+    }
+
+    private async Task ShowQuestionFormDialog(string title, AddEditQuestionCommand command)
+    {
+        var parameters = new DialogParameters<QuestionFormDialog>
+        {
+            { x => x._model, command }
+        };
+        var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Medium, FullWidth = true };
+        var dialog = await DialogService.ShowAsync<QuestionFormDialog>(title, parameters, options);
+        var state = await dialog.Result;
+        if (state is not null && !state.Canceled)
+        {
+            await _questionsGrid.ReloadServerData();
+        }
+    }
+
+    private async Task OnCreateQuestion()
+    {
+        var command = new AddEditQuestionCommand
+        {
+            AnswerOptions = new List<AnswerOptionModel>
+            {
+                new() { Text = string.Empty, IsCorrect = false },
+                new() { Text = string.Empty, IsCorrect = false }
+            }
+        };
+        await ShowQuestionFormDialog(L["New question"], command);
+    }
+
+    private async Task OnEditQuestion(QuestionDto dto)
+    {
+        var result = await Mediator.Send(new GetQuestionByIdQuery { Id = dto.Id });
+        await result.MatchAsync(async data =>
+        {
+            var command = Mapper.Map<AddEditQuestionCommand>(data);
+            command.AnswerOptions = command.AnswerOptions.OrderBy(a => a.Order).ToList();
+            await ShowQuestionFormDialog(L["Edit the question"], command);
+        }, errors =>
+        {
+            Snackbar.Add(errors, Severity.Error);
+            return Task.CompletedTask;
+        });
+    }
+}

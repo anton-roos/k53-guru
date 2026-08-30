@@ -133,6 +133,12 @@ public class MenuService : IMenuService
                         },
                         new()
                         {
+                            Title = "Questions",
+                            Href = "/system/questions",
+                            PageStatus = PageStatus.Completed
+                        },
+                        new()
+                        {
                             Title = "Audit Trails",
                             Href = "/system/audittrails",
                             PageStatus = PageStatus.Completed
