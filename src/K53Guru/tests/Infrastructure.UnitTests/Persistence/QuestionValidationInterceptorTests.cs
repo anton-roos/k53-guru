@@ -195,6 +195,47 @@ public class QuestionValidationInterceptorTests : IDisposable
     }
 
     [Fact]
+    public async Task ChildrenOnlyEdit_ParentExplicitlyMarkedModified_StillRejectedBeforeCommit()
+    {
+        // Covers spec-2-1-author-edit-question.md's patch finding: an edit that only touches
+        // AnswerOptions (every scalar field on Question left untouched) leaves EF Core's change
+        // tracker with the parent Question entry at Unchanged - this interceptor only inspects
+        // ChangeTracker.Entries<Question>() in the Added/Modified states, so it would silently
+        // skip re-validating a children-only edit unless the caller explicitly flags the parent
+        // as Modified. AddEditQuestionCommandHandler now does exactly that (see its edit branch)
+        // on every edit; this test proves that mechanism actually closes the gap at the
+        // interceptor/EF level, independent of the handler.
+
+        // Arrange: seed a valid question, then reload it into a fresh context.
+        await using (var seedContext = CreateContext())
+        {
+            seedContext.Questions.Add(BuildQuestion());
+            await seedContext.SaveChangesAsync();
+        }
+
+        await using var context = CreateContext();
+        var question = await context.Questions.Include(q => q.AnswerOptions).SingleAsync();
+
+        // Act: mutate only the children into an invalid state (zero correct) - every scalar
+        // field on the parent (Stem/Codes/Section/LanguageCode/SignRef) stays untouched - then
+        // explicitly mark the parent Modified, mirroring the handler's fix.
+        foreach (var option in question.AnswerOptions)
+        {
+            option.IsCorrect = false;
+        }
+        context.ChangeTracker.Entries<Question>().Single(e => e.Entity.Id == question.Id).State = EntityState.Modified;
+
+        var exception = await Assert.ThrowsAsync<ValidationException>(() => context.SaveChangesAsync());
+
+        // Assert
+        Assert.Contains("exactly one correct", exception.Message, StringComparison.OrdinalIgnoreCase);
+
+        await using var verifyContext = CreateContext();
+        var unchanged = await verifyContext.Questions.Include(q => q.AnswerOptions).SingleAsync();
+        Assert.Single(unchanged.AnswerOptions, a => a.IsCorrect);
+    }
+
+    [Fact]
     public async Task NoneCode_SaveRejectedBeforeCommit_ThrowsWithApplicableLicenceCodeMessage()
     {
         // Arrange: Codes left at its default (LicenceCode.None) - zero bits set.

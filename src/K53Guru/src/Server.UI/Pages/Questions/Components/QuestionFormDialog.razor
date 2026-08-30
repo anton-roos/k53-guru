@@ -1,0 +1,196 @@
+@using K53Guru.Application.Features.Questions.Commands.AddEdit
+@using K53Guru.Domain.Enums
+
+@inject IStringLocalizer<Questions> L
+
+<MudDialog>
+    <DialogContent>
+        <MudForm Model="@_model" @ref="@_form" Validation="@(Validator.ValidateValue(_model))">
+            <MudGrid Spacing="2">
+                <MudItem xs="12">
+                    <MudTextField Label="@L["Stem"]"
+                                  Lines="3"
+                                  @bind-Value="_model.Stem"
+                                  For="@(() => _model.Stem)"
+                                  Placeholder="@L["Enter the question stem"]"
+                                  Required="true">
+                    </MudTextField>
+                </MudItem>
+                <MudItem xs="12" sm="6">
+                    <MudSelect T="LicenceCode"
+                               Label="@L["Codes"]"
+                               MultiSelection="true"
+                               SelectedValues="@_selectedCodes"
+                               SelectedValuesChanged="@OnCodesChanged"
+                               For="@(() => _model.Codes)"
+                               Required="true">
+                        <MudSelectItem Value="LicenceCode.Code1">@L["Code 1"]</MudSelectItem>
+                        <MudSelectItem Value="LicenceCode.Code2">@L["Code 2"]</MudSelectItem>
+                        <MudSelectItem Value="LicenceCode.Code3">@L["Code 3"]</MudSelectItem>
+                    </MudSelect>
+                </MudItem>
+                <MudItem xs="12" sm="6">
+                    <MudEnumSelect TEnum="SectionType"
+                                   Label="@L["Section"]"
+                                   Value="_model.Section"
+                                   ValueChanged="@(v => _model.Section = v)"
+                                   For="@(() => _model.Section)">
+                    </MudEnumSelect>
+                </MudItem>
+                <MudItem xs="12" sm="6">
+                    <MudTextField Label="@L["Language"]"
+                                  @bind-Value="_model.LanguageCode"
+                                  For="@(() => _model.LanguageCode)"
+                                  Placeholder="@L["e.g. en"]">
+                    </MudTextField>
+                </MudItem>
+                <MudItem xs="12" sm="6">
+                    <MudTextField Label="@L["Sign Reference"]"
+                                  @bind-Value="_model.SignRef"
+                                  For="@(() => _model.SignRef)"
+                                  Placeholder="@L["Legislation code, e.g. R1"]"
+                                  HelperText="@L["Optional - must match an existing road sign's legislation code"]">
+                    </MudTextField>
+                </MudItem>
+                <MudItem xs="12">
+                    <MudText Typo="Typo.body2" Class="mb-2">@L["Answer Options"]</MudText>
+                    <MudRadioGroup T="int" Value="@_correctIndex" ValueChanged="@OnCorrectIndexChanged">
+                        @for (var i = 0; i < _model.AnswerOptions.Count; i++)
+                        {
+                            var index = i;
+                            <MudStack Row AlignItems="AlignItems.Center" Spacing="2" Class="mb-2">
+                                <MudRadio T="int" Value="@index" Color="Color.Primary" Dense="true">
+                                    @L["Correct"]
+                                </MudRadio>
+                                <MudTextField T="string"
+                                              @bind-Value="_model.AnswerOptions[index].Text"
+                                              Label="@($"{L["Option"]} {index + 1}")"
+                                              Class="flex-grow-1"
+                                              Required="true">
+                                </MudTextField>
+                                <MudIconButton Icon="@Icons.Material.Outlined.Delete"
+                                               Color="Color.Error"
+                                               Disabled="@(_model.AnswerOptions.Count <= 2)"
+                                               OnClick="@(() => RemoveOption(index))">
+                                </MudIconButton>
+                            </MudStack>
+                        }
+                    </MudRadioGroup>
+                    <MudButton StartIcon="@Icons.Material.Outlined.Add" OnClick="AddOption">
+                        @L["Add option"]
+                    </MudButton>
+                    @if (_answerOptionsError is not null)
+                    {
+                        <MudText Color="Color.Error" Typo="Typo.caption" Class="d-block mt-1">
+                            @_answerOptionsError
+                        </MudText>
+                    }
+                </MudItem>
+            </MudGrid>
+        </MudForm>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">@AppStrings.Cancel</MudButton>
+        <MudLoadingButton Loading="@_saving" OnClick="Submit">@AppStrings.Save</MudLoadingButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter] private IMudDialogInstance MudDialog { get; set; } = default!;
+
+    [EditorRequired][Parameter] public AddEditQuestionCommand _model { get; set; } = default!;
+
+    private MudForm? _form;
+    private bool _saving;
+    private string? _answerOptionsError;
+    private int _correctIndex = -1;
+    private IEnumerable<LicenceCode> _selectedCodes = Array.Empty<LicenceCode>();
+
+    protected override void OnParametersSet()
+    {
+        RecalculateCorrectIndex();
+        _selectedCodes = SplitFlags(_model.Codes).ToList();
+    }
+
+    private static IEnumerable<LicenceCode> SplitFlags(LicenceCode codes)
+    {
+        foreach (var flag in new[] { LicenceCode.Code1, LicenceCode.Code2, LicenceCode.Code3 })
+        {
+            if (codes.HasFlag(flag)) yield return flag;
+        }
+    }
+
+    private void OnCodesChanged(IEnumerable<LicenceCode> values)
+    {
+        _selectedCodes = values.ToList();
+        _model.Codes = _selectedCodes.Aggregate(LicenceCode.None, (acc, v) => acc | v);
+    }
+
+    private void RecalculateCorrectIndex()
+    {
+        _correctIndex = _model.AnswerOptions.FindIndex(a => a.IsCorrect);
+    }
+
+    private async Task OnCorrectIndexChanged(int value)
+    {
+        _correctIndex = value;
+        for (var i = 0; i < _model.AnswerOptions.Count; i++)
+        {
+            _model.AnswerOptions[i].IsCorrect = i == value;
+        }
+        await ValidateAnswerOptions();
+    }
+
+    private async Task AddOption()
+    {
+        _model.AnswerOptions.Add(new AnswerOptionModel { Text = string.Empty, IsCorrect = false });
+        await ValidateAnswerOptions();
+    }
+
+    private async Task RemoveOption(int index)
+    {
+        _model.AnswerOptions.RemoveAt(index);
+        RecalculateCorrectIndex();
+        await ValidateAnswerOptions();
+    }
+
+    private async Task ValidateAnswerOptions()
+    {
+        var errors = (await Validator.ValidatePropertyAsync(_model, nameof(AddEditQuestionCommand.AnswerOptions))).ToList();
+        _answerOptionsError = errors.Count > 0 ? string.Join(" ", errors) : null;
+    }
+
+    private async Task Submit()
+    {
+        try
+        {
+            _saving = true;
+            await _form!.Validate().ConfigureAwait(false);
+            await ValidateAnswerOptions();
+
+            if (!_form!.IsValid || _answerOptionsError is not null)
+                return;
+
+            var result = await Mediator.Send(_model);
+            result.Match(
+                data =>
+                {
+                    MudDialog.Close(DialogResult.Ok(true));
+                    Snackbar.Add(AppStrings.SaveSuccess, Severity.Info);
+                },
+                errors =>
+                {
+                    Snackbar.Add(errors, Severity.Error);
+                });
+        }
+        finally
+        {
+            _saving = false;
+        }
+    }
+
+    private void Cancel()
+    {
+        MudDialog.Cancel();
+    }
+}
