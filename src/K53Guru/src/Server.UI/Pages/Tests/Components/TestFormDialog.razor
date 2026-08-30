@@ -1,0 +1,202 @@
+@using K53Guru.Application.Features.Tests
+@using K53Guru.Application.Features.Tests.Commands.AddEdit
+@using K53Guru.Application.Features.Questions.DTOs
+@using K53Guru.Application.Features.Questions.Queries.GetAll
+@using K53Guru.Domain.Enums
+
+@inject IStringLocalizer<Tests> L
+
+<MudDialog>
+    <DialogContent>
+        <MudForm Model="@_model" @ref="@_form" Validation="@(Validator.ValidateValue(_model))">
+            <MudGrid Spacing="2">
+                <MudItem xs="12">
+                    <MudTextField Label="@L["Name"]"
+                                  @bind-Value="_model.Name"
+                                  For="@(() => _model.Name)"
+                                  Placeholder="@L["Enter the test name"]"
+                                  Required="true">
+                    </MudTextField>
+                </MudItem>
+                <MudItem xs="12" sm="6">
+                    <MudSelect T="LicenceCode"
+                               Label="@L["Codes"]"
+                               MultiSelection="true"
+                               SelectedValues="@_selectedCodes"
+                               SelectedValuesChanged="@OnCodesChanged"
+                               For="@(() => _model.Codes)"
+                               Required="true">
+                        <MudSelectItem Value="LicenceCode.Code1">@L["Code 1"]</MudSelectItem>
+                        <MudSelectItem Value="LicenceCode.Code2">@L["Code 2"]</MudSelectItem>
+                        <MudSelectItem Value="LicenceCode.Code3">@L["Code 3"]</MudSelectItem>
+                    </MudSelect>
+                </MudItem>
+                <MudItem xs="12" sm="6">
+                    <MudSelect T="TestSectionScope"
+                               Label="@L["Sections"]"
+                               MultiSelection="true"
+                               SelectedValues="@_selectedSections"
+                               SelectedValuesChanged="@OnSectionsChanged"
+                               For="@(() => _model.Sections)"
+                               Required="true">
+                        <MudSelectItem Value="TestSectionScope.Rules">@L["Rules"]</MudSelectItem>
+                        <MudSelectItem Value="TestSectionScope.Signs">@L["Signs"]</MudSelectItem>
+                        <MudSelectItem Value="TestSectionScope.VehicleControls">@L["Vehicle Controls"]</MudSelectItem>
+                    </MudSelect>
+                </MudItem>
+                <MudItem xs="12">
+                    <MudSelect T="int"
+                               Label="@L["Questions"]"
+                               MultiSelection="true"
+                               SelectedValues="@_model.QuestionIds"
+                               SelectedValuesChanged="@OnQuestionIdsChanged"
+                               Required="true">
+                        @foreach (var question in _allQuestions)
+                        {
+                            <MudSelectItem Value="@question.Id">@question.Stem</MudSelectItem>
+                        }
+                    </MudSelect>
+                    @if (_questionIdsError is not null)
+                    {
+                        <MudText Color="Color.Error" Typo="Typo.caption" Class="d-block mt-1">
+                            @_questionIdsError
+                        </MudText>
+                    }
+                </MudItem>
+                <MudItem xs="12">
+                    <MudText Typo="Typo.body2" Class="mb-2">@L["Associated Questions"]</MudText>
+                    @{
+                        var groupedQuestions = TestQuestionGrouping.GroupBySectionWithCodeCounts(_associatedQuestions);
+                    }
+                    @if (!groupedQuestions.Any())
+                    {
+                        <MudText Typo="Typo.caption">@L["No questions selected yet."]</MudText>
+                    }
+                    else
+                    {
+                        @foreach (var sectionGroup in groupedQuestions)
+                        {
+                            <MudPaper Class="pa-2 mb-2" Outlined="true">
+                                <MudText Typo="Typo.subtitle2">
+                                    @sectionGroup.Section (@sectionGroup.Count)
+                                </MudText>
+                                @foreach (var codeCount in sectionGroup.CodeCounts)
+                                {
+                                    <MudText Typo="Typo.caption" Class="d-block">
+                                        @codeCount.Code: @codeCount.Count
+                                    </MudText>
+                                }
+                            </MudPaper>
+                        }
+                    }
+                </MudItem>
+            </MudGrid>
+        </MudForm>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">@AppStrings.Cancel</MudButton>
+        <MudLoadingButton Loading="@_saving" OnClick="Submit">@AppStrings.Save</MudLoadingButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter] private IMudDialogInstance MudDialog { get; set; } = default!;
+
+    [EditorRequired][Parameter] public AddEditTestCommand _model { get; set; } = default!;
+
+    private MudForm? _form;
+    private bool _saving;
+    private string? _questionIdsError;
+    private List<QuestionDto> _allQuestions = new();
+    private IEnumerable<LicenceCode> _selectedCodes = Array.Empty<LicenceCode>();
+    private IEnumerable<TestSectionScope> _selectedSections = Array.Empty<TestSectionScope>();
+
+    private IEnumerable<QuestionDto> _associatedQuestions =>
+        _allQuestions.Where(q => _model.QuestionIds.Contains(q.Id));
+
+    protected override async Task OnInitializedAsync()
+    {
+        var questions = await Mediator.Send(new GetAllQuestionsQuery());
+        _allQuestions = questions.ToList();
+    }
+
+    protected override void OnParametersSet()
+    {
+        _selectedCodes = SplitCodeFlags(_model.Codes).ToList();
+        _selectedSections = SplitSectionFlags(_model.Sections).ToList();
+    }
+
+    private static IEnumerable<LicenceCode> SplitCodeFlags(LicenceCode codes)
+    {
+        foreach (var flag in new[] { LicenceCode.Code1, LicenceCode.Code2, LicenceCode.Code3 })
+        {
+            if (codes.HasFlag(flag)) yield return flag;
+        }
+    }
+
+    private static IEnumerable<TestSectionScope> SplitSectionFlags(TestSectionScope sections)
+    {
+        foreach (var flag in new[] { TestSectionScope.Rules, TestSectionScope.Signs, TestSectionScope.VehicleControls })
+        {
+            if (sections.HasFlag(flag)) yield return flag;
+        }
+    }
+
+    private void OnCodesChanged(IEnumerable<LicenceCode> values)
+    {
+        _selectedCodes = values.ToList();
+        _model.Codes = _selectedCodes.Aggregate(LicenceCode.None, (acc, v) => acc | v);
+    }
+
+    private void OnSectionsChanged(IEnumerable<TestSectionScope> values)
+    {
+        _selectedSections = values.ToList();
+        _model.Sections = _selectedSections.Aggregate(TestSectionScope.None, (acc, v) => acc | v);
+    }
+
+    private async Task OnQuestionIdsChanged(IEnumerable<int> values)
+    {
+        _model.QuestionIds = values.ToList();
+        await ValidateQuestionIds();
+    }
+
+    private async Task ValidateQuestionIds()
+    {
+        var errors = (await Validator.ValidatePropertyAsync(_model, nameof(AddEditTestCommand.QuestionIds))).ToList();
+        _questionIdsError = errors.Count > 0 ? string.Join(" ", errors) : null;
+    }
+
+    private async Task Submit()
+    {
+        try
+        {
+            _saving = true;
+            await _form!.Validate().ConfigureAwait(false);
+            await ValidateQuestionIds();
+
+            if (!_form!.IsValid || _questionIdsError is not null)
+                return;
+
+            var result = await Mediator.Send(_model);
+            result.Match(
+                data =>
+                {
+                    MudDialog.Close(DialogResult.Ok(true));
+                    Snackbar.Add(AppStrings.SaveSuccess, Severity.Info);
+                },
+                errors =>
+                {
+                    Snackbar.Add(errors, Severity.Error);
+                });
+        }
+        finally
+        {
+            _saving = false;
+        }
+    }
+
+    private void Cancel()
+    {
+        MudDialog.Cancel();
+    }
+}
