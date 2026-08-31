@@ -35,6 +35,10 @@ public class ApplicationDbContext : IdentityDbContext<
     public DbSet<TestQuestion> TestQuestions { get; set; }
     public DbSet<TestConfig> TestConfigs { get; set; }
     public DbSet<SectionRule> SectionRules { get; set; }
+    public DbSet<LearnerProfile> LearnerProfiles { get; set; }
+    public DbSet<Attempt> Attempts { get; set; }
+    public DbSet<AttemptQuestion> AttemptQuestions { get; set; }
+    public DbSet<AttemptAnswerOption> AttemptAnswerOptions { get; set; }
     public DbSet<LoginAudit> LoginAudits { get; set; }
     public DbSet<UserLoginRiskSummary> UserLoginRiskSummaries { get; set; }
     public DbSet<DataProtectionKey> DataProtectionKeys { get; set; }

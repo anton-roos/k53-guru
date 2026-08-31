@@ -25,6 +25,10 @@ public interface IApplicationDbContext: IAsyncDisposable
     DbSet<TestQuestion> TestQuestions { get; set; }
     DbSet<TestConfig> TestConfigs { get; set; }
     DbSet<SectionRule> SectionRules { get; set; }
+    DbSet<LearnerProfile> LearnerProfiles { get; set; }
+    DbSet<Attempt> Attempts { get; set; }
+    DbSet<AttemptQuestion> AttemptQuestions { get; set; }
+    DbSet<AttemptAnswerOption> AttemptAnswerOptions { get; set; }
     DbSet<LoginAudit> LoginAudits { get; set; }
     DbSet<UserLoginRiskSummary> UserLoginRiskSummaries { get; set; }
     ChangeTracker ChangeTracker { get; }
