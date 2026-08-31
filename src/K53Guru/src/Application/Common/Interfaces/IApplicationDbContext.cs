@@ -23,6 +23,8 @@ public interface IApplicationDbContext: IAsyncDisposable
     DbSet<AnswerOption> AnswerOptions { get; set; }
     DbSet<Test> Tests { get; set; }
     DbSet<TestQuestion> TestQuestions { get; set; }
+    DbSet<TestConfig> TestConfigs { get; set; }
+    DbSet<SectionRule> SectionRules { get; set; }
     DbSet<LoginAudit> LoginAudits { get; set; }
     DbSet<UserLoginRiskSummary> UserLoginRiskSummaries { get; set; }
     ChangeTracker ChangeTracker { get; }

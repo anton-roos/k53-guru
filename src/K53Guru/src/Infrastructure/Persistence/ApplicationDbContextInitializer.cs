@@ -2,6 +2,7 @@
 using System.Reflection;
 using K53Guru.Application.Common.Constants;
 using K53Guru.Application.Common.Security;
+using K53Guru.Domain.Enums;
 using K53Guru.Domain.Identity;
 
 namespace K53Guru.Infrastructure.Persistence;
@@ -318,6 +319,7 @@ public class ApplicationDbContextInitializer
         }
 
         await SeedRoadSignsAsync();
+        await SeedTestConfigsAsync();
     }
 
     private async Task SeedRoadSignsAsync()
@@ -350,6 +352,59 @@ public class ApplicationDbContextInitializer
         };
 
         await _context.RoadSigns.AddRangeAsync(signs);
+        await _context.SaveChangesAsync();
+    }
+
+    /// <summary>
+    /// Seeds one <see cref="TestConfig"/> per <see cref="LicenceCode"/> (Code1/Code2/Code3),
+    /// each with 3 <see cref="SectionRule"/> children (Rules/Signs/VehicleControls).
+    ///
+    /// Every numeric value below is a PROVISIONAL PLACEHOLDER, not a confirmed official
+    /// K53/CLLT figure - see test-structure.md (`_bmad-output/specs/spec-k53-learners-app/test-structure.md`)
+    /// and its "Confirm the final ranges and the time limit against a live DLTC/CLLT
+    /// terminal before relying on them" caveat, plus the tracking entry in deferred-work.md
+    /// (spec-3-2-configure-test-parameters.md). Identical across all three codes today,
+    /// since the source document documents no per-code numeric variance.
+    /// </summary>
+    private async Task SeedTestConfigsAsync()
+    {
+        if (await _context.TestConfigs.AnyAsync()) return;
+
+        _logger.LogInformation("Seeding test configs...");
+
+        // PROVISIONAL PLACEHOLDER: no time limit is specified anywhere in test-structure.md
+        // ("Not specified in the CLLT description provided; unconfirmed... Confirm before
+        // enforcing."). 60 minutes is a generous placeholder pending real-world confirmation.
+        const int placeholderTimeLimitMinutes = 60;
+
+        var codes = new[] { LicenceCode.Code1, LicenceCode.Code2, LicenceCode.Code3 };
+
+        var testConfigs = codes.Select(code => new TestConfig
+        {
+            Code = code,
+            TimeLimitMinutes = placeholderTimeLimitMinutes,
+            SectionRules = new List<SectionRule>
+            {
+                // PROVISIONAL PLACEHOLDER: test-structure.md documents an official *range*
+                // of 28-30 questions with a pass mark of 22 correct. 30 (the upper end of
+                // the range) is seeded as a single representative value, per explicit human
+                // direction not to model ranges.
+                new SectionRule { Section = SectionType.Rules, QuestionCount = 30, PassMark = 22 },
+
+                // PROVISIONAL PLACEHOLDER: test-structure.md documents an official *range*
+                // of 28-30 questions with a pass mark of 23 correct. 30 (the upper end of
+                // the range) is seeded as a single representative value.
+                new SectionRule { Section = SectionType.Signs, QuestionCount = 30, PassMark = 23 },
+
+                // PROVISIONAL PLACEHOLDER: test-structure.md documents an official *range*
+                // of 8-12 questions with a pass mark of "6 of 8, or 10 of 12" depending on
+                // which count is drawn. 12/10 (the upper end of the range, paired with its
+                // documented pass mark) is seeded as a single representative value.
+                new SectionRule { Section = SectionType.VehicleControls, QuestionCount = 12, PassMark = 10 }
+            }
+        }).ToArray();
+
+        await _context.TestConfigs.AddRangeAsync(testConfigs);
         await _context.SaveChangesAsync();
     }
 }
