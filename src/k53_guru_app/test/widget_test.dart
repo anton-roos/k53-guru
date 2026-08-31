@@ -1,30 +1,36 @@
-// This is a basic Flutter widget test.
-//
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility in the flutter_test package. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
+// Smoke test for the app shell: the themed `MaterialApp` launches the
+// sittings proof screen and renders its data once the (overridden, network
+// -free) sittings future resolves.
 
-import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import 'package:k53_guru_app/domain/available_sitting.dart';
 import 'package:k53_guru_app/main.dart';
+import 'package:k53_guru_app/presentation/sittings/sittings_list_provider.dart';
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(const MyApp());
+  testWidgets('renders the sittings list screen inside the themed app shell',
+      (WidgetTester tester) async {
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          availableSittingsProvider.overrideWith(
+            (Ref ref) => Future<List<AvailableSitting>>.value(
+              const <AvailableSitting>[],
+            ),
+          ),
+        ],
+        child: const K53GuruApp(),
+      ),
+    );
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+    // First frame: the future hasn't resolved yet.
+    expect(find.text('Available Sittings'), findsOneWidget);
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
+    await tester.pumpAndSettle();
 
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+    // Empty-state text once the (stubbed) sittings future resolves.
+    expect(find.text('No sittings available.'), findsOneWidget);
   });
 }
