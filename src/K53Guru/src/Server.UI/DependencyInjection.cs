@@ -1,4 +1,5 @@
 ﻿using System.Net.Http.Headers;
+using System.Text.Json.Serialization;
 using K53Guru.Application;
 using K53Guru.Application.Common.Constants;
 using K53Guru.Application.Common.Interfaces;
@@ -17,7 +18,9 @@ using Hangfire;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.AspNetCore.SignalR;
+using System.Threading.RateLimiting;
 using Microsoft.Extensions.FileProviders;
 using MudBlazor.Services;
 using QuestPDF;
@@ -79,7 +82,28 @@ public static class DependencyInjection
             .AddHangfireServer()
             .AddMvc();
 
-        services.AddControllers();
+        services.AddControllers()
+            .AddJsonOptions(o => o.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
+
+        // Learner-facing API (Epic 3): anonymous, per-IP rate limiting - no learner UUID exists
+        // yet at this pre-attempt discovery endpoint, so IP-based partitioning is the correct
+        // interim scope (revisited once Story 3.3+ introduces a learner UUID).
+        services.AddRateLimiter(options =>
+        {
+            // Per-client-IP partitioning (not AddFixedWindowLimiter, which would partition by the
+            // constant "learner-api" policy-name string and share one global 60-req/min budget
+            // across every caller). Rejections return 429 per the spec's I/O Matrix, overriding the
+            // RateLimiterOptions default of 503.
+            options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+            options.AddPolicy("learner-api", httpContext =>
+                RateLimitPartition.GetFixedWindowLimiter(
+                    partitionKey: httpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown",
+                    factory: _ => new FixedWindowRateLimiterOptions
+                    {
+                        PermitLimit = 60,
+                        Window = TimeSpan.FromMinutes(1)
+                    }));
+        });
 
         services.AddScoped<IApplicationHubWrapper, ServerHubWrapper>()
             .AddSignalR(options =>
@@ -193,6 +217,11 @@ public static class DependencyInjection
         });
         app.MapRazorComponents<App>().AddInteractiveServerRenderMode();
         app.MapHub<ServerHub>(ISignalRHub.Url);
+
+        // Learner-facing /api/v1 surface (Epic 3): rate limiter must be wired before controllers
+        // are mapped for [EnableRateLimiting] to take effect.
+        app.UseRateLimiter();
+        app.MapControllers();
 
         //QuestPDF License configuration
         Settings.License = LicenseType.Community;

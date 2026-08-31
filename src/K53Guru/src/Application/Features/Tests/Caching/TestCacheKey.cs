@@ -4,6 +4,8 @@ public static class TestCacheKey
 {
     public const string GetAllCacheKey = "all-Tests";
 
+    public const string GetAvailableSittingsCacheKey = "TestCacheKey:GetAvailableSittingsQuery";
+
     public static string GetByIdCacheKey(string parameters)
     {
         return $"TestCacheKey:GetByIdCacheKey,{parameters}";
