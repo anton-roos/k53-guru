@@ -29,6 +29,8 @@ public interface IApplicationDbContext: IAsyncDisposable
     DbSet<Attempt> Attempts { get; set; }
     DbSet<AttemptQuestion> AttemptQuestions { get; set; }
     DbSet<AttemptAnswerOption> AttemptAnswerOptions { get; set; }
+    DbSet<CodeResult> CodeResults { get; set; }
+    DbSet<SectionResult> SectionResults { get; set; }
     DbSet<LoginAudit> LoginAudits { get; set; }
     DbSet<UserLoginRiskSummary> UserLoginRiskSummaries { get; set; }
     ChangeTracker ChangeTracker { get; }

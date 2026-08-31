@@ -29,5 +29,12 @@ public class Attempt : BaseAuditableEntity
 
     public DateTime StartedAt { get; set; }
 
+    /// <summary>
+    /// Set by SubmitAttemptCommand (Story 3.5) once the attempt has been graded; null while
+    /// in-progress. A second submit against an already-submitted Attempt (non-null here) is
+    /// rejected outright, never re-graded.
+    /// </summary>
+    public DateTime? SubmittedAt { get; set; }
+
     public List<AttemptQuestion> AttemptQuestions { get; set; } = new();
 }

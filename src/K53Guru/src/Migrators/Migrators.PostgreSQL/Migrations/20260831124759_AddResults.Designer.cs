@@ -3,6 +3,7 @@ using System;
 using K53Guru.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace K53Guru.Migrators.PostgreSQL.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260831124759_AddResults")]
+    partial class AddResults
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -371,9 +374,8 @@ namespace K53Guru.Migrators.PostgreSQL.Migrations
                     b.HasKey("Id")
                         .HasName("pk_code_results");
 
-                    b.HasIndex("AttemptId", "Code")
-                        .IsUnique()
-                        .HasDatabaseName("ix_code_results_attempt_id_code");
+                    b.HasIndex("AttemptId")
+                        .HasDatabaseName("ix_code_results_attempt_id");
 
                     b.ToTable("code_results", (string)null);
                 });

@@ -39,6 +39,8 @@ public class ApplicationDbContext : IdentityDbContext<
     public DbSet<Attempt> Attempts { get; set; }
     public DbSet<AttemptQuestion> AttemptQuestions { get; set; }
     public DbSet<AttemptAnswerOption> AttemptAnswerOptions { get; set; }
+    public DbSet<CodeResult> CodeResults { get; set; }
+    public DbSet<SectionResult> SectionResults { get; set; }
     public DbSet<LoginAudit> LoginAudits { get; set; }
     public DbSet<UserLoginRiskSummary> UserLoginRiskSummaries { get; set; }
     public DbSet<DataProtectionKey> DataProtectionKeys { get; set; }

@@ -1,4 +1,5 @@
 using K53Guru.Application.Features.Attempts.DTOs;
+using K53Guru.Domain.Common;
 using K53Guru.Domain.Enums;
 
 namespace K53Guru.Application.Features.Attempts.Commands.Start;
@@ -54,11 +55,9 @@ public class StartAttemptCommandHandler : IRequestHandler<StartAttemptCommand, R
 
         // Constituent codes in fixed composition order - Code1 first when present, then
         // Code2/Code3 (the allowlist above guarantees this is exactly one of: [Code1], [Code2],
-        // [Code3], [Code1, Code2], [Code1, Code3]).
-        var constituentCodes = new List<LicenceCode>();
-        if (test.Codes.HasFlag(LicenceCode.Code1)) constituentCodes.Add(LicenceCode.Code1);
-        if (test.Codes.HasFlag(LicenceCode.Code2)) constituentCodes.Add(LicenceCode.Code2);
-        if (test.Codes.HasFlag(LicenceCode.Code3)) constituentCodes.Add(LicenceCode.Code3);
+        // [Code3], [Code1, Code2], [Code1, Code3]). Shared with SubmitAttemptCommand (Story 3.5)
+        // via LicenceCodeExtensions.GetConstituentCodes() rather than duplicating these checks.
+        var constituentCodes = test.Codes.GetConstituentCodes();
         var primaryCode = constituentCodes[0];
 
         // (2) Load the primary (first constituent) code's TestConfig + SectionRules. Rules/Signs

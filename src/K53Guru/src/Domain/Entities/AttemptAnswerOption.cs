@@ -14,7 +14,7 @@ public class AttemptAnswerOption : BaseAuditableEntity
     public string Text { get; set; } = string.Empty;
 
     /// <summary>
-    /// Retained for future grading (Story 3.5) - never serialized into AttemptAnswerOptionDto.
+    /// Retained for grading (Story 3.5) - never serialized into AttemptAnswerOptionDto.
     /// </summary>
     public bool IsCorrect { get; set; }
 
@@ -23,4 +23,10 @@ public class AttemptAnswerOption : BaseAuditableEntity
     /// the source AnswerOption.Order.
     /// </summary>
     public int Order { get; set; }
+
+    /// <summary>
+    /// The learner's recorded choice, set by SubmitAttemptCommand (Story 3.5) - defaults false
+    /// until submission. Never exposed back out through AttemptDto, same as IsCorrect.
+    /// </summary>
+    public bool IsSelected { get; set; }
 }

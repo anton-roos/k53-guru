@@ -38,6 +38,12 @@ public class AttemptDto
 /// </summary>
 public class AttemptQuestionDto
 {
+    /// <summary>
+    /// Exposed (Story 3.5) so the client can reference which question it's answering when
+    /// submitting - see SubmitAttemptCommand.
+    /// </summary>
+    [Description("Id")] public int Id { get; set; }
+
     [Description("Section")] public SectionType Section { get; set; }
 
     /// <summary>
@@ -62,6 +68,12 @@ public class AttemptQuestionDto
 /// </summary>
 public class AttemptAnswerOptionDto
 {
+    /// <summary>
+    /// Exposed (Story 3.5) so the client can reference which option it's selecting when
+    /// submitting - see SubmitAttemptCommand.
+    /// </summary>
+    [Description("Id")] public int Id { get; set; }
+
     [Description("Text")] public string? Text { get; set; }
 
     [Description("Order")] public int Order { get; set; }
