@@ -1,16 +1,24 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'presentation/sittings/sittings_list_screen.dart';
+import 'presentation/shell/app_shell.dart';
 import 'theme/app_theme.dart';
 
-void main() {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  // K53 Guru is portrait-only, single-column per DESIGN.md -- locked before
+  // `runApp` so no frame ever renders in landscape.
+  await SystemChrome.setPreferredOrientations(<DeviceOrientation>[
+    DeviceOrientation.portraitUp,
+    DeviceOrientation.portraitDown,
+  ]);
   runApp(const ProviderScope(child: K53GuruApp()));
 }
 
 /// App root. Wires the DESIGN.md theme (light/dark, following the system
 /// setting for now -- a dedicated profile toggle is Story 4.6's job) and
-/// launches the one proof screen this story ships.
+/// launches the three-tab [AppShell].
 class K53GuruApp extends StatelessWidget {
   const K53GuruApp({super.key});
 
@@ -22,7 +30,7 @@ class K53GuruApp extends StatelessWidget {
       theme: AppTheme.light(),
       darkTheme: AppTheme.dark(),
       themeMode: ThemeMode.system,
-      home: const SittingsListScreen(),
+      home: const AppShell(),
     );
   }
 }
