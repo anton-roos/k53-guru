@@ -21,8 +21,9 @@ public class Attempt : BaseAuditableEntity
     public int TestId { get; set; }
 
     /// <summary>
-    /// The single licence code this attempt is sitting, copied from Test.Codes at start time.
-    /// Always exactly one bit (Code1/Code2/Code3) - a combination sitting is Story 3.4's concern.
+    /// The licence code(s) this attempt is sitting, copied from Test.Codes at start time. Either a
+    /// single code (Code1/Code2/Code3) or a valid combination (Code1|Code2, Code1|Code3) - see
+    /// StartAttemptCommand for the full allowlist (Story 3.4).
     /// </summary>
     public LicenceCode Code { get; set; }
 

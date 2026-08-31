@@ -8,6 +8,7 @@ public class AttemptQuestionConfiguration : IEntityTypeConfiguration<AttemptQues
     public void Configure(EntityTypeBuilder<AttemptQuestion> builder)
     {
         builder.Property(q => q.Section).HasConversion<string>().HasMaxLength(50).IsRequired();
+        builder.Property(q => q.Code).HasConversion<string>().HasMaxLength(50).IsRequired();
 
         // Mirrors QuestionConfiguration's Stem/SignRef lengths - these are verbatim copies of the
         // source Question's content at snapshot time.

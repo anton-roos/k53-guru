@@ -40,6 +40,13 @@ public class AttemptQuestionDto
 {
     [Description("Section")] public SectionType Section { get; set; }
 
+    /// <summary>
+    /// The licence code this question counts toward - the whole combination for shared
+    /// Rules/Signs questions, or the one constituent code for a VehicleControls module
+    /// question. See <see cref="Domain.Entities.AttemptQuestion.Code"/>.
+    /// </summary>
+    [Description("Code")] public LicenceCode Code { get; set; }
+
     [Description("Display Order")] public int DisplayOrder { get; set; }
 
     [Description("Stem")] public string? Stem { get; set; }
