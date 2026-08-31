@@ -18,12 +18,17 @@
 // call into a separately-testable function) since this story's tests are
 // test-only changes and must not touch `lib/`. `main()` does go on to
 // build the real `K53GuruApp` (via `runApp`, synchronously during this
-// call thanks to `AutomatedTestWidgetsFlutterBinding.scheduleWarmUpFrame`),
-// which kicks off a real, un-overridable network request for the Practice
-// tab's sittings -- but the orientation call this test cares about is
-// awaited and captured *before* `runApp` even runs, and the test never
-// awaits/pumps further, so that background request (and whatever it
-// eventually resolves to) has no bearing on this test's outcome.
+// call thanks to `AutomatedTestWidgetsFlutterBinding.scheduleWarmUpFrame`).
+// Since Story 4.3, `K53GuruApp` is also the first-run router: it reads the
+// persisted learner profile id via `learnerProfileProvider`, which in this
+// unmocked test environment fails to reach any `SharedPreferences`
+// platform implementation -- `LearnerProfileStore` treats that failure as
+// "no profile id" per its own contract, so the router settles on
+// `StartLearningScreen` rather than `AppShell`, and no network request for
+// the Practice tab's sittings ever fires. Either way, the orientation call
+// this test cares about is awaited and captured *before* `runApp` even
+// runs, and the test never awaits/pumps further, so which screen `main()`
+// ends up building has no bearing on this test's outcome.
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
