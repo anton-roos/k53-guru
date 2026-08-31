@@ -80,12 +80,14 @@ public class StartAttemptCommandHandlerTests : IDisposable
         return factoryMock.Object;
     }
 
-    private static Question NewQuestion(string stem, SectionType section, LicenceCode codes = LicenceCode.Code1) => new()
+    private static Question NewQuestion(
+        string stem, SectionType section, LicenceCode codes = LicenceCode.Code1, string? explanation = null) => new()
     {
         Stem = stem,
         Codes = codes,
         Section = section,
         LanguageCode = "en",
+        Explanation = explanation,
         AnswerOptions = new List<AnswerOption>
         {
             new() { Text = "Correct answer", IsCorrect = true, Order = 0 },
@@ -265,7 +267,7 @@ public class StartAttemptCommandHandlerTests : IDisposable
 
         // Act
         var result = await handler.Handle(
-            new StartAttemptCommand { LearnerProfileId = learnerProfileId, TestId = testId },
+            new StartAttemptCommand { LearnerProfileId = learnerProfileId, TestId = testId, Mode = AttemptMode.Practice },
             CancellationToken.None);
 
         // Assert
@@ -312,10 +314,10 @@ public class StartAttemptCommandHandlerTests : IDisposable
 
         // Act
         var result1 = await handler.Handle(
-            new StartAttemptCommand { LearnerProfileId = Guid.NewGuid(), TestId = testId },
+            new StartAttemptCommand { LearnerProfileId = Guid.NewGuid(), TestId = testId, Mode = AttemptMode.Practice },
             CancellationToken.None);
         var result2 = await handler.Handle(
-            new StartAttemptCommand { LearnerProfileId = Guid.NewGuid(), TestId = testId },
+            new StartAttemptCommand { LearnerProfileId = Guid.NewGuid(), TestId = testId, Mode = AttemptMode.Practice },
             CancellationToken.None);
 
         // Assert
@@ -342,10 +344,10 @@ public class StartAttemptCommandHandlerTests : IDisposable
 
         // Act
         var result1 = await handler.Handle(
-            new StartAttemptCommand { LearnerProfileId = learnerProfileId, TestId = testId },
+            new StartAttemptCommand { LearnerProfileId = learnerProfileId, TestId = testId, Mode = AttemptMode.Practice },
             CancellationToken.None);
         var result2 = await handler.Handle(
-            new StartAttemptCommand { LearnerProfileId = learnerProfileId, TestId = testId },
+            new StartAttemptCommand { LearnerProfileId = learnerProfileId, TestId = testId, Mode = AttemptMode.Practice },
             CancellationToken.None);
 
         // Assert
@@ -369,7 +371,7 @@ public class StartAttemptCommandHandlerTests : IDisposable
 
         // Act
         var result = await handler.Handle(
-            new StartAttemptCommand { LearnerProfileId = Guid.NewGuid(), TestId = testId },
+            new StartAttemptCommand { LearnerProfileId = Guid.NewGuid(), TestId = testId, Mode = AttemptMode.Practice },
             CancellationToken.None);
 
         // Assert
@@ -390,7 +392,7 @@ public class StartAttemptCommandHandlerTests : IDisposable
 
         // Act
         var result = await handler.Handle(
-            new StartAttemptCommand { LearnerProfileId = Guid.NewGuid(), TestId = 12345 },
+            new StartAttemptCommand { LearnerProfileId = Guid.NewGuid(), TestId = 12345, Mode = AttemptMode.Practice },
             CancellationToken.None);
 
         // Assert
@@ -410,7 +412,7 @@ public class StartAttemptCommandHandlerTests : IDisposable
 
         // Act
         var result = await handler.Handle(
-            new StartAttemptCommand { LearnerProfileId = Guid.NewGuid(), TestId = testId },
+            new StartAttemptCommand { LearnerProfileId = Guid.NewGuid(), TestId = testId, Mode = AttemptMode.Practice },
             CancellationToken.None);
 
         // Assert
@@ -451,7 +453,7 @@ public class StartAttemptCommandHandlerTests : IDisposable
 
         // Act
         var result = await handler.Handle(
-            new StartAttemptCommand { LearnerProfileId = Guid.NewGuid(), TestId = testId },
+            new StartAttemptCommand { LearnerProfileId = Guid.NewGuid(), TestId = testId, Mode = AttemptMode.Practice },
             CancellationToken.None);
 
         // Assert
@@ -472,7 +474,7 @@ public class StartAttemptCommandHandlerTests : IDisposable
 
         // Act
         var result = await handler.Handle(
-            new StartAttemptCommand { LearnerProfileId = Guid.NewGuid(), TestId = testId },
+            new StartAttemptCommand { LearnerProfileId = Guid.NewGuid(), TestId = testId, Mode = AttemptMode.Practice },
             CancellationToken.None);
 
         // Assert
@@ -509,7 +511,7 @@ public class StartAttemptCommandHandlerTests : IDisposable
 
         // Act
         var result = await handler.Handle(
-            new StartAttemptCommand { LearnerProfileId = Guid.NewGuid(), TestId = testId },
+            new StartAttemptCommand { LearnerProfileId = Guid.NewGuid(), TestId = testId, Mode = AttemptMode.Practice },
             CancellationToken.None);
 
         // Assert
@@ -587,7 +589,7 @@ public class StartAttemptCommandHandlerTests : IDisposable
 
         // Act
         var result = await handler.Handle(
-            new StartAttemptCommand { LearnerProfileId = Guid.NewGuid(), TestId = testId },
+            new StartAttemptCommand { LearnerProfileId = Guid.NewGuid(), TestId = testId, Mode = AttemptMode.Practice },
             CancellationToken.None);
 
         // Assert
@@ -632,7 +634,7 @@ public class StartAttemptCommandHandlerTests : IDisposable
 
         // Act
         var result = await handler.Handle(
-            new StartAttemptCommand { LearnerProfileId = Guid.NewGuid(), TestId = testId },
+            new StartAttemptCommand { LearnerProfileId = Guid.NewGuid(), TestId = testId, Mode = AttemptMode.Practice },
             CancellationToken.None);
 
         // Assert
@@ -657,7 +659,7 @@ public class StartAttemptCommandHandlerTests : IDisposable
 
         // Act
         var result = await handler.Handle(
-            new StartAttemptCommand { LearnerProfileId = Guid.NewGuid(), TestId = testId },
+            new StartAttemptCommand { LearnerProfileId = Guid.NewGuid(), TestId = testId, Mode = AttemptMode.Practice },
             CancellationToken.None);
 
         // Assert
@@ -702,7 +704,7 @@ public class StartAttemptCommandHandlerTests : IDisposable
 
         // Act
         var result = await handler.Handle(
-            new StartAttemptCommand { LearnerProfileId = Guid.NewGuid(), TestId = testId },
+            new StartAttemptCommand { LearnerProfileId = Guid.NewGuid(), TestId = testId, Mode = AttemptMode.Practice },
             CancellationToken.None);
 
         // Assert
@@ -724,7 +726,7 @@ public class StartAttemptCommandHandlerTests : IDisposable
 
         // Act
         var result = await handler.Handle(
-            new StartAttemptCommand { LearnerProfileId = learnerProfileId, TestId = testId },
+            new StartAttemptCommand { LearnerProfileId = learnerProfileId, TestId = testId, Mode = AttemptMode.Practice },
             CancellationToken.None);
 
         // Assert
@@ -744,13 +746,13 @@ public class StartAttemptCommandHandlerTests : IDisposable
         var handler = new StartAttemptCommandHandler(CreateFactory(), _mapper);
 
         var first = await handler.Handle(
-            new StartAttemptCommand { LearnerProfileId = learnerProfileId, TestId = testId },
+            new StartAttemptCommand { LearnerProfileId = learnerProfileId, TestId = testId, Mode = AttemptMode.Practice },
             CancellationToken.None);
         Assert.True(first.Succeeded);
 
         // Act: start a second attempt for the same, now-existing learner.
         var second = await handler.Handle(
-            new StartAttemptCommand { LearnerProfileId = learnerProfileId, TestId = testId },
+            new StartAttemptCommand { LearnerProfileId = learnerProfileId, TestId = testId, Mode = AttemptMode.Practice },
             CancellationToken.None);
 
         // Assert
@@ -759,5 +761,96 @@ public class StartAttemptCommandHandlerTests : IDisposable
         await using var verifyContext = new ApplicationDbContext(_options);
         Assert.Equal(1, await verifyContext.LearnerProfiles.CountAsync(lp => lp.Id == learnerProfileId));
         Assert.Equal(2, await verifyContext.Attempts.CountAsync(a => a.LearnerProfileId == learnerProfileId));
+    }
+
+    [Fact]
+    public async Task Start_PracticeMode_AttemptModeIsSetAndQuestionExplanationIsSnapshotted()
+    {
+        // Arrange: one question per section, each carrying a distinct Explanation - proves
+        // StartAttemptCommand (Story 3.6) both records the requested Mode on the Attempt and
+        // copies each source Question's Explanation onto its AttemptQuestion snapshot, exactly
+        // like Stem/SignRef already are.
+        await using (var context = new ApplicationDbContext(_options))
+        {
+            var questions = new List<Question>
+            {
+                NewQuestion("Rules Q0", SectionType.Rules, explanation: "Rules explanation"),
+                NewQuestion("Signs Q0", SectionType.Signs, explanation: "Signs explanation"),
+                NewQuestion("VehicleControls Q0", SectionType.VehicleControls, explanation: null)
+            };
+            var test = new Test
+            {
+                Name = "Explanation Test",
+                Codes = LicenceCode.Code1,
+                Sections = TestSectionScope.Rules | TestSectionScope.Signs | TestSectionScope.VehicleControls,
+                Status = TestStatus.Published,
+                TestQuestions = questions.Select(q => new TestQuestion { Question = q }).ToList()
+            };
+            context.Tests.Add(test);
+            context.TestConfigs.Add(new TestConfig
+            {
+                Code = LicenceCode.Code1,
+                TimeLimitMinutes = 60,
+                SectionRules = new List<SectionRule>
+                {
+                    new() { Section = SectionType.Rules, QuestionCount = 1, PassMark = 1 },
+                    new() { Section = SectionType.Signs, QuestionCount = 1, PassMark = 1 },
+                    new() { Section = SectionType.VehicleControls, QuestionCount = 1, PassMark = 1 }
+                }
+            });
+            await context.SaveChangesAsync();
+        }
+
+        int testId;
+        await using (var readContext = new ApplicationDbContext(_options))
+        {
+            testId = await readContext.Tests.Select(t => t.Id).SingleAsync();
+        }
+
+        var handler = new StartAttemptCommandHandler(CreateFactory(), _mapper);
+
+        // Act
+        var result = await handler.Handle(
+            new StartAttemptCommand { LearnerProfileId = Guid.NewGuid(), TestId = testId, Mode = AttemptMode.Practice },
+            CancellationToken.None);
+
+        // Assert
+        Assert.True(result.Succeeded);
+        Assert.Equal(AttemptMode.Practice, result.Data!.Mode);
+
+        await using var verifyContext = new ApplicationDbContext(_options);
+        var savedAttempt = await verifyContext.Attempts
+            .Include(a => a.AttemptQuestions)
+            .SingleAsync(a => a.Id == result.Data!.Id);
+        Assert.Equal(AttemptMode.Practice, savedAttempt.Mode);
+
+        var rulesQuestion = savedAttempt.AttemptQuestions.Single(q => q.Section == SectionType.Rules);
+        var signsQuestion = savedAttempt.AttemptQuestions.Single(q => q.Section == SectionType.Signs);
+        var vehicleControlsQuestion = savedAttempt.AttemptQuestions.Single(q => q.Section == SectionType.VehicleControls);
+        Assert.Equal("Rules explanation", rulesQuestion.Explanation);
+        Assert.Equal("Signs explanation", signsQuestion.Explanation);
+        Assert.Null(vehicleControlsQuestion.Explanation);
+    }
+
+    [Fact]
+    public async Task Start_TestMode_AttemptModeIsSetToTest()
+    {
+        // Arrange: proves the requested Mode value round-trips faithfully - not hardcoded to
+        // Practice - for the Test-mode case too.
+        var testId = await SeedPublishedTestAsync(perSectionCount: 1, required: 1);
+        var handler = new StartAttemptCommandHandler(CreateFactory(), _mapper);
+
+        // Act
+        var result = await handler.Handle(
+            new StartAttemptCommand { LearnerProfileId = Guid.NewGuid(), TestId = testId, Mode = AttemptMode.Test },
+            CancellationToken.None);
+
+        // Assert
+        Assert.True(result.Succeeded);
+        Assert.Equal(AttemptMode.Test, result.Data!.Mode);
+
+        await using var verifyContext = new ApplicationDbContext(_options);
+        var savedAttempt = await verifyContext.Attempts.SingleAsync(a => a.Id == result.Data!.Id);
+        Assert.Equal(AttemptMode.Test, savedAttempt.Mode);
     }
 }

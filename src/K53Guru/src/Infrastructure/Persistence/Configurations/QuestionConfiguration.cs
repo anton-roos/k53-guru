@@ -12,6 +12,7 @@ public class QuestionConfiguration : IEntityTypeConfiguration<Question>
         builder.Property(t => t.Section).HasConversion<string>().HasMaxLength(50).IsRequired();
         builder.Property(t => t.LanguageCode).HasMaxLength(10).IsRequired();
         builder.Property(t => t.SignRef).HasMaxLength(20);
+        builder.Property(t => t.Explanation).HasMaxLength(2000);
 
         builder.HasMany(t => t.AnswerOptions)
             .WithOne()

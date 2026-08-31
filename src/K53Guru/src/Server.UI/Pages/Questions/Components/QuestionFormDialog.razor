@@ -53,6 +53,15 @@
                     </MudTextField>
                 </MudItem>
                 <MudItem xs="12">
+                    <MudTextField Label="@L["Explanation"]"
+                                  Lines="3"
+                                  @bind-Value="_model.Explanation"
+                                  For="@(() => _model.Explanation)"
+                                  Placeholder="@L["Shown to the learner after answering in Practice mode"]"
+                                  HelperText="@L["Optional"]">
+                    </MudTextField>
+                </MudItem>
+                <MudItem xs="12">
                     <MudText Typo="Typo.body2" Class="mb-2">@L["Answer Options"]</MudText>
                     <MudRadioGroup T="int" Value="@_correctIndex" ValueChanged="@OnCorrectIndexChanged">
                         @for (var i = 0; i < _model.AnswerOptions.Count; i++)

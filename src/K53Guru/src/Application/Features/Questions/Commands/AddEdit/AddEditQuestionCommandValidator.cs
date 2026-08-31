@@ -21,6 +21,12 @@ public class AddEditQuestionCommandValidator : AbstractValidator<AddEditQuestion
             .NotEmpty()
             .WithMessage("Stem is required.");
 
+        // Optional at authoring time (Story 3.6) - only a sane max length is enforced, matching
+        // Stem's existing 2000-character column length; no NotEmpty rule.
+        RuleFor(v => v.Explanation)
+            .MaximumLength(2000)
+            .WithMessage("Explanation must be 2000 characters or fewer.");
+
         // Rejects both LicenceCode.None (zero bits) and any bit outside the three known codes
         // (e.g. a malformed direct API/import call - unreachable through the UI's checkbox-style
         // selector, but not through the command itself).

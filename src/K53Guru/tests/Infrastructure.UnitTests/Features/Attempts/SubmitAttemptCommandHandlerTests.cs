@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using K53Guru.Application.Common.ExceptionHandlers;
 using K53Guru.Application.Common.Interfaces;
+using K53Guru.Application.Features.Attempts.Commands.CheckAnswer;
 using K53Guru.Application.Features.Attempts.Commands.Start;
 using K53Guru.Application.Features.Attempts.Commands.Submit;
 using K53Guru.Domain.Entities;
@@ -199,12 +200,17 @@ public class SubmitAttemptCommandHandlerTests : IDisposable
         return test.Id;
     }
 
-    private async Task<(int AttemptId, Guid LearnerProfileId)> StartAttemptAsync(int testId)
+    /// <summary>
+    /// Defaults to Practice mode - existing (pre-Story-3.6) tests exercise grading only and must
+    /// never be affected by the new Test-mode-only time-limit check.
+    /// </summary>
+    private async Task<(int AttemptId, Guid LearnerProfileId)> StartAttemptAsync(
+        int testId, AttemptMode mode = AttemptMode.Practice)
     {
         var startHandler = new StartAttemptCommandHandler(CreateFactory(), _mapper);
         var learnerProfileId = Guid.NewGuid();
         var startResult = await startHandler.Handle(
-            new StartAttemptCommand { LearnerProfileId = learnerProfileId, TestId = testId },
+            new StartAttemptCommand { LearnerProfileId = learnerProfileId, TestId = testId, Mode = mode },
             CancellationToken.None);
         Assert.True(startResult.Succeeded);
         return (startResult.Data!.Id, learnerProfileId);
@@ -677,6 +683,262 @@ public class SubmitAttemptCommandHandlerTests : IDisposable
         var selectedCount = await verifyContext.AttemptAnswerOptions
             .CountAsync(o => o.IsSelected && attemptQuestionIds.Contains(o.AttemptQuestionId));
         Assert.Equal(0, selectedCount);
+    }
+
+    /// <summary>
+    /// Regression test for the cross-command grading corruption fix in SubmitAttemptCommandHandler
+    /// step (4): before the fix, that step only set the newly-submitted option's IsSelected = true
+    /// without first clearing sibling options (unlike CheckAnswerCommand, which does clear-then-set).
+    /// A Practice-mode learner who calls CheckAnswer with a WRONG option and later Submits a
+    /// DIFFERENT (correct) final answer for that SAME question would end up with BOTH options
+    /// marked IsSelected = true, and grading's Any(o =&gt; o.IsSelected &amp;&amp; o.IsCorrect) would count
+    /// the question correct regardless of the learner's actual final answer. This proves the fix:
+    /// after Submit, only the final submitted (correct) option is selected, the previously-checked
+    /// wrong option is cleared back to false, and grading reflects the final answer.
+    /// </summary>
+    [Fact]
+    public async Task Submit_AfterPriorCheckAnswerWithDifferentOption_GradesOnlyFinalSubmittedAnswer()
+    {
+        // Arrange: 1 question per section, PassMark 1, Practice mode (CheckAnswer is Practice-only).
+        var passMarks = new Dictionary<SectionType, int>
+        {
+            [SectionType.Rules] = 1,
+            [SectionType.Signs] = 1,
+            [SectionType.VehicleControls] = 1
+        };
+        var testId = await SeedPublishedTestAsync(perSectionCount: 1, passMarkBySection: passMarks);
+        var (attemptId, learnerProfileId) = await StartAttemptAsync(testId, AttemptMode.Practice);
+        var attempt = await ReadAttemptAsync(attemptId);
+
+        var targetQuestion = attempt.AttemptQuestions.Single(q => q.Section == SectionType.Rules);
+        var wrongOptionId = targetQuestion.AttemptAnswerOptions.Single(o => !o.IsCorrect).Id;
+        var correctOptionId = targetQuestion.AttemptAnswerOptions.Single(o => o.IsCorrect).Id;
+
+        // Act (1): CheckAnswer selects the WRONG option for the target question - persists
+        // wrongOption.IsSelected = true (Practice mode's retry-friendly clear-then-set behavior).
+        var checkAnswerHandler = new CheckAnswerCommandHandler(CreateFactory());
+        var checkResult = await checkAnswerHandler.Handle(
+            new CheckAnswerCommand
+            {
+                AttemptId = attemptId,
+                LearnerProfileId = learnerProfileId,
+                AttemptQuestionId = targetQuestion.Id,
+                SelectedAttemptAnswerOptionId = wrongOptionId
+            },
+            CancellationToken.None);
+        Assert.True(checkResult.Succeeded);
+        Assert.False(checkResult.Data!.IsCorrect);
+
+        await using (var midContext = new ApplicationDbContext(_options))
+        {
+            var wrongOptionAfterCheck = await midContext.AttemptAnswerOptions.SingleAsync(o => o.Id == wrongOptionId);
+            Assert.True(wrongOptionAfterCheck.IsSelected);
+        }
+
+        // Act (2): Submit the FINAL attempt with a DIFFERENT (correct) answer for the same
+        // question - the other two sections answered correctly too, so a pre-fix bug (both options
+        // marked selected) would still show up as "all sections pass", masking the corruption;
+        // the DB-level assertions below are what actually catches it.
+        var answers = attempt.AttemptQuestions
+            .Where(q => q.Id != targetQuestion.Id)
+            .Select(CorrectAnswerFor)
+            .ToList();
+        answers.Add(new SubmitAttemptAnswer { AttemptQuestionId = targetQuestion.Id, SelectedAttemptAnswerOptionId = correctOptionId });
+
+        var submitHandler = new SubmitAttemptCommandHandler(CreateFactory(), _mapper);
+        var submitResult = await submitHandler.Handle(
+            new SubmitAttemptCommand { AttemptId = attemptId, LearnerProfileId = learnerProfileId, Answers = answers },
+            CancellationToken.None);
+
+        // Assert: grading reflects ONLY the final submitted (correct) answer.
+        Assert.True(submitResult.Succeeded);
+        Assert.True(submitResult.Data!.Passed);
+        var rulesResult = submitResult.Data!.CodeResults.Single().SectionResults.Single(sr => sr.Section == SectionType.Rules);
+        Assert.True(rulesResult.Passed);
+        Assert.Equal(1, rulesResult.CorrectCount);
+
+        // A fresh DB read confirms the previously-checked wrong option is now cleared back to
+        // false - not left stuck true alongside the newly-selected correct option.
+        await using var verifyContext = new ApplicationDbContext(_options);
+        var wrongOptionAfterSubmit = await verifyContext.AttemptAnswerOptions.SingleAsync(o => o.Id == wrongOptionId);
+        var correctOptionAfterSubmit = await verifyContext.AttemptAnswerOptions.SingleAsync(o => o.Id == correctOptionId);
+        Assert.False(wrongOptionAfterSubmit.IsSelected);
+        Assert.True(correctOptionAfterSubmit.IsSelected);
+    }
+
+    /// <summary>
+    /// Backdates an already-started Attempt's StartedAt directly in the database, so a test can
+    /// deterministically simulate elapsed time without actually waiting - used only by the
+    /// Story 3.6 timing matrix tests below.
+    /// </summary>
+    private async Task BackdateAttemptStartedAtAsync(int attemptId, TimeSpan howLongAgo)
+    {
+        await using var context = new ApplicationDbContext(_options);
+        var attempt = await context.Attempts.SingleAsync(a => a.Id == attemptId);
+        attempt.StartedAt = DateTime.UtcNow - howLongAgo;
+        await context.SaveChangesAsync();
+    }
+
+    [Fact]
+    public async Task Submit_TestModeWithinTimeLimit_GradesNormally()
+    {
+        // Arrange: TestConfig.TimeLimitMinutes defaults to 60 (SeedPublishedTestAsync) - backdate
+        // StartedAt by only 30 minutes, comfortably within the limit.
+        var passMarks = new Dictionary<SectionType, int>
+        {
+            [SectionType.Rules] = 1,
+            [SectionType.Signs] = 1,
+            [SectionType.VehicleControls] = 1
+        };
+        var testId = await SeedPublishedTestAsync(perSectionCount: 1, passMarkBySection: passMarks);
+        var (attemptId, learnerProfileId) = await StartAttemptAsync(testId, AttemptMode.Test);
+        await BackdateAttemptStartedAtAsync(attemptId, TimeSpan.FromMinutes(30));
+        var attempt = await ReadAttemptAsync(attemptId);
+
+        var handler = new SubmitAttemptCommandHandler(CreateFactory(), _mapper);
+        var clientSubmittedAt = DateTime.UtcNow;
+
+        // Act
+        var result = await handler.Handle(
+            new SubmitAttemptCommand
+            {
+                AttemptId = attemptId,
+                LearnerProfileId = learnerProfileId,
+                Answers = attempt.AttemptQuestions.Select(CorrectAnswerFor).ToList(),
+                ClientSubmittedAt = clientSubmittedAt
+            },
+            CancellationToken.None);
+
+        // Assert: grades normally, exactly as Story 3.5.
+        Assert.True(result.Succeeded);
+        Assert.True(result.Data!.Passed);
+
+        await using var verifyContext = new ApplicationDbContext(_options);
+        var savedAttempt = await verifyContext.Attempts.SingleAsync(a => a.Id == attemptId);
+        Assert.NotNull(savedAttempt.SubmittedAt);
+        // ClientSubmittedAt is stored verbatim for diagnostics only.
+        Assert.Equal(clientSubmittedAt, savedAttempt.ClientSubmittedAt);
+    }
+
+    [Fact]
+    public async Task Submit_TestModeLate_RejectedNothingPersisted()
+    {
+        // Arrange: TestConfig.TimeLimitMinutes defaults to 60 - backdate StartedAt by 90 minutes,
+        // well past the limit.
+        var passMarks = new Dictionary<SectionType, int>
+        {
+            [SectionType.Rules] = 1,
+            [SectionType.Signs] = 1,
+            [SectionType.VehicleControls] = 1
+        };
+        var testId = await SeedPublishedTestAsync(perSectionCount: 1, passMarkBySection: passMarks);
+        var (attemptId, learnerProfileId) = await StartAttemptAsync(testId, AttemptMode.Test);
+        await BackdateAttemptStartedAtAsync(attemptId, TimeSpan.FromMinutes(90));
+        var attempt = await ReadAttemptAsync(attemptId);
+
+        var handler = new SubmitAttemptCommandHandler(CreateFactory(), _mapper);
+
+        // Act
+        var result = await handler.Handle(
+            new SubmitAttemptCommand
+            {
+                AttemptId = attemptId,
+                LearnerProfileId = learnerProfileId,
+                Answers = attempt.AttemptQuestions.Select(CorrectAnswerFor).ToList()
+            },
+            CancellationToken.None);
+
+        // Assert: rejected with a clear message, nothing persisted - not SubmittedAt, not a
+        // CodeResult, and no selections recorded.
+        Assert.False(result.Succeeded);
+        Assert.Contains("time limit", result.ErrorMessage, StringComparison.OrdinalIgnoreCase);
+
+        await using var verifyContext = new ApplicationDbContext(_options);
+        var savedAttempt = await verifyContext.Attempts.SingleAsync(a => a.Id == attemptId);
+        Assert.Null(savedAttempt.SubmittedAt);
+        Assert.Equal(0, await verifyContext.CodeResults.CountAsync(cr => cr.AttemptId == attemptId));
+
+        var attemptQuestionIds = await verifyContext.AttemptQuestions
+            .Where(q => q.AttemptId == attemptId)
+            .Select(q => q.Id)
+            .ToListAsync();
+        var selectedCount = await verifyContext.AttemptAnswerOptions
+            .CountAsync(o => o.IsSelected && attemptQuestionIds.Contains(o.AttemptQuestionId));
+        Assert.Equal(0, selectedCount);
+    }
+
+    [Fact]
+    public async Task Submit_PracticeModeArbitrarilyLate_GradesNormallyNoDeadline()
+    {
+        // Arrange: Practice mode NEVER enforces the time limit, regardless of TimeLimitMinutes -
+        // backdate StartedAt by a full day, far beyond the 60-minute configured limit.
+        var passMarks = new Dictionary<SectionType, int>
+        {
+            [SectionType.Rules] = 1,
+            [SectionType.Signs] = 1,
+            [SectionType.VehicleControls] = 1
+        };
+        var testId = await SeedPublishedTestAsync(perSectionCount: 1, passMarkBySection: passMarks);
+        var (attemptId, learnerProfileId) = await StartAttemptAsync(testId, AttemptMode.Practice);
+        await BackdateAttemptStartedAtAsync(attemptId, TimeSpan.FromDays(1));
+        var attempt = await ReadAttemptAsync(attemptId);
+
+        var handler = new SubmitAttemptCommandHandler(CreateFactory(), _mapper);
+
+        // Act
+        var result = await handler.Handle(
+            new SubmitAttemptCommand
+            {
+                AttemptId = attemptId,
+                LearnerProfileId = learnerProfileId,
+                Answers = attempt.AttemptQuestions.Select(CorrectAnswerFor).ToList()
+            },
+            CancellationToken.None);
+
+        // Assert: grades normally - no deadline in Practice mode.
+        Assert.True(result.Succeeded);
+        Assert.True(result.Data!.Passed);
+
+        await using var verifyContext = new ApplicationDbContext(_options);
+        var savedAttempt = await verifyContext.Attempts.SingleAsync(a => a.Id == attemptId);
+        Assert.NotNull(savedAttempt.SubmittedAt);
+    }
+
+    [Fact]
+    public async Task Submit_ClientSubmittedAtIsStoredButNeverUsedForLatenessCheck()
+    {
+        // Arrange: a Test-mode attempt, backdated well past the time limit. The client supplies
+        // an early ClientSubmittedAt (as if submitted right at start) - Boundaries require this
+        // to be stored for DIAGNOSTICS ONLY and never substituted for the server's own
+        // DateTime.UtcNow in the lateness check, so the submission must still be rejected as late.
+        var passMarks = new Dictionary<SectionType, int>
+        {
+            [SectionType.Rules] = 1,
+            [SectionType.Signs] = 1,
+            [SectionType.VehicleControls] = 1
+        };
+        var testId = await SeedPublishedTestAsync(perSectionCount: 1, passMarkBySection: passMarks);
+        var (attemptId, learnerProfileId) = await StartAttemptAsync(testId, AttemptMode.Test);
+        await BackdateAttemptStartedAtAsync(attemptId, TimeSpan.FromMinutes(90));
+        var attempt = await ReadAttemptAsync(attemptId);
+
+        var handler = new SubmitAttemptCommandHandler(CreateFactory(), _mapper);
+
+        // Act: ClientSubmittedAt deceptively claims the submission happened immediately at start.
+        var result = await handler.Handle(
+            new SubmitAttemptCommand
+            {
+                AttemptId = attemptId,
+                LearnerProfileId = learnerProfileId,
+                Answers = attempt.AttemptQuestions.Select(CorrectAnswerFor).ToList(),
+                ClientSubmittedAt = attempt.StartedAt
+            },
+            CancellationToken.None);
+
+        // Assert: still rejected as late - the client-supplied timestamp never overrides the
+        // server-computed elapsed time.
+        Assert.False(result.Succeeded);
+        Assert.Contains("time limit", result.ErrorMessage, StringComparison.OrdinalIgnoreCase);
     }
 
     /// <summary>

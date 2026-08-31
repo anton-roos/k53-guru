@@ -211,6 +211,67 @@ public class GetAttemptQueryHandlerTests : IDisposable
     }
 
     [Fact]
+    public async Task Resume_ExplicitTestMode_RoundTripsModeThroughResume()
+    {
+        // Arrange: seed a Test/TestConfig exactly like SeedStartedAttemptAsync, but start the
+        // Attempt with an EXPLICIT Mode of AttemptMode.Test - deliberately NOT AttemptMode.Practice
+        // (the enum's default value, 0) - so that a mapping regression which dropped or ignored
+        // AttemptDto.Mode would be caught here rather than accidentally passing by relying on the
+        // default.
+        int testId;
+        await using (var context = new ApplicationDbContext(_options))
+        {
+            var test = new Test
+            {
+                Name = "Explicit Mode Test",
+                Codes = LicenceCode.Code1,
+                Sections = TestSectionScope.Rules | TestSectionScope.Signs | TestSectionScope.VehicleControls,
+                Status = TestStatus.Published,
+                TestQuestions = new List<TestQuestion>
+                {
+                    new() { Question = NewQuestion("Rules Q", SectionType.Rules) },
+                    new() { Question = NewQuestion("Signs Q", SectionType.Signs) },
+                    new() { Question = NewQuestion("Controls Q", SectionType.VehicleControls) }
+                }
+            };
+            context.Tests.Add(test);
+
+            context.TestConfigs.Add(new TestConfig
+            {
+                Code = LicenceCode.Code1,
+                TimeLimitMinutes = 60,
+                SectionRules = new List<SectionRule>
+                {
+                    new() { Section = SectionType.Rules, QuestionCount = 1, PassMark = 1 },
+                    new() { Section = SectionType.Signs, QuestionCount = 1, PassMark = 1 },
+                    new() { Section = SectionType.VehicleControls, QuestionCount = 1, PassMark = 1 }
+                }
+            });
+
+            await context.SaveChangesAsync();
+            testId = test.Id;
+        }
+
+        var startHandler = new StartAttemptCommandHandler(CreateFactory(), _mapper);
+        var learnerProfileId = Guid.NewGuid();
+        var startResult = await startHandler.Handle(
+            new StartAttemptCommand { LearnerProfileId = learnerProfileId, TestId = testId, Mode = AttemptMode.Test },
+            CancellationToken.None);
+        Assert.True(startResult.Succeeded);
+
+        var handler = new GetAttemptQueryHandler(CreateFactory(), _mapper);
+
+        // Act
+        var result = await handler.Handle(
+            new GetAttemptQuery { AttemptId = startResult.Data!.Id, LearnerProfileId = learnerProfileId },
+            CancellationToken.None);
+
+        // Assert
+        Assert.True(result.Succeeded);
+        Assert.Equal(AttemptMode.Test, result.Data!.Mode);
+    }
+
+    [Fact]
     public async Task Resume_WrongLearnerMessage_IsIdenticalToNonexistentIdMessage_ForTheSameAttemptId()
     {
         // Arrange: seed a real, persisted Attempt to learn a concrete AttemptId.

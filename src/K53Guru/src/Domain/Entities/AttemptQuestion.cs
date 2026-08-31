@@ -52,5 +52,12 @@ public class AttemptQuestion : BaseAuditableEntity
 
     public string? SignRef { get; set; }
 
+    /// <summary>
+    /// An owned, immutable COPY of the source Question.Explanation at snapshot time (Story 3.6) -
+    /// exactly like Stem/SignRef above. Never returned by AttemptDto/GetAttemptQuery; only
+    /// CheckAnswerCommand's Practice-mode-only response reveals it.
+    /// </summary>
+    public string? Explanation { get; set; }
+
     public List<AttemptAnswerOption> AttemptAnswerOptions { get; set; } = new();
 }

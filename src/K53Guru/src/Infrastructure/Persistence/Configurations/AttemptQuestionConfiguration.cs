@@ -14,6 +14,7 @@ public class AttemptQuestionConfiguration : IEntityTypeConfiguration<AttemptQues
         // source Question's content at snapshot time.
         builder.Property(q => q.Stem).HasMaxLength(2000).IsRequired();
         builder.Property(q => q.SignRef).HasMaxLength(20);
+        builder.Property(q => q.Explanation).HasMaxLength(2000);
 
         builder.HasMany(q => q.AttemptAnswerOptions)
             .WithOne()

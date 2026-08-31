@@ -16,5 +16,14 @@ public class Question : BaseAuditableEntity
     /// </summary>
     public string? SignRef { get; set; }
 
+    /// <summary>
+    /// Optional explanation shown to the learner immediately after answering in Practice mode
+    /// (Story 3.6, via CheckAnswerCommand) - never exposed in Test mode or in any attempt-start/
+    /// resume response. Nullable and populated going forward only; no retroactive backfill for
+    /// existing questions. Snapshotted onto AttemptQuestion.Explanation at attempt-start time,
+    /// exactly like Stem/SignRef already are.
+    /// </summary>
+    public string? Explanation { get; set; }
+
     public List<AnswerOption> AnswerOptions { get; set; } = new();
 }

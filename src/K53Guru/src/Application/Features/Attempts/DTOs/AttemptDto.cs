@@ -16,6 +16,14 @@ public class AttemptDto
 
     [Description("Code")] public LicenceCode Code { get; set; }
 
+    /// <summary>
+    /// Which learner experience this attempt is sitting under (Story 3.6) - the client uses this
+    /// to decide which UI to render (inline-feedback Practice vs. cold-simulation Test). No other
+    /// field on this DTO is mode-dependent; immediate per-question feedback is
+    /// CheckAnswerCommand's job alone, and only in Practice mode.
+    /// </summary>
+    [Description("Mode")] public AttemptMode Mode { get; set; }
+
     [Description("Started At")] public DateTime StartedAt { get; set; }
 
     [Description("Questions")] public List<AttemptQuestionDto> AttemptQuestions { get; set; } = new();

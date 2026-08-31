@@ -17,6 +17,13 @@ public class QuestionDto
 
     [Description("Sign Reference")] public string? SignRef { get; set; }
 
+    /// <summary>
+    /// Round-tripped so editing an existing question (QuestionDto -&gt; AddEditQuestionCommand,
+    /// see Questions.razor.OnEditQuestion) doesn't silently null out an already-authored
+    /// Explanation on save (Story 3.6).
+    /// </summary>
+    [Description("Explanation")] public string? Explanation { get; set; }
+
     [Description("Answer Options")] public List<AnswerOptionDto> AnswerOptions { get; set; } = new();
 
     private class Mapping : Profile

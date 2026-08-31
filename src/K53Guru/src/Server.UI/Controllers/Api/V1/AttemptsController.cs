@@ -1,3 +1,4 @@
+using K53Guru.Application.Features.Attempts.Commands.CheckAnswer;
 using K53Guru.Application.Features.Attempts.Commands.Start;
 using K53Guru.Application.Features.Attempts.Commands.Submit;
 using K53Guru.Application.Features.Attempts.DTOs;
@@ -9,9 +10,9 @@ using Microsoft.AspNetCore.RateLimiting;
 namespace K53Guru.Server.UI.Controllers.Api.V1;
 
 /// <summary>
-/// Learner-facing attempt composition/resume/submit (Epic 3, Stories 3.3-3.5). Anonymous,
-/// rate-limited (reuses the "learner-api" IP-based policy from Story 3.1 unchanged - no per-UUID
-/// partitioning yet, deferred per spec-3-3-start-single-code-attempt.md). Mirrors
+/// Learner-facing attempt composition/resume/submit/check-answer (Epic 3, Stories 3.3-3.6).
+/// Anonymous, rate-limited (reuses the "learner-api" IP-based policy from Story 3.1 unchanged -
+/// no per-UUID partitioning yet, deferred per spec-3-3-start-single-code-attempt.md). Mirrors
 /// SittingsController's shape: thin, no business logic, every action delegates entirely to an
 /// Application-layer MediatR command/query.
 /// </summary>
@@ -68,6 +69,29 @@ public class AttemptsController : ControllerBase
         // NotFound, exactly like GetAttempt's equivalent failure - "identical to Story 3.3's resume
         // behavior" per spec. Every other failure (already submitted, duplicate answer, the
         // concurrent-double-submit race) returns BadRequest.
+        var isNotFound = result.Errors.Any(m => m.Contains("not found", StringComparison.OrdinalIgnoreCase));
+        return isNotFound ? NotFound(result) : BadRequest(result);
+    }
+
+    /// <summary>
+    /// Practice-mode-only immediate per-question feedback: records the learner's selected option
+    /// (re-settable on every call - this is what permits retry) and returns whether it was
+    /// correct, the correct option, and the question's explanation. Rejected outright for a
+    /// Test-mode attempt - Test mode's confidentiality must never be bypassable through this
+    /// endpoint.
+    /// </summary>
+    [HttpPost("{id:int}/check-answer")]
+    public async Task<ActionResult<CheckAnswerResultDto>> CheckAnswer(int id, [FromBody] CheckAnswerCommand command)
+    {
+        command.AttemptId = id;
+        var result = await _mediator.Send(command);
+        if (result.Succeeded)
+            return Ok(result.Data);
+
+        // Mirrors SubmitAttempt's NotFound/BadRequest split: the wrong-learner/nonexistent-id
+        // case (NotFoundException) and the resolved-but-foreign AttemptQuestion/AttemptAnswerOption
+        // case (a "not found" Result.Failure message) both return NotFound; every other rejection
+        // (wrong mode, already submitted) returns BadRequest.
         var isNotFound = result.Errors.Any(m => m.Contains("not found", StringComparison.OrdinalIgnoreCase));
         return isNotFound ? NotFound(result) : BadRequest(result);
     }

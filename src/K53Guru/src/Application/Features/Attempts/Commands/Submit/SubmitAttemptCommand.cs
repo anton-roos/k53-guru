@@ -25,6 +25,13 @@ public class SubmitAttemptCommand : IRequest<Result<GradedAttemptResultDto>>
     public Guid LearnerProfileId { get; set; }
 
     public List<SubmitAttemptAnswer> Answers { get; set; } = new();
+
+    /// <summary>
+    /// Optional client-supplied submission timestamp (Story 3.6), stored on Attempt for
+    /// DIAGNOSTICS ONLY - the server-side lateness check below always uses server
+    /// DateTime.UtcNow, never this value.
+    /// </summary>
+    public DateTime? ClientSubmittedAt { get; set; }
 }
 
 /// <summary>
@@ -77,6 +84,30 @@ public class SubmitAttemptCommandHandler : IRequestHandler<SubmitAttemptCommand,
         if (request.Answers.GroupBy(a => a.AttemptQuestionId).Any(g => g.Count() > 1))
             return await Result<GradedAttemptResultDto>.FailureAsync("Duplicate answer submitted for one or more questions.");
 
+        // (3b) Server-side time-limit enforcement, Test mode only (Story 3.6). Practice mode
+        // never enforces this, regardless of TimeLimitMinutes. Any constituent code's
+        // TestConfig.TimeLimitMinutes is used - Story 3.2 seeds identical values across every
+        // code, the same reasoning StartAttemptCommand already relies on for Rules/Signs.
+        // Elapsed time is always computed from server DateTime.UtcNow, never a client-supplied
+        // timestamp. Nothing is persisted if this rejects.
+        if (attempt.Mode == AttemptMode.Test)
+        {
+            var primaryCode = attempt.Code.GetConstituentCodes()[0];
+            var timeLimitConfig = await db.TestConfigs
+                .SingleOrDefaultAsync(tc => tc.Code == primaryCode, cancellationToken);
+            if (timeLimitConfig == null)
+                return await Result<GradedAttemptResultDto>.FailureAsync(
+                    $"No test configuration found for code [{primaryCode}].");
+
+            var elapsed = DateTime.UtcNow - attempt.StartedAt;
+            if (elapsed.TotalMinutes > timeLimitConfig.TimeLimitMinutes)
+                return await Result<GradedAttemptResultDto>.FailureAsync("Time limit exceeded.");
+        }
+
+        // (3c) Client-supplied submission timestamp is recorded for DIAGNOSTICS ONLY - never used
+        // by the lateness check above, regardless of mode.
+        attempt.ClientSubmittedAt = request.ClientSubmittedAt;
+
         // (4) Record the learner's selections. An AttemptQuestionId/SelectedAttemptAnswerOptionId
         // that doesn't belong to this attempt is silently ignored, not an error - and a question
         // with no matching answer in the submitted list is simply graded as incorrect below (its
@@ -91,6 +122,17 @@ public class SubmitAttemptCommandHandler : IRequestHandler<SubmitAttemptCommand,
                 .SingleOrDefault(o => o.Id == answer.SelectedAttemptAnswerOptionId);
             if (option == null)
                 continue;
+
+            // Clear IsSelected on every option for this question first, then set the newly
+            // submitted one - mirrors CheckAnswerCommand's own clear-then-set pattern. Without
+            // this, a prior CheckAnswerCommand call's stale IsSelected = true on a sibling option
+            // (Practice mode) would survive alongside this submission's answer, and grading's
+            // Any(o => o.IsSelected && o.IsCorrect) would count the question correct regardless of
+            // the learner's actual final answer.
+            foreach (var siblingOption in question.AttemptAnswerOptions)
+            {
+                siblingOption.IsSelected = false;
+            }
 
             option.IsSelected = true;
         }

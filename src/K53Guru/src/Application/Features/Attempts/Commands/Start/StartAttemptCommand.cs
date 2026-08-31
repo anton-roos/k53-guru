@@ -20,6 +20,12 @@ public class StartAttemptCommand : IRequest<Result<AttemptDto>>
     public Guid LearnerProfileId { get; set; }
 
     public int TestId { get; set; }
+
+    /// <summary>
+    /// Which learner experience this attempt sits under (Story 3.6) - chosen once here and never
+    /// changed thereafter. Required; the client must pick a mode before starting.
+    /// </summary>
+    public AttemptMode Mode { get; set; }
 }
 
 public class StartAttemptCommandHandler : IRequestHandler<StartAttemptCommand, Result<AttemptDto>>
@@ -184,6 +190,7 @@ public class StartAttemptCommandHandler : IRequestHandler<StartAttemptCommand, R
             LearnerProfileId = request.LearnerProfileId,
             TestId = test.Id,
             Code = test.Codes,
+            Mode = request.Mode,
             StartedAt = DateTime.UtcNow
         };
 
@@ -200,6 +207,7 @@ public class StartAttemptCommandHandler : IRequestHandler<StartAttemptCommand, R
                     DisplayOrder = displayOrder++,
                     Stem = question.Stem,
                     SignRef = question.SignRef,
+                    Explanation = question.Explanation,
                     AttemptAnswerOptions = question.AnswerOptions
                         .OrderBy(a => a.Order)
                         .Select(a => new AttemptAnswerOption

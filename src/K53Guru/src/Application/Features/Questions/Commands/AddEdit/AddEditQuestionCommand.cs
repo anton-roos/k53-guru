@@ -20,6 +20,13 @@ public class AddEditQuestionCommand : ICacheInvalidatorRequest<Result<int>>
     /// </summary>
     public string? SignRef { get; set; }
 
+    /// <summary>
+    /// Optional explanation shown to the learner in Practice mode after answering (Story 3.6).
+    /// Nullable - authoring it is optional; leaving it empty simply means Practice mode's
+    /// check-answer response carries no explanation for this question.
+    /// </summary>
+    public string? Explanation { get; set; }
+
     public List<AnswerOptionModel> AnswerOptions { get; set; } = new();
 
     public string CacheKey => QuestionCacheKey.GetAllCacheKey;

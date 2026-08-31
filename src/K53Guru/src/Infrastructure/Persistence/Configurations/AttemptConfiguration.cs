@@ -8,6 +8,7 @@ public class AttemptConfiguration : IEntityTypeConfiguration<Attempt>
     public void Configure(EntityTypeBuilder<Attempt> builder)
     {
         builder.Property(a => a.Code).HasConversion<string>().HasMaxLength(50).IsRequired();
+        builder.Property(a => a.Mode).HasConversion<string>().HasMaxLength(50).IsRequired();
 
         builder.HasMany(a => a.AttemptQuestions)
             .WithOne()

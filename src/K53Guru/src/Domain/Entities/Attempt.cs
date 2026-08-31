@@ -36,5 +36,21 @@ public class Attempt : BaseAuditableEntity
     /// </summary>
     public DateTime? SubmittedAt { get; set; }
 
+    /// <summary>
+    /// Which learner experience this attempt is sitting under (Story 3.6), set once at
+    /// StartAttemptCommand time and never changed thereafter. Practice mode permits
+    /// CheckAnswerCommand's immediate correctness/explanation + retry and never enforces a time
+    /// limit; Test mode withholds correctness/explanations until submission and enforces
+    /// SubmitAttemptCommand's server-side time-limit check.
+    /// </summary>
+    public AttemptMode Mode { get; set; }
+
+    /// <summary>
+    /// Client-supplied submission timestamp (Story 3.6), stored for DIAGNOSTICS ONLY - the
+    /// server's own late-submission check in SubmitAttemptCommand always uses server
+    /// DateTime.UtcNow, never this value. Optional; null if the client didn't supply one.
+    /// </summary>
+    public DateTime? ClientSubmittedAt { get; set; }
+
     public List<AttemptQuestion> AttemptQuestions { get; set; } = new();
 }
