@@ -8,6 +8,8 @@ import '../../theme/app_spacing.dart';
 import '../onboarding/learner_profile_provider.dart';
 import '../onboarding/licence_code_provider.dart';
 import '../onboarding/licence_code_selection_screen.dart';
+import '../settings/theme_mode_provider.dart';
+import '../settings/tts_settings_provider.dart';
 
 /// The exact save-your-progress microcopy from EXPERIENCE.md's "Identity &
 /// Profile" section -- reused verbatim rather than re-typed inline so there
@@ -93,6 +95,20 @@ class _ProfileContentState extends ConsumerState<_ProfileContent> {
   @override
   Widget build(BuildContext context) {
     final AsyncValue<LicenceCode?> licenceCode = ref.watch(licenceCodeProvider);
+    final AsyncValue<ThemeMode> themeMode = ref.watch(themeModeProvider);
+    final AsyncValue<bool> ttsEnabled = ref.watch(ttsSettingsProvider);
+
+    // Defaults the visual selection to Light while the provider hasn't
+    // resolved yet (or errored), matching SettingsStore's documented
+    // default -- never crashes waiting on AsyncLoading/AsyncError.
+    final ThemeMode selectedThemeMode = themeMode.maybeWhen(
+      data: (ThemeMode mode) => mode,
+      orElse: () => ThemeMode.light,
+    );
+    final bool ttsSwitchValue = ttsEnabled.maybeWhen(
+      data: (bool enabled) => enabled,
+      orElse: () => false,
+    );
 
     return SingleChildScrollView(
       padding: const EdgeInsets.all(AppSpacing.space24),
@@ -153,6 +169,50 @@ class _ProfileContentState extends ConsumerState<_ProfileContent> {
             ),
             trailing: const Icon(Icons.chevron_right),
             onTap: () => _onChangeCodeTapped(context),
+          ),
+          const SizedBox(height: AppSpacing.space32),
+          const Divider(),
+          Text(
+            'Settings',
+            style: Theme.of(context).textTheme.titleMedium,
+          ),
+          const SizedBox(height: AppSpacing.space16),
+          Semantics(
+            label: 'Theme',
+            child: SegmentedButton<ThemeMode>(
+              key: const Key('themeModeSegmentedButton'),
+              segments: const <ButtonSegment<ThemeMode>>[
+                ButtonSegment<ThemeMode>(
+                  value: ThemeMode.light,
+                  label: Text('Light'),
+                  icon: Icon(Icons.light_mode),
+                ),
+                ButtonSegment<ThemeMode>(
+                  value: ThemeMode.dark,
+                  label: Text('Dark'),
+                  icon: Icon(Icons.dark_mode),
+                ),
+              ],
+              selected: <ThemeMode>{selectedThemeMode},
+              onSelectionChanged: (Set<ThemeMode> selection) {
+                ref
+                    .read(themeModeProvider.notifier)
+                    .setThemeMode(selection.first);
+              },
+            ),
+          ),
+          const SizedBox(height: AppSpacing.space16),
+          SwitchListTile(
+            key: const Key('ttsEnabledSwitch'),
+            contentPadding: EdgeInsets.zero,
+            title: const Text('Read questions aloud'),
+            subtitle: const Text(
+              'Applies once practice and test questions are available',
+            ),
+            value: ttsSwitchValue,
+            onChanged: (bool enabled) {
+              ref.read(ttsSettingsProvider.notifier).setTtsEnabled(enabled);
+            },
           ),
         ],
       ),

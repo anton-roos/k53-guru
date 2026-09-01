@@ -7,6 +7,7 @@ import 'presentation/onboarding/licence_code_provider.dart';
 import 'presentation/onboarding/licence_code_selection_screen.dart';
 import 'presentation/onboarding/learner_profile_provider.dart';
 import 'presentation/onboarding/start_learning_screen.dart';
+import 'presentation/settings/theme_mode_provider.dart';
 import 'presentation/shell/app_shell.dart';
 import 'theme/app_theme.dart';
 
@@ -21,10 +22,10 @@ Future<void> main() async {
   runApp(const ProviderScope(child: K53GuruApp()));
 }
 
-/// App root. Wires the DESIGN.md theme (light/dark, following the system
-/// setting for now -- a dedicated profile toggle is Story 4.6's job) and
-/// doubles as the app's router across three states (Story 4.3 introduced
-/// the first two; Story 4.5 adds the third):
+/// App root. Wires the DESIGN.md theme (light/dark, as a profile setting --
+/// Story 4.6 adds [themeModeProvider], read here instead of hardcoding
+/// [ThemeMode.system]) and doubles as the app's router across three states
+/// (Story 4.3 introduced the first two; Story 4.5 adds the third):
 ///
 /// 1. No persisted learner profile id -> [StartLearningScreen] (first run).
 /// 2. A profile id exists (freshly generated OR restored, Story 4.4) but no
@@ -41,13 +42,20 @@ class K53GuruApp extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final AsyncValue<String?> profile = ref.watch(learnerProfileProvider);
     final AsyncValue<LicenceCode?> licenceCode = ref.watch(licenceCodeProvider);
+    final AsyncValue<ThemeMode> themeMode = ref.watch(themeModeProvider);
 
     return MaterialApp(
       title: 'K53 Guru',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.light(),
       darkTheme: AppTheme.dark(),
-      themeMode: ThemeMode.system,
+      // Reads the persisted profile setting (Story 4.6) instead of
+      // hardcoding ThemeMode.system -- falls back to the documented default
+      // (Light) while it loads, so theme never blocks the router below.
+      themeMode: themeMode.maybeWhen(
+        data: (ThemeMode mode) => mode,
+        orElse: () => ThemeMode.light,
+      ),
       home: profile.maybeWhen(
         data: (String? id) => id == null
             ? const StartLearningScreen()

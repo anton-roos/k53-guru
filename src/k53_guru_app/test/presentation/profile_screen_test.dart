@@ -7,6 +7,8 @@
 // `Change code`, confirming `Recalibrate` or `Start fresh`, and picking a
 // new code replaces the old one and updates the displayed value.
 
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -15,9 +17,12 @@ import 'package:qr_flutter/qr_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:k53_guru_app/data/local/learner_profile_store.dart';
+import 'package:k53_guru_app/data/local/settings_store.dart';
 import 'package:k53_guru_app/domain/licence_code.dart';
 import 'package:k53_guru_app/presentation/onboarding/licence_code_selection_screen.dart';
 import 'package:k53_guru_app/presentation/profile/profile_screen.dart';
+import 'package:k53_guru_app/presentation/settings/theme_mode_provider.dart';
+import 'package:k53_guru_app/presentation/settings/tts_settings_provider.dart';
 import 'package:k53_guru_app/theme/app_theme.dart';
 
 const String _profileId = '11111111-2222-4333-8444-555555555555';
@@ -51,6 +56,22 @@ Widget _wrap(Widget child) {
   return ProviderScope(
     child: MaterialApp(theme: AppTheme.light(), home: child),
   );
+}
+
+/// A [ThemeModeNotifier] whose [build] never completes, mirroring
+/// `main_test.dart`'s established `Completer`-backed technique for driving a
+/// provider into a permanent `AsyncLoading` state without touching real
+/// `SharedPreferences`.
+class _NeverResolvingThemeModeNotifier extends ThemeModeNotifier {
+  @override
+  Future<ThemeMode> build() => Completer<ThemeMode>().future;
+}
+
+/// A [TtsSettingsNotifier] whose [build] never completes, mirroring
+/// [_NeverResolvingThemeModeNotifier].
+class _NeverResolvingTtsSettingsNotifier extends TtsSettingsNotifier {
+  @override
+  Future<bool> build() => Completer<bool>().future;
 }
 
 void main() {
@@ -300,5 +321,219 @@ void main() {
 
     const LearnerProfileStore freshStore = LearnerProfileStore();
     expect(await freshStore.readLicenceCode(), LicenceCode.code1);
+  });
+
+  // Story 4.6: the Settings section (theme control + TTS switch) added
+  // below the existing `Change code` row.
+
+  testWidgets(
+      'Settings section renders a heading, a Light/Dark theme control '
+      '(no System option), and a TTS opt-in switch',
+      (WidgetTester tester) async {
+    await tester.pumpWidget(_wrap(const ProfileScreen()));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Settings'), findsOneWidget);
+
+    expect(find.byType(SegmentedButton<ThemeMode>), findsOneWidget);
+    expect(find.text('Light'), findsOneWidget);
+    expect(find.text('Dark'), findsOneWidget);
+    expect(find.text('System'), findsNothing);
+
+    // Positively verify exclusivity -- exactly 2 segments, exactly
+    // {Light, Dark} -- rather than only checking that both are *present*
+    // (`containsAllInOrder` would still pass if a third, e.g. icon-only,
+    // segment with no text label were added later).
+    final SegmentedButton<ThemeMode> segmentedButton =
+        tester.widget<SegmentedButton<ThemeMode>>(
+      find.byKey(const Key('themeModeSegmentedButton')),
+    );
+    expect(
+      segmentedButton.segments.length,
+      2,
+      reason: 'exactly 2 segments must ever be offered -- never a 3rd '
+          '(e.g. a future icon-only "Auto" segment)',
+    );
+    expect(
+      segmentedButton.segments
+          .map((ButtonSegment<ThemeMode> s) => s.value)
+          .toSet(),
+      <ThemeMode>{ThemeMode.light, ThemeMode.dark},
+      reason: 'exactly Light and Dark are offered -- never System, per the '
+          'spec\'s "not a system toggle" requirement',
+    );
+
+    expect(find.byType(SwitchListTile), findsOneWidget);
+    expect(find.text('Read questions aloud'), findsOneWidget);
+  });
+
+  testWidgets(
+      'Fresh install (no theme/TTS ever persisted) -> theme control shows '
+      'Light selected and the TTS switch is off, matching the documented '
+      'defaults', (WidgetTester tester) async {
+    await tester.pumpWidget(_wrap(const ProfileScreen()));
+    await tester.pumpAndSettle();
+
+    final SegmentedButton<ThemeMode> segmentedButton =
+        tester.widget<SegmentedButton<ThemeMode>>(
+      find.byType(SegmentedButton<ThemeMode>),
+    );
+    expect(segmentedButton.selected, <ThemeMode>{ThemeMode.light});
+
+    final SwitchListTile ttsSwitch =
+        tester.widget<SwitchListTile>(find.byType(SwitchListTile));
+    expect(ttsSwitch.value, isFalse);
+  });
+
+  testWidgets(
+      'Selecting Dark in the theme control persists dark mode and updates '
+      "the control's own selection immediately", (WidgetTester tester) async {
+    await tester.pumpWidget(_wrap(const ProfileScreen()));
+    await tester.pumpAndSettle();
+
+    await tester.ensureVisible(find.text('Dark'));
+    await tester.tap(find.text('Dark'));
+    await tester.pumpAndSettle();
+
+    final SegmentedButton<ThemeMode> segmentedButton =
+        tester.widget<SegmentedButton<ThemeMode>>(
+      find.byType(SegmentedButton<ThemeMode>),
+    );
+    expect(segmentedButton.selected, <ThemeMode>{ThemeMode.dark});
+
+    // Actually persisted through the real store, not just held in memory --
+    // a fresh SettingsStore instance reads back the same value, mirroring
+    // the "relaunch" matrix row.
+    const SettingsStore freshStore = SettingsStore();
+    expect(await freshStore.readThemeMode(), ThemeMode.dark);
+  });
+
+  testWidgets(
+      'Selecting Dark then Light again round-trips back to light and '
+      'persists it', (WidgetTester tester) async {
+    await tester.pumpWidget(_wrap(const ProfileScreen()));
+    await tester.pumpAndSettle();
+
+    await tester.ensureVisible(find.text('Dark'));
+    await tester.tap(find.text('Dark'));
+    await tester.pumpAndSettle();
+    await tester.ensureVisible(find.text('Light'));
+    await tester.tap(find.text('Light'));
+    await tester.pumpAndSettle();
+
+    final SegmentedButton<ThemeMode> segmentedButton =
+        tester.widget<SegmentedButton<ThemeMode>>(
+      find.byType(SegmentedButton<ThemeMode>),
+    );
+    expect(segmentedButton.selected, <ThemeMode>{ThemeMode.light});
+
+    const SettingsStore freshStore = SettingsStore();
+    expect(await freshStore.readThemeMode(), ThemeMode.light);
+  });
+
+  testWidgets(
+      'Toggling the TTS switch on updates its visual state and persists',
+      (WidgetTester tester) async {
+    await tester.pumpWidget(_wrap(const ProfileScreen()));
+    await tester.pumpAndSettle();
+
+    SwitchListTile ttsSwitch =
+        tester.widget<SwitchListTile>(find.byType(SwitchListTile));
+    expect(ttsSwitch.value, isFalse);
+
+    await tester.ensureVisible(find.byType(SwitchListTile));
+    await tester.tap(find.byType(SwitchListTile));
+    await tester.pumpAndSettle();
+
+    ttsSwitch = tester.widget<SwitchListTile>(find.byType(SwitchListTile));
+    expect(ttsSwitch.value, isTrue);
+
+    const SettingsStore freshStore = SettingsStore();
+    expect(await freshStore.readTtsEnabled(), isTrue);
+  });
+
+  testWidgets(
+      'Toggling the TTS switch on then off again round-trips back to off '
+      'and persists', (WidgetTester tester) async {
+    await tester.pumpWidget(_wrap(const ProfileScreen()));
+    await tester.pumpAndSettle();
+
+    await tester.ensureVisible(find.byType(SwitchListTile));
+    await tester.tap(find.byType(SwitchListTile));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byType(SwitchListTile));
+    await tester.pumpAndSettle();
+
+    final SwitchListTile ttsSwitch =
+        tester.widget<SwitchListTile>(find.byType(SwitchListTile));
+    expect(ttsSwitch.value, isFalse);
+
+    const SettingsStore freshStore = SettingsStore();
+    expect(await freshStore.readTtsEnabled(), isFalse);
+  });
+
+  testWidgets(
+      'themeModeProvider and ttsSettingsProvider left in AsyncLoading -> the '
+      "Settings section's own local maybeWhen(orElse: ...) fallback renders "
+      'the documented defaults (Light selected, TTS off) instead of '
+      'crashing or showing a stale/null state',
+      (WidgetTester tester) async {
+    // Every other test in this file calls pumpAndSettle() before inspecting
+    // the Settings controls, so the providers are always already resolved
+    // by the time assertions run -- profile_screen.dart's own
+    // `maybeWhen(orElse: ...)` derivation of `selectedThemeMode`/
+    // `ttsSwitchValue` (its defensive fallback for the loading/error case)
+    // is therefore never actually exercised. Overriding both providers with
+    // a never-completing build() and pumping only once (not
+    // pumpAndSettle(), which would hang forever waiting for them, mirroring
+    // main_test.dart's identical technique) reproduces genuine AsyncLoading
+    // at assertion time.
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          themeModeProvider.overrideWith(
+            () => _NeverResolvingThemeModeNotifier(),
+          ),
+          ttsSettingsProvider.overrideWith(
+            () => _NeverResolvingTtsSettingsNotifier(),
+          ),
+        ],
+        child: MaterialApp(
+          theme: AppTheme.light(),
+          home: const ProfileScreen(),
+        ),
+      ),
+    );
+    // A single pump flushes the real learnerProfileProvider/
+    // licenceCodeProvider reads (backed by this file's setUp() mocked
+    // SharedPreferences values, resolved purely via microtasks) far enough
+    // for `_ProfileContent` -- and therefore the Settings section -- to
+    // actually build, without waiting on the deliberately-never-completing
+    // theme/TTS providers.
+    await tester.pump();
+
+    expect(find.text('Settings'), findsOneWidget);
+
+    final SegmentedButton<ThemeMode> segmentedButton =
+        tester.widget<SegmentedButton<ThemeMode>>(
+      find.byKey(const Key('themeModeSegmentedButton')),
+    );
+    expect(
+      segmentedButton.selected,
+      <ThemeMode>{ThemeMode.light},
+      reason: 'while themeModeProvider is still loading, the control must '
+          'fall back to Light selected, matching SettingsStore\'s '
+          'documented default',
+    );
+
+    final SwitchListTile ttsSwitch = tester.widget<SwitchListTile>(
+      find.byKey(const Key('ttsEnabledSwitch')),
+    );
+    expect(
+      ttsSwitch.value,
+      isFalse,
+      reason: 'while ttsSettingsProvider is still loading, the switch must '
+          'fall back to off, matching SettingsStore\'s documented default',
+    );
   });
 }
