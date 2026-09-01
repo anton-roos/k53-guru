@@ -10,6 +10,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shared_preferences_platform_interface/shared_preferences_platform_interface.dart';
 
@@ -18,6 +19,7 @@ import 'package:k53_guru_app/domain/available_sitting.dart';
 import 'package:k53_guru_app/main.dart';
 import 'package:k53_guru_app/presentation/onboarding/learner_profile_provider.dart';
 import 'package:k53_guru_app/presentation/onboarding/start_learning_screen.dart';
+import 'package:k53_guru_app/presentation/profile/restore_profile_screen.dart';
 import 'package:k53_guru_app/presentation/shell/app_shell.dart';
 import 'package:k53_guru_app/presentation/sittings/sittings_list_provider.dart';
 
@@ -142,6 +144,72 @@ void main() {
   });
 
   testWidgets(
+      'Tap Restore profile -> a real Navigator.push opens RestoreProfileScreen; '
+      'entering a valid UUID and submitting restores it through the real '
+      'router, swapping StartLearningScreen out for AppShell',
+      (WidgetTester tester) async {
+    SharedPreferences.setMockInitialValues(<String, Object>{});
+
+    // `StartLearningScreen._openRestoreProfile` always constructs a plain
+    // `const RestoreProfileScreen()` (no injected scanner controller), so
+    // reaching it via the real button press -- unlike every other test in
+    // this suite, which pushes `RestoreProfileScreen` directly with an
+    // `autoStart: false` controller -- means its `MobileScannerController`
+    // really does try to auto-start the camera. There is no real
+    // camera/platform-channel backend in the widget-test environment, so
+    // `MobileScannerPlatform.instance` is swapped for a fake for the
+    // duration of this test (the same pattern this file already uses for
+    // `SharedPreferencesStorePlatform` above) -- this only stands in for
+    // camera hardware, it does not stub any app code, so the real
+    // `StartLearningScreen` -> `RestoreProfileScreen` -> validator ->
+    // `learnerProfileProvider` -> router-swap path is still exercised
+    // end-to-end.
+    final MobileScannerPlatform originalScannerPlatform =
+        MobileScannerPlatform.instance;
+    MobileScannerPlatform.instance = _FakeMobileScannerPlatform();
+    addTearDown(() {
+      MobileScannerPlatform.instance = originalScannerPlatform;
+    });
+
+    await tester.pumpWidget(_app());
+    await tester.pumpAndSettle();
+    expect(find.byType(StartLearningScreen), findsOneWidget);
+
+    await tester.tap(find.text('Restore profile'));
+    await tester.pumpAndSettle();
+
+    // The real push happened -- `RestoreProfileScreen` is now on top.
+    expect(find.byType(RestoreProfileScreen), findsOneWidget);
+
+    const String id = '44444444-5555-4666-8777-888888888888';
+    await tester.enterText(
+      find.widgetWithText(TextField, 'xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx'),
+      id,
+    );
+    final Finder restoreButton =
+        find.widgetWithText(ElevatedButton, 'Restore');
+    // The button sits below the fold of the default test viewport once the
+    // camera-preview box, divider, and field are laid out above it.
+    await tester.ensureVisible(restoreButton);
+    await tester.pumpAndSettle();
+    await tester.tap(restoreButton);
+    await tester.pumpAndSettle();
+
+    // The router swapped -- both the first-run screen and the restore
+    // screen are gone, and `AppShell` is showing.
+    expect(find.byType(AppShell), findsOneWidget);
+    expect(find.byType(StartLearningScreen), findsNothing);
+    expect(find.byType(RestoreProfileScreen), findsNothing);
+
+    // Actually persisted through the real store, not just held in memory.
+    const LearnerProfileStore freshStore = LearnerProfileStore();
+    expect(await freshStore.readProfileId(), id);
+
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    expect(prefs.getString(_profileIdKey), id);
+  });
+
+  testWidgets(
       'Second launch, same device -> a persisted profile id sends the app '
       'straight into AppShell, no StartLearningScreen shown again',
       (WidgetTester tester) async {
@@ -260,4 +328,56 @@ class _ManuallyGatedLearnerProfileNotifier extends LearnerProfileNotifier {
   }
 
   void releaseGate() => _gate.complete();
+}
+
+/// A [MobileScannerPlatform] stand-in for the widget-test environment, which
+/// has no real camera or platform-channel backend.
+///
+/// Only stands in for camera hardware -- every other part of the
+/// `StartLearningScreen` -> `RestoreProfileScreen` -> `ProfileRestoreValidator`
+/// -> `learnerProfileProvider` -> router path stays real. [start] mirrors
+/// what a device with no usable camera would report: a [MobileScannerException]
+/// is thrown, which `MobileScannerController.start()` catches internally and
+/// surfaces as `MobileScannerState.error` (`MobileScanner`'s own built-in
+/// error view then renders in place of a live camera preview) -- it never
+/// propagates out as an unhandled exception, so this does not fail the test.
+///
+/// The barcode/torch/zoom streams are read synchronously by
+/// `MobileScannerController.start()` before the (fake) platform call, so
+/// they need a real (if empty) implementation regardless of how [start]
+/// resolves; [dispose] is called unconditionally by
+/// `MobileScannerController.dispose()`, so it also needs a safe no-op
+/// implementation.
+class _FakeMobileScannerPlatform extends MobileScannerPlatform {
+  @override
+  Stream<BarcodeCapture?> get barcodesStream =>
+      const Stream<BarcodeCapture?>.empty();
+
+  @override
+  Stream<TorchState> get torchStateStream => const Stream<TorchState>.empty();
+
+  @override
+  Stream<double> get zoomScaleStateStream => const Stream<double>.empty();
+
+  @override
+  Future<MobileScannerViewAttributes> start(StartOptions startOptions) {
+    throw const MobileScannerException(
+      errorCode: MobileScannerErrorCode.genericError,
+      errorDetails: MobileScannerErrorDetails(
+        message: 'No camera available in the widget-test environment.',
+      ),
+    );
+  }
+
+  @override
+  Future<void> stop() async {}
+
+  @override
+  Future<void> pause() async {}
+
+  @override
+  Future<void> dispose() async {}
+
+  @override
+  Widget buildCameraView() => const SizedBox.shrink();
 }

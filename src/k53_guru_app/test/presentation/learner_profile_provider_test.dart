@@ -61,4 +61,37 @@ void main() {
     expect(state.hasValue, isTrue);
     expect(state.value, id);
   });
+
+  test(
+      'generateAndPersistProfileId explicitly lower-cases the persisted id '
+      '-- not merely relying on the uuid package always producing lowercase '
+      'hex', () async {
+    SharedPreferences.setMockInitialValues(<String, Object>{});
+
+    final ProviderContainer container = ProviderContainer();
+    addTearDown(container.dispose);
+
+    await container.read(learnerProfileProvider.future);
+
+    final String id = await container
+        .read(learnerProfileProvider.notifier)
+        .generateAndPersistProfileId();
+
+    // Explicit, unambiguous lowercase check -- independent of the UUID v4
+    // regex above (which only happens to reject uppercase hex as a side
+    // effect of being written with a lowercase-only character class).
+    expect(
+      id,
+      equals(id.toLowerCase()),
+      reason: 'the returned/persisted id must already be lowercase',
+    );
+
+    const LearnerProfileStore freshStore = LearnerProfileStore();
+    final String? persisted = await freshStore.readProfileId();
+    expect(
+      persisted,
+      equals(persisted?.toLowerCase()),
+      reason: 'the value actually written to storage must be lowercase',
+    );
+  });
 }

@@ -8,12 +8,23 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:k53_guru_app/domain/available_sitting.dart';
 import 'package:k53_guru_app/domain/licence_code.dart';
 import 'package:k53_guru_app/presentation/shell/app_shell.dart';
 import 'package:k53_guru_app/presentation/sittings/sittings_list_provider.dart';
 import 'package:k53_guru_app/theme/app_theme.dart';
+
+// The Profile tab is now Story 4.4's real `ProfileScreen`, which reads
+// `learnerProfileProvider` (backed by `SharedPreferences`) as soon as
+// `AppShell`'s `IndexedStack` builds it -- every tab is built immediately,
+// regardless of which one is selected. Without a mock store, that read
+// never resolves in the test environment, leaving the Profile tab's
+// `CircularProgressIndicator` animating forever and `pumpAndSettle` timing
+// out; a fixed profile id lets it resolve immediately, matching a real
+// returning learner.
+const String _mockProfileId = '11111111-2222-4333-8444-555555555555';
 
 Widget _wrap(Widget child) {
   return ProviderScope(
@@ -55,6 +66,12 @@ Finder _tabContent(String text) => find.descendant(
     );
 
 void main() {
+  setUp(() {
+    SharedPreferences.setMockInitialValues(<String, Object>{
+      'learner_profile_id': _mockProfileId,
+    });
+  });
+
   testWidgets('exposes exactly 3 destinations in Practice/Test/Profile order',
       (WidgetTester tester) async {
     await tester.pumpWidget(_wrap(const AppShell()));

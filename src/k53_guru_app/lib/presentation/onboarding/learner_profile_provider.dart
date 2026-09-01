@@ -29,11 +29,31 @@ class LearnerProfileNotifier extends AsyncNotifier<String?> {
   /// First-run only: generates a new UUID v4, persists it via
   /// [LearnerProfileStore], and updates provider state so every consumer
   /// -- including the root router in `main.dart` -- sees it immediately.
+  ///
+  /// Explicitly lower-cased before persisting: the `uuid` package's `v4()`
+  /// always produces lowercase hex today, but this call makes that an
+  /// explicit guarantee of this method rather than an unstated assumption
+  /// about a third-party package's implementation detail -- matching
+  /// `ProfileRestoreValidator.validateAndPersist`, which makes the same
+  /// guarantee explicitly for the restore path.
   Future<String> generateAndPersistProfileId() async {
-    final String id = _uuid.v4();
+    final String id = _uuid.v4().toLowerCase();
     await _store.writeProfileId(id);
     state = AsyncData<String?>(id);
     return id;
+  }
+
+  /// Story 4.4's restore flow: persists a caller-supplied [id] as the
+  /// learner's profile id and updates provider state, exactly like
+  /// [generateAndPersistProfileId] but for an id the learner already had
+  /// (from a QR scan or manual paste) rather than a freshly generated one.
+  ///
+  /// Callers -- specifically `ProfileRestoreValidator` -- are responsible
+  /// for format-validating [id] first; this method persists whatever it is
+  /// given without re-checking it.
+  Future<void> restoreProfileId(String id) async {
+    await _store.writeProfileId(id);
+    state = AsyncData<String?>(id);
   }
 }
 

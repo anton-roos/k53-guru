@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../profile/profile_placeholder_screen.dart';
+import '../profile/profile_screen.dart';
 import '../sittings/sittings_list_screen.dart';
 import '../test_mode/test_mode_placeholder_screen.dart';
 
@@ -10,9 +10,9 @@ import '../test_mode/test_mode_placeholder_screen.dart';
 /// form state, in-flight requests all survive switching away and back)
 /// rather than being rebuilt from scratch every time.
 ///
-/// Practice reuses Story 4.1's [SittingsListScreen] as-is; Test and Profile
-/// are placeholders until Epic 5/6 (and a later Epic 4 story for Profile)
-/// build their real content.
+/// Practice reuses Story 4.1's [SittingsListScreen] as-is; Profile reuses
+/// Story 4.4's [ProfileScreen] (replacing Story 4.2's placeholder); Test is
+/// still a placeholder until Epic 5/6 builds its real content.
 class AppShell extends StatefulWidget {
   const AppShell({super.key});
 
@@ -26,7 +26,7 @@ class _AppShellState extends State<AppShell> {
   static const List<Widget> _tabs = <Widget>[
     SittingsListScreen(),
     TestModePlaceholderScreen(),
-    ProfilePlaceholderScreen(),
+    ProfileScreen(),
   ];
 
   @override
