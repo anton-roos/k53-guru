@@ -44,44 +44,65 @@ class _LicenceCodeSelectionScreenState
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      // Accessibility floor (Story 4.7): this screen's headline/subtitle
+      // grow considerably at large dynamic-type scales (e.g. a 200% OS text
+      // setting), and this `Column` used to be laid out directly inside a
+      // fixed-height `Padding`/`SafeArea` with no way to grow -- a genuine
+      // `RenderFlex` overflow at 200% scale. `LayoutBuilder` +
+      // `SingleChildScrollView` + a `ConstrainedBox` with `minHeight`
+      // preserves the original vertically-centered look whenever the
+      // content actually fits (the common case, unaffected by this change),
+      // while letting it scroll instead of clipping/overflowing once it
+      // doesn't.
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(AppSpacing.space24),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              Text(
-                'Which licence are you studying for?',
-                style: Theme.of(context).textTheme.displayLarge,
-                textAlign: TextAlign.center,
+        child: LayoutBuilder(
+          builder: (BuildContext context, BoxConstraints constraints) {
+            final double minContentHeight = constraints.maxHeight -
+                (AppSpacing.space24 * 2);
+            return SingleChildScrollView(
+              padding: const EdgeInsets.all(AppSpacing.space24),
+              child: ConstrainedBox(
+                constraints: BoxConstraints(
+                  minHeight: minContentHeight > 0 ? minContentHeight : 0,
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Text(
+                      'Which licence are you studying for?',
+                      style: Theme.of(context).textTheme.displayLarge,
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: AppSpacing.space8),
+                    Text(
+                      "Pick one -- we'll show you exactly what you need.",
+                      style: Theme.of(context).textTheme.bodyLarge,
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: AppSpacing.space32),
+                    _OptionCard(
+                      label: 'Code 1',
+                      enabled: !_isSelecting,
+                      onTap: () => _select(LicenceCode.code1),
+                    ),
+                    const SizedBox(height: AppSpacing.space16),
+                    _OptionCard(
+                      label: 'Code 2',
+                      enabled: !_isSelecting,
+                      onTap: () => _select(LicenceCode.code2),
+                    ),
+                    const SizedBox(height: AppSpacing.space16),
+                    _OptionCard(
+                      label: 'Code 3',
+                      enabled: !_isSelecting,
+                      onTap: () => _select(LicenceCode.code3),
+                    ),
+                  ],
+                ),
               ),
-              const SizedBox(height: AppSpacing.space8),
-              Text(
-                "Pick one -- we'll show you exactly what you need.",
-                style: Theme.of(context).textTheme.bodyLarge,
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: AppSpacing.space32),
-              _OptionCard(
-                label: 'Code 1',
-                enabled: !_isSelecting,
-                onTap: () => _select(LicenceCode.code1),
-              ),
-              const SizedBox(height: AppSpacing.space16),
-              _OptionCard(
-                label: 'Code 2',
-                enabled: !_isSelecting,
-                onTap: () => _select(LicenceCode.code2),
-              ),
-              const SizedBox(height: AppSpacing.space16),
-              _OptionCard(
-                label: 'Code 3',
-                enabled: !_isSelecting,
-                onTap: () => _select(LicenceCode.code3),
-              ),
-            ],
-          ),
+            );
+          },
         ),
       ),
     );

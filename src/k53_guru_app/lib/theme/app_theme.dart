@@ -75,6 +75,27 @@ class AppTheme {
           ),
         ),
       ),
+      // Accessibility floor (Story 4.7): `elevatedButtonTheme` above already
+      // themes a `minimumSize`, but `OutlinedButton`/`TextButton` had no
+      // theme at all -- Material's own un-themed defaults for those two
+      // variants are smaller than `AppSpacing.minTapTarget` (48px). Themed
+      // here once so every current call site (`Copy UUID`'s
+      // `OutlinedButton.icon`, `Restore profile`'s `TextButton`, the
+      // `Recalibrate`/`Start fresh` dialog `TextButton`s) and any future one
+      // meets the floor without a per-call-site override. Width (64) is not
+      // part of the accessibility floor -- it's simply Material's own
+      // convention for a comfortable minimum button width; height (48) is
+      // what the floor actually requires.
+      outlinedButtonTheme: OutlinedButtonThemeData(
+        style: OutlinedButton.styleFrom(
+          minimumSize: const Size(64, AppSpacing.minTapTarget),
+        ),
+      ),
+      textButtonTheme: TextButtonThemeData(
+        style: TextButton.styleFrom(
+          minimumSize: const Size(64, AppSpacing.minTapTarget),
+        ),
+      ),
       extensions: <ThemeExtension<dynamic>>[
         AppColorsExtension(palette),
       ],

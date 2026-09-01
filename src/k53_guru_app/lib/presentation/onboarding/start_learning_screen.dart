@@ -45,34 +45,56 @@ class _StartLearningScreenState extends ConsumerState<StartLearningScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      // Accessibility floor (Story 4.7): this screen used to lay its Column
+      // out directly inside a fixed-height `Center`/`Padding`/`SafeArea`
+      // with no way to grow -- a genuine `RenderFlex` overflow at large
+      // dynamic-type scales on a short/narrow viewport (the same bug class
+      // `LicenceCodeSelectionScreen` already fixes). Same `LayoutBuilder` +
+      // `SingleChildScrollView` + `ConstrainedBox` with `minHeight` pattern:
+      // preserves this screen's vertically-centered look whenever the
+      // content actually fits (the common case, unaffected by this change),
+      // while letting it scroll instead of clipping/overflowing once it
+      // doesn't.
       body: SafeArea(
-        child: Center(
-          child: Padding(
-            padding: const EdgeInsets.all(AppSpacing.space24),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: <Widget>[
-                Text(
-                  'K53 Guru',
-                  style: Theme.of(context).textTheme.displayLarge,
-                  textAlign: TextAlign.center,
+        child: LayoutBuilder(
+          builder: (BuildContext context, BoxConstraints constraints) {
+            final double minContentHeight = constraints.maxHeight -
+                (AppSpacing.space24 * 2);
+            return SingleChildScrollView(
+              padding: const EdgeInsets.all(AppSpacing.space24),
+              child: ConstrainedBox(
+                constraints: BoxConstraints(
+                  minHeight: minContentHeight > 0 ? minContentHeight : 0,
                 ),
-                const SizedBox(height: AppSpacing.space32),
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: _isGenerating ? null : _startLearning,
-                    child: const Text('Start learning'),
-                  ),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    Text(
+                      'K53 Guru',
+                      style: Theme.of(context).textTheme.displayLarge,
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: AppSpacing.space32),
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        onPressed: _isGenerating ? null : _startLearning,
+                        child: const Text('Start learning'),
+                      ),
+                    ),
+                    const SizedBox(height: AppSpacing.space16),
+                    TextButton(
+                      onPressed: _isGenerating
+                          ? null
+                          : () => _openRestoreProfile(context),
+                      child: const Text('Restore profile'),
+                    ),
+                  ],
                 ),
-                const SizedBox(height: AppSpacing.space16),
-                TextButton(
-                  onPressed: _isGenerating ? null : () => _openRestoreProfile(context),
-                  child: const Text('Restore profile'),
-                ),
-              ],
-            ),
-          ),
+              ),
+            );
+          },
         ),
       ),
     );
