@@ -2,6 +2,10 @@
 // "Copy UUID": the UUID is shown and copyable, the exact save-your-progress
 // microcopy from EXPERIENCE.md is present, and a QR code encoding the raw
 // UUID string is rendered.
+//
+// Also covers spec-4-5's "Change code from Profile" matrix row: tapping
+// `Change code`, confirming `Recalibrate` or `Start fresh`, and picking a
+// new code replaces the old one and updates the displayed value.
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -10,6 +14,9 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'package:k53_guru_app/data/local/learner_profile_store.dart';
+import 'package:k53_guru_app/domain/licence_code.dart';
+import 'package:k53_guru_app/presentation/onboarding/licence_code_selection_screen.dart';
 import 'package:k53_guru_app/presentation/profile/profile_screen.dart';
 import 'package:k53_guru_app/theme/app_theme.dart';
 
@@ -50,6 +57,7 @@ void main() {
   setUp(() {
     SharedPreferences.setMockInitialValues(<String, Object>{
       'learner_profile_id': _profileId,
+      'learner_licence_code': 'Code1',
     });
   });
 
@@ -171,5 +179,126 @@ void main() {
       reason: 'tapping the copy action must copy the exact profile UUID to '
           'the system clipboard',
     );
+  });
+
+  testWidgets('Change code row shows the current code',
+      (WidgetTester tester) async {
+    await tester.pumpWidget(_wrap(const ProfileScreen()));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Change code'), findsOneWidget);
+    expect(find.text('Code 1'), findsOneWidget);
+  });
+
+  testWidgets(
+      'Tap Change code -> confirmation dialog offers exactly Recalibrate '
+      'and Start fresh', (WidgetTester tester) async {
+    await tester.pumpWidget(_wrap(const ProfileScreen()));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('Change code'));
+    await tester.pumpAndSettle();
+
+    expect(find.byType(AlertDialog), findsOneWidget);
+    expect(find.text('Recalibrate'), findsOneWidget);
+    expect(find.text('Start fresh'), findsOneWidget);
+  });
+
+  testWidgets(
+      'Change code, confirm Recalibrate, pick a new code -> the new code '
+      "replaces the old one and the row's displayed value updates",
+      (WidgetTester tester) async {
+    await tester.pumpWidget(_wrap(const ProfileScreen()));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Code 1'), findsOneWidget);
+
+    await tester.tap(find.text('Change code'));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('Recalibrate'));
+    await tester.pumpAndSettle();
+
+    // The dialog is gone and LicenceCodeSelectionScreen is now showing,
+    // pushed on top of Profile.
+    expect(find.byType(AlertDialog), findsNothing);
+    expect(find.byType(LicenceCodeSelectionScreen), findsOneWidget);
+
+    await tester.tap(find.text('Code 3'));
+    await tester.pumpAndSettle();
+
+    // Popped back to Profile, and the new code is both persisted and
+    // reflected in the row's displayed value.
+    expect(find.byType(LicenceCodeSelectionScreen), findsNothing);
+    expect(find.byType(ProfileScreen), findsOneWidget);
+    expect(find.text('Code 3'), findsOneWidget);
+    expect(find.text('Code 1'), findsNothing);
+
+    const LearnerProfileStore freshStore = LearnerProfileStore();
+    expect(await freshStore.readLicenceCode(), LicenceCode.code3);
+  });
+
+  testWidgets(
+      'Change code, confirm Start fresh, pick a new code -> the new code '
+      'replaces the old one (both dialog choices lead to the same '
+      're-selection flow)', (WidgetTester tester) async {
+    await tester.pumpWidget(_wrap(const ProfileScreen()));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('Change code'));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('Start fresh'));
+    await tester.pumpAndSettle();
+
+    expect(find.byType(LicenceCodeSelectionScreen), findsOneWidget);
+
+    await tester.tap(find.text('Code 2'));
+    await tester.pumpAndSettle();
+
+    expect(find.byType(LicenceCodeSelectionScreen), findsNothing);
+    expect(find.text('Code 2'), findsOneWidget);
+
+    const LearnerProfileStore freshStore = LearnerProfileStore();
+    expect(await freshStore.readLicenceCode(), LicenceCode.code2);
+  });
+
+  testWidgets(
+      'Rapid double-tap on Change code -> only one AlertDialog is shown',
+      (WidgetTester tester) async {
+    await tester.pumpWidget(_wrap(const ProfileScreen()));
+    await tester.pumpAndSettle();
+
+    // Two taps back-to-back with no pump in between, simulating a rapid
+    // double-tap: the second tap must be swallowed by `_isChangingCode`
+    // before a second `AlertDialog` can be stacked on the Navigator.
+    await tester.tap(find.text('Change code'));
+    await tester.tap(find.text('Change code'));
+    await tester.pumpAndSettle();
+
+    expect(find.byType(AlertDialog), findsOneWidget);
+  });
+
+  testWidgets(
+      'Tap Change code then dismiss the dialog without choosing -> the '
+      'current code is left untouched, no code picker shown',
+      (WidgetTester tester) async {
+    await tester.pumpWidget(_wrap(const ProfileScreen()));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('Change code'));
+    await tester.pumpAndSettle();
+    expect(find.byType(AlertDialog), findsOneWidget);
+
+    // Tap outside the dialog to dismiss it without choosing either option.
+    await tester.tapAt(const Offset(10, 10));
+    await tester.pumpAndSettle();
+
+    expect(find.byType(AlertDialog), findsNothing);
+    expect(find.byType(LicenceCodeSelectionScreen), findsNothing);
+    expect(find.text('Code 1'), findsOneWidget);
+
+    const LearnerProfileStore freshStore = LearnerProfileStore();
+    expect(await freshStore.readLicenceCode(), LicenceCode.code1);
   });
 }

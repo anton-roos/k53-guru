@@ -3,8 +3,11 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
+import '../../domain/licence_code.dart';
 import '../../theme/app_spacing.dart';
 import '../onboarding/learner_profile_provider.dart';
+import '../onboarding/licence_code_provider.dart';
+import '../onboarding/licence_code_selection_screen.dart';
 
 /// The exact save-your-progress microcopy from EXPERIENCE.md's "Identity &
 /// Profile" section -- reused verbatim rather than re-typed inline so there
@@ -12,6 +15,28 @@ import '../onboarding/learner_profile_provider.dart';
 const String kSaveProgressMicrocopy =
     'To save your progress, copy this UUID to import your results in '
     'another app';
+
+/// The two named choices the `Change code` confirmation dialog offers, per
+/// the spec's acceptance criteria. Both are currently no-ops beyond
+/// persisting the newly-picked code: no progress/mastery data model exists
+/// yet (Epic 5/6, not built this session) for either to actually recalibrate
+/// or reset. The interaction itself -- the dialog, these two exact choices,
+/// re-presenting the code picker -- is built faithfully so a future story
+/// only needs to implement the two branches' real data effects.
+enum ChangeCodeChoice { recalibrate, startFresh }
+
+/// The exact label shown for each [LicenceCode], reused wherever the
+/// learner's current code needs to be displayed in the Profile tab.
+String licenceCodeLabel(LicenceCode code) {
+  switch (code) {
+    case LicenceCode.code1:
+      return 'Code 1';
+    case LicenceCode.code2:
+      return 'Code 2';
+    case LicenceCode.code3:
+      return 'Code 3';
+  }
+}
 
 /// The Profile tab's real content (replacing Story 4.2's placeholder):
 /// the learner's UUID as selectable/copyable text, a copy-to-clipboard
@@ -45,13 +70,30 @@ class ProfileScreen extends ConsumerWidget {
   }
 }
 
-class _ProfileContent extends StatelessWidget {
+class _ProfileContent extends ConsumerStatefulWidget {
   const _ProfileContent({required this.profileId});
 
   final String profileId;
 
   @override
+  ConsumerState<_ProfileContent> createState() => _ProfileContentState();
+}
+
+class _ProfileContentState extends ConsumerState<_ProfileContent> {
+  // Guards against rapid double-tap on the `Change code` row -- same
+  // rationale/shape as `StartLearningScreen._isGenerating`,
+  // `LicenceCodeSelectionScreen._isSelecting`, and
+  // `RestoreProfileScreen._isProcessing`: a local widget flag, checked and
+  // set before `showDialog` opens, so two quick taps can't stack two
+  // `AlertDialog`s on the Navigator. Reset once the flow completes --
+  // whether the dialog was dismissed without choosing, or a full
+  // recalibrate/reset selection was made.
+  bool _isChangingCode = false;
+
+  @override
   Widget build(BuildContext context) {
+    final AsyncValue<LicenceCode?> licenceCode = ref.watch(licenceCodeProvider);
+
     return SingleChildScrollView(
       padding: const EdgeInsets.all(AppSpacing.space24),
       child: Column(
@@ -59,7 +101,7 @@ class _ProfileContent extends StatelessWidget {
         children: <Widget>[
           Center(
             child: QrImageView(
-              data: profileId,
+              data: widget.profileId,
               size: 200,
               // Required so a real device/screen reader announces this as
               // "profile QR code" rather than silently skipping an image
@@ -76,7 +118,7 @@ class _ProfileContent extends StatelessWidget {
           ),
           const SizedBox(height: AppSpacing.space8),
           SelectableText(
-            profileId,
+            widget.profileId,
             textAlign: TextAlign.center,
             style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                   fontFeatures: const <FontFeature>[FontFeature.tabularFigures()],
@@ -97,18 +139,96 @@ class _ProfileContent extends StatelessWidget {
             textAlign: TextAlign.center,
             style: Theme.of(context).textTheme.bodyMedium,
           ),
+          const SizedBox(height: AppSpacing.space32),
+          const Divider(),
+          ListTile(
+            contentPadding: EdgeInsets.zero,
+            title: const Text('Change code'),
+            subtitle: Text(
+              licenceCode.maybeWhen(
+                data: (LicenceCode? code) =>
+                    code == null ? 'Not set' : licenceCodeLabel(code),
+                orElse: () => 'Loading...',
+              ),
+            ),
+            trailing: const Icon(Icons.chevron_right),
+            onTap: () => _onChangeCodeTapped(context),
+          ),
         ],
       ),
     );
   }
 
   Future<void> _copyToClipboard(BuildContext context) async {
-    await Clipboard.setData(ClipboardData(text: profileId));
+    await Clipboard.setData(ClipboardData(text: widget.profileId));
     if (!context.mounted) {
       return;
     }
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('Copied to clipboard')),
     );
+  }
+
+  /// Opens the confirmation dialog the AC requires -- exactly two named
+  /// choices, `Recalibrate` and `Start fresh` -- then, regardless of which
+  /// one the learner picks, re-presents [LicenceCodeSelectionScreen] to
+  /// choose the new code. Both choices are currently no-ops beyond that
+  /// (see [ChangeCodeChoice]'s doc comment); dismissing the dialog without
+  /// choosing either (tap outside, back button) leaves the current code
+  /// untouched.
+  ///
+  /// Guarded by [_isChangingCode] against rapid double-tap: the flag is set
+  /// synchronously before `showDialog` is awaited, so a second tap landing
+  /// before the first `setState` is even rebuilt still sees it and bails
+  /// out, rather than stacking a second `AlertDialog` on the Navigator.
+  Future<void> _onChangeCodeTapped(BuildContext context) async {
+    if (_isChangingCode) {
+      return;
+    }
+    setState(() => _isChangingCode = true);
+
+    final ChangeCodeChoice? choice = await showDialog<ChangeCodeChoice>(
+      context: context,
+      builder: (BuildContext dialogContext) => AlertDialog(
+        title: const Text('Change your code'),
+        content: const Text(
+          'Recalibrate maps your existing progress to the new code, or '
+          'start fresh to reset it.',
+        ),
+        actions: <Widget>[
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext)
+                .pop(ChangeCodeChoice.recalibrate),
+            child: const Text('Recalibrate'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext)
+                .pop(ChangeCodeChoice.startFresh),
+            child: const Text('Start fresh'),
+          ),
+        ],
+      ),
+    );
+
+    if (choice == null) {
+      if (mounted) {
+        setState(() => _isChangingCode = false);
+      }
+      return;
+    }
+
+    if (!context.mounted) {
+      return;
+    }
+
+    await Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (_) => const LicenceCodeSelectionScreen(),
+      ),
+    );
+
+    if (mounted) {
+      setState(() => _isChangingCode = false);
+    }
   }
 }

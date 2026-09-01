@@ -18,12 +18,14 @@ import 'package:k53_guru_app/data/local/learner_profile_store.dart';
 import 'package:k53_guru_app/domain/available_sitting.dart';
 import 'package:k53_guru_app/main.dart';
 import 'package:k53_guru_app/presentation/onboarding/learner_profile_provider.dart';
+import 'package:k53_guru_app/presentation/onboarding/licence_code_selection_screen.dart';
 import 'package:k53_guru_app/presentation/onboarding/start_learning_screen.dart';
 import 'package:k53_guru_app/presentation/profile/restore_profile_screen.dart';
 import 'package:k53_guru_app/presentation/shell/app_shell.dart';
 import 'package:k53_guru_app/presentation/sittings/sittings_list_provider.dart';
 
 const String _profileIdKey = 'learner_profile_id';
+const String _licenceCodeKey = 'learner_licence_code';
 
 /// A [SharedPreferencesStorePlatform] that fails every operation --
 /// deterministically reproducing the spec's "`SharedPreferences` throws"
@@ -108,7 +110,9 @@ void main() {
 
   testWidgets(
       'Tap Start learning -> a new UUID v4 is generated, persisted, and '
-      'the app navigates to AppShell', (WidgetTester tester) async {
+      'the app navigates to LicenceCodeSelectionScreen (Story 4.5: a '
+      'profile id alone is not enough to reach AppShell -- a licence code '
+      "hasn't been chosen yet)", (WidgetTester tester) async {
     SharedPreferences.setMockInitialValues(<String, Object>{});
 
     await tester.pumpWidget(_app());
@@ -118,8 +122,9 @@ void main() {
     await tester.tap(find.text('Start learning'));
     await tester.pumpAndSettle();
 
-    expect(find.byType(AppShell), findsOneWidget);
+    expect(find.byType(LicenceCodeSelectionScreen), findsOneWidget);
     expect(find.byType(StartLearningScreen), findsNothing);
+    expect(find.byType(AppShell), findsNothing);
 
     // Actually persisted (not just held in memory) -- a fresh read finds
     // the same value a real relaunch would use.
@@ -135,18 +140,29 @@ void main() {
     // The single app-wide provider any future screen's `K53ApiClient` call
     // (Epic 5/6) would read exposes this exact same value -- not a
     // different in-memory copy.
-    final BuildContext appShellContext =
-        tester.element(find.byType(AppShell));
+    final BuildContext selectionScreenContext =
+        tester.element(find.byType(LicenceCodeSelectionScreen));
     final AsyncValue<String?> providerState = ProviderScope.containerOf(
-      appShellContext,
+      selectionScreenContext,
     ).read(learnerProfileProvider);
     expect(providerState.value, persisted);
+
+    // Picking a code proceeds the rest of the way into AppShell -- the
+    // full first-run flow end to end.
+    await tester.tap(find.text('Code 1'));
+    await tester.pumpAndSettle();
+
+    expect(find.byType(AppShell), findsOneWidget);
+    expect(find.byType(LicenceCodeSelectionScreen), findsNothing);
+    expect(prefs.getString(_licenceCodeKey), 'Code1');
   });
 
   testWidgets(
       'Tap Restore profile -> a real Navigator.push opens RestoreProfileScreen; '
       'entering a valid UUID and submitting restores it through the real '
-      'router, swapping StartLearningScreen out for AppShell',
+      'router, swapping StartLearningScreen out for LicenceCodeSelectionScreen '
+      '(Story 4.5: licence code is device-local, never restored, so a '
+      'restored profile also routes through code selection)',
       (WidgetTester tester) async {
     SharedPreferences.setMockInitialValues(<String, Object>{});
 
@@ -196,10 +212,12 @@ void main() {
     await tester.pumpAndSettle();
 
     // The router swapped -- both the first-run screen and the restore
-    // screen are gone, and `AppShell` is showing.
-    expect(find.byType(AppShell), findsOneWidget);
+    // screen are gone, and `LicenceCodeSelectionScreen` is showing (the
+    // restored profile still has no locally-persisted licence code).
+    expect(find.byType(LicenceCodeSelectionScreen), findsOneWidget);
     expect(find.byType(StartLearningScreen), findsNothing);
     expect(find.byType(RestoreProfileScreen), findsNothing);
+    expect(find.byType(AppShell), findsNothing);
 
     // Actually persisted through the real store, not just held in memory.
     const LearnerProfileStore freshStore = LearnerProfileStore();
@@ -210,8 +228,26 @@ void main() {
   });
 
   testWidgets(
-      'Second launch, same device -> a persisted profile id sends the app '
-      'straight into AppShell, no StartLearningScreen shown again',
+      'Second launch, same device -> a persisted profile id AND licence '
+      'code send the app straight into AppShell, no StartLearningScreen or '
+      'LicenceCodeSelectionScreen shown again',
+      (WidgetTester tester) async {
+    SharedPreferences.setMockInitialValues(<String, Object>{
+      _profileIdKey: '11111111-2222-4333-8444-555555555555',
+      _licenceCodeKey: 'Code2',
+    });
+
+    await tester.pumpWidget(_app());
+    await tester.pumpAndSettle();
+
+    expect(find.byType(AppShell), findsOneWidget);
+    expect(find.byType(StartLearningScreen), findsNothing);
+    expect(find.byType(LicenceCodeSelectionScreen), findsNothing);
+  });
+
+  testWidgets(
+      'Second launch, profile id persisted but no licence code yet -> '
+      'LicenceCodeSelectionScreen renders, not AppShell',
       (WidgetTester tester) async {
     SharedPreferences.setMockInitialValues(<String, Object>{
       _profileIdKey: '11111111-2222-4333-8444-555555555555',
@@ -220,8 +256,9 @@ void main() {
     await tester.pumpWidget(_app());
     await tester.pumpAndSettle();
 
-    expect(find.byType(AppShell), findsOneWidget);
+    expect(find.byType(LicenceCodeSelectionScreen), findsOneWidget);
     expect(find.byType(StartLearningScreen), findsNothing);
+    expect(find.byType(AppShell), findsNothing);
   });
 
   testWidgets(
@@ -284,8 +321,13 @@ void main() {
     notifier.releaseGate();
     await tester.pumpAndSettle();
 
-    expect(find.byType(AppShell), findsOneWidget);
+    // The profile id now exists, but no licence code has been chosen yet
+    // -- the router lands on LicenceCodeSelectionScreen, not AppShell
+    // (Story 4.5). This test's own concern -- the double-tap dedupe guard
+    // -- is already fully proven by `generateCallCount` above.
+    expect(find.byType(LicenceCodeSelectionScreen), findsOneWidget);
     expect(find.byType(StartLearningScreen), findsNothing);
+    expect(find.byType(AppShell), findsNothing);
 
     // Exactly one id was persisted -- not overwritten mid-flight by a
     // second generation racing the first.

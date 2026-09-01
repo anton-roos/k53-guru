@@ -23,6 +23,10 @@ void main() {
       (WidgetTester tester) async {
     SharedPreferences.setMockInitialValues(<String, Object>{
       'learner_profile_id': '11111111-2222-4333-8444-555555555555',
+      // Story 4.5: the router only reaches `AppShell` once a licence code
+      // is also persisted -- without this, a profile-id-only mock now
+      // routes to `LicenceCodeSelectionScreen` instead.
+      'learner_licence_code': 'Code1',
     });
 
     await tester.pumpWidget(
