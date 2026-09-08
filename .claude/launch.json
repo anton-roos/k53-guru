@@ -1,0 +1,15 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "k53_guru_app-web",
+      "runtimeExecutable": "powershell",
+      "runtimeArgs": [
+        "-NoProfile",
+        "-Command",
+        "Set-Location 'C:\\Users\\farro\\src\\k53-guru\\src\\k53_guru_app'; flutter run -d web-server --web-port 8765"
+      ],
+      "port": 8765
+    }
+  ]
+}

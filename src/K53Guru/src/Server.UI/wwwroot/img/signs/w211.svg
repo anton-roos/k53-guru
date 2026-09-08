@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="864.20001"
+   height="755.22601"
+   viewBox="0 0 228.65291 199.82022"
+   version="1.1"
+   id="svg4490"
+   inkscape:version="0.92.2 (5c3e80d, 2017-08-06)"
+   sodipodi:docname="SADC_road_sign_W210.svg">
+  <defs
+     id="defs4484" />
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="0.7"
+     inkscape:cx="416.24628"
+     inkscape:cy="354.62832"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer1"
+     showgrid="false"
+     units="px"
+     inkscape:window-width="1920"
+     inkscape:window-height="1057"
+     inkscape:window-x="-8"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1" />
+  <metadata
+     id="metadata4487">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(0,-97.179783)">
+    <path
+       sodipodi:nodetypes="cccc"
+       inkscape:connector-curvature="0"
+       id="path4488"
+       d="M 6.7199328,290.27958 114.32645,103.8995 221.93303,290.27956 Z"
+       style="fill:#e20a16;fill-opacity:1;stroke:#e20a16;stroke-width:13.22916698;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+    <path
+       style="fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:13.22916603;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       d="m 114.32647,130.35788 84.6929,146.69241 -169.385739,1.1e-4 z"
+       id="rect5050"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="cccc" />
+    <path
+       inkscape:connector-curvature="0"
+       id="path4154"
+       d="m 126.50984,201.73063 c 0.49785,0.5026 0.49785,1.00283 0.49785,1.50542 0,1.00282 -0.49785,2.50896 -1.4936,3.01084 h -0.49786 -0.99567 c 0,0 -0.4979,0 -0.4979,0 l -13.54873,-4.51626 v 29.60652 c 0,2.008 1.51726,2.50918 3.01082,2.50918 0.49782,0 0.99568,0 0.99568,0 l 27.60022,-14.05066 c 0.99566,-0.5026 5.01646,-2.00802 6.52186,-2.00802 10.03775,0 19.07023,6.52357 19.07023,17.56339 v 34.12206 h -17.5648 v -29.6058 c 0,-1.00282 -0.99575,-2.00801 -2.01511,-2.50919 h -0.49786 c -0.49786,0 -1.49353,0 -2.01515,0 l -27.59778,14.05066 c -2.01515,1.50542 -5.52148,2.00802 -8.02969,2.00802 -9.535109,0 -17.062239,-8.53087 -17.062239,-17.56339 v -34.12277 l -10.53789,4.51626 c 0,0 -0.99575,0 -0.99575,0 h -0.99572 c 0,0 0,0 0,0 -0.99564,-0.5026 -1.49354,-1.00282 -2.01514,-1.50542 v -0.5026 -1.00282 c 0,-0.50259 0,-1.00282 0.49788,-1.50542 l 22.581319,-34.62418 25.59214,34.62418 z"
+       style="fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.38018811" />
+  </g>
+</svg>

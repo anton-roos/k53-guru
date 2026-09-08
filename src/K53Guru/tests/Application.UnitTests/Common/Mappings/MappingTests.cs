@@ -4,11 +4,7 @@ using System.Runtime.Serialization;
 using AutoMapper;
 using K53Guru.Application.Common.Interfaces;
 using K53Guru.Application.Features.AuditTrails.DTOs;
-using K53Guru.Application.Features.Contacts.DTOs;
-using K53Guru.Application.Features.Documents.DTOs;
 using K53Guru.Application.Features.Identity.DTOs;
-using K53Guru.Application.Features.PicklistSets.DTOs;
-using K53Guru.Application.Features.Products.DTOs;
 using K53Guru.Application.Features.SystemLogs.DTOs;
 using K53Guru.Application.Features.Tenants.DTOs;
 using K53Guru.Domain.Entities;
@@ -34,11 +30,7 @@ public class MappingTests
     }
 
     [Test]
-    [TestCase(typeof(Document), typeof(DocumentDto), true)]
     [TestCase(typeof(Tenant), typeof(TenantDto), true)]
-    [TestCase(typeof(Product), typeof(ProductDto), true)]
-    [TestCase(typeof(Contact), typeof(ContactDto), true)]
-    [TestCase(typeof(PicklistSet), typeof(PicklistSetDto), true)]
     [TestCase(typeof(ApplicationUser), typeof(ApplicationUserDto), false)]
     [TestCase(typeof(ApplicationRole), typeof(ApplicationRoleDto), false)]
     [TestCase(typeof(SystemLog), typeof(SystemLogDto), false)]

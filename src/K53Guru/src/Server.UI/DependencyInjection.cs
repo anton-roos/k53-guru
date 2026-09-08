@@ -85,6 +85,24 @@ public static class DependencyInjection
         services.AddControllers()
             .AddJsonOptions(o => o.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
 
+        // Dev-only CORS for the Flutter app's web target (flutter run -d chrome / web-server),
+        // which serves from its own localhost origin/port and calls the learner API
+        // (Epic 3, /api/v1/*) cross-origin. Only ever applied in Development (see
+        // ConfigureServer) -- the Windows/mobile targets don't need CORS at all since they
+        // aren't subject to browser same-origin policy, and this must never be enabled in a
+        // real deployment.
+        services.AddCors(options =>
+        {
+            options.AddPolicy("FlutterWebDev", policy =>
+            {
+                policy.SetIsOriginAllowed(origin =>
+                        Uri.TryCreate(origin, UriKind.Absolute, out var uri) &&
+                        (uri.Host is "localhost" or "127.0.0.1"))
+                    .AllowAnyHeader()
+                    .AllowAnyMethod();
+            });
+        });
+
         // Learner-facing API (Epic 3): anonymous, per-IP rate limiting - no learner UUID exists
         // yet at this pre-attempt discovery endpoint, so IP-based partitioning is the correct
         // interim scope (revisited once Story 3.3+ introduces a learner UUID).
@@ -163,6 +181,7 @@ public static class DependencyInjection
         if (app.Environment.IsDevelopment())
         {
             app.UseMigrationsEndPoint();
+            app.UseCors("FlutterWebDev");
         }
         else
         {

@@ -13,58 +13,11 @@ public class MenuService : IMenuService
             SectionItems = new List<MenuSectionItemModel>
             {
                 new() { Title = "Home", Icon = Icons.Material.Filled.Home, Href = "/" },
-                new()
-                {
-                    Title = "E-Commerce",
-                    Icon = Icons.Material.Filled.ShoppingCart,
-                    PageStatus = PageStatus.Completed,
-                    IsParent = true,
-                    MenuItems = new List<MenuSectionSubItemModel>
-                    {
-                        new()
-                        {
-                            Title = "Products",
-                            Href = "/pages/products",
-                            PageStatus = PageStatus.Completed
-                        },
-                        new()
-                        {
-                            Title = "Documents",
-                            Href = "/pages/documents",
-                            PageStatus = PageStatus.Completed
-                        },
-                        new()
-                        {
-                            Title = "Contacts",
-                            Href = "/pages/contacts",
-                            PageStatus = PageStatus.Completed
-                        }
-                    }
-                },
-                new()
-                {
-                    Title = "Analytics",
-                    Roles = new[] { Roles.Admin, Roles.Users },
-                    Icon = Icons.Material.Filled.Analytics,
-                    Href = "/analytics",
-                    PageStatus = PageStatus.ComingSoon
-                },
-                new()
-                {
-                    Title = "Banking",
-                    Roles = new[] { Roles.Admin, Roles.Users },
-                    Icon = Icons.Material.Filled.Money,
-                    Href = "/banking",
-                    PageStatus = PageStatus.ComingSoon
-                },
-                new()
-                {
-                    Title = "Booking",
-                    Roles = new[] { Roles.Admin, Roles.Users },
-                    Icon = Icons.Material.Filled.CalendarToday,
-                    Href = "/booking",
-                    PageStatus = PageStatus.ComingSoon
-                }
+                // E-Commerce (Products/Documents/Contacts), Analytics, Banking, and Booking were
+                // the starter template's generic demo/stub modules -- unrelated to K53Guru's
+                // domain and removed from the nav per explicit request. Their pages/backing code
+                // were intentionally left in place rather than deleted (see chat for scope); ask
+                // if you also want them physically removed.
             }
         },
         new MenuSectionModel
@@ -119,12 +72,9 @@ public class MenuService : IMenuService
                     Icon = Icons.Material.Filled.Devices,
                     MenuItems = new List<MenuSectionSubItemModel>
                     {
-                        new()
-                        {
-                            Title = "Picklist",
-                            Href = "/system/picklistset",
-                            PageStatus = PageStatus.Completed
-                        },
+                        // "Picklist" (generic key/value list management from the starter
+                        // template) removed from the nav per explicit request -- not part of
+                        // K53Guru's domain. Page/backing code left in place; see chat for scope.
                         new()
                         {
                             Title = "Road Signs",

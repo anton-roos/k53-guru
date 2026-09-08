@@ -18,7 +18,6 @@ using Moq;
 using NUnit.Framework;
 using Respawn;
 using Respawn.Graph;
-using K53Guru.Application.Features.PicklistSets.DTOs;
 using K53Guru.Infrastructure.Services;
 using K53Guru.Application.Features.Tenants.DTOs;
 using K53Guru.Infrastructure.Services.MultiTenant;
@@ -183,12 +182,6 @@ public class Testing
         using var scope = _scopeFactory.CreateScope();
         var context = scope.ServiceProvider.GetService<ApplicationDbContext>();
         return await context.Set<TEntity>().CountAsync();
-    }
-
-    public static IDataSourceService<PicklistSetDto> CreatePicklistService()
-    {
-        var scope = _scopeFactory.CreateScope();
-        return scope.ServiceProvider.GetRequiredService<PicklistDataSourceService>();
     }
 
     public static IDataSourceService<TenantDto> CreateTenantsService()

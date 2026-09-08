@@ -1,0 +1,2540 @@
+[
+  {
+    "legislationCode": "IN1-CLASS-A1",
+    "description": "Road sign IN1-CLASS-A1 (description not found in source, needs verification)",
+    "imageAssetKey": "signs/in1-class-a1.svg",
+    "confidence": "unverified"
+  },
+  {
+    "legislationCode": "IN1-TOURISM",
+    "description": "Road sign IN1-TOURISM (description not found in source, needs verification)",
+    "imageAssetKey": "signs/in1-tourism.svg",
+    "confidence": "unverified"
+  },
+  {
+    "legislationCode": "IN10",
+    "description": "Park and Ride",
+    "imageAssetKey": "signs/in10.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "IN11-1",
+    "description": "Road sign IN11-1 (description not found in source, needs verification)",
+    "imageAssetKey": "signs/in11-1.svg",
+    "confidence": "unverified"
+  },
+  {
+    "legislationCode": "IN11-2",
+    "description": "Road sign IN11-2 (description not found in source, needs verification)",
+    "imageAssetKey": "signs/in11-2.svg",
+    "confidence": "unverified"
+  },
+  {
+    "legislationCode": "IN11-4",
+    "description": "Road sign IN11-4 (description not found in source, needs verification)",
+    "imageAssetKey": "signs/in11-4.svg",
+    "confidence": "unverified"
+  },
+  {
+    "legislationCode": "IN11-4-BLIND-PEOPLE",
+    "description": "Road sign IN11-4-BLIND-PEOPLE (description not found in source, needs verification)",
+    "imageAssetKey": "signs/in11-4-blind-people.svg",
+    "confidence": "unverified"
+  },
+  {
+    "legislationCode": "IN11-501",
+    "description": "Road sign IN11-501 (description not found in source, needs verification)",
+    "imageAssetKey": "signs/in11-501.svg",
+    "confidence": "unverified"
+  },
+  {
+    "legislationCode": "IN11-502",
+    "description": "Road sign IN11-502 (description not found in source, needs verification)",
+    "imageAssetKey": "signs/in11-502.svg",
+    "confidence": "unverified"
+  },
+  {
+    "legislationCode": "IN12",
+    "description": "Information centre",
+    "imageAssetKey": "signs/in12.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "IN14",
+    "description": "Co-ordinated traffic signals at indicated speed",
+    "imageAssetKey": "signs/in14.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "IN15",
+    "description": "Multi-phase traffic signals",
+    "imageAssetKey": "signs/in15.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "IN16",
+    "description": "Bus stop ahead",
+    "imageAssetKey": "signs/in16.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "IN17",
+    "description": "Modal transfer point",
+    "imageAssetKey": "signs/in17.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "IN18",
+    "description": "Modal transfer point",
+    "imageAssetKey": "signs/in18.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "IN19",
+    "description": "Modal transfer point",
+    "imageAssetKey": "signs/in19.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "IN20",
+    "description": "Right-of-way over oncoming vehicles",
+    "imageAssetKey": "signs/in20.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "IN3-CLASS-A1",
+    "description": "Road sign IN3-CLASS-A1 (description not found in source, needs verification)",
+    "imageAssetKey": "signs/in3-class-a1.svg",
+    "confidence": "unverified"
+  },
+  {
+    "legislationCode": "IN4",
+    "description": "Dead end",
+    "imageAssetKey": "signs/in4.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "IN5",
+    "description": "Dead end",
+    "imageAssetKey": "signs/in5.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "IN6",
+    "description": "Dead end",
+    "imageAssetKey": "signs/in6.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "IN7",
+    "description": "Right-of-way",
+    "imageAssetKey": "signs/in7.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "IN9",
+    "description": "Park and Ride",
+    "imageAssetKey": "signs/in9.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R1",
+    "description": "Stop",
+    "imageAssetKey": "signs/r1.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R1.1",
+    "description": "Stop (two-way stop control)",
+    "imageAssetKey": "signs/r1-1.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R1.2",
+    "description": "Stop. But drivers turning left must give way / yield",
+    "imageAssetKey": "signs/r1-2.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R1.3",
+    "description": "Stop (3-way)",
+    "imageAssetKey": "signs/r1-3.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R1.4",
+    "description": "Stop (4-way)",
+    "imageAssetKey": "signs/r1-4.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R1.5-RSA",
+    "description": "Stop / Go manual control sign",
+    "imageAssetKey": "signs/r1-5-rsa.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R101",
+    "description": "Minimum speed limit",
+    "imageAssetKey": "signs/r101.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R101-600",
+    "description": "End of minimum speed limit",
+    "imageAssetKey": "signs/r101-600.svg",
+    "confidence": "inferred-600-pattern"
+  },
+  {
+    "legislationCode": "R102",
+    "description": "Vehicles exceeding 10 tonnes GVM only",
+    "imageAssetKey": "signs/r102.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R103",
+    "description": "Keep Left",
+    "imageAssetKey": "signs/r103.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R104",
+    "description": "Keep Right",
+    "imageAssetKey": "signs/r104.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R105",
+    "description": "Turn Left",
+    "imageAssetKey": "signs/r105.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R106",
+    "description": "Turn Right",
+    "imageAssetKey": "signs/r106.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R107",
+    "description": "Proceed Straight",
+    "imageAssetKey": "signs/r107.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R108",
+    "description": "Turn left ahead",
+    "imageAssetKey": "signs/r108.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R109",
+    "description": "Turn right ahead",
+    "imageAssetKey": "signs/r109.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R110",
+    "description": "Pedestrians only",
+    "imageAssetKey": "signs/r110.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R111",
+    "description": "Cyclists only",
+    "imageAssetKey": "signs/r111.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R112",
+    "description": "Cyclists and pedestrians only",
+    "imageAssetKey": "signs/r112.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R113",
+    "description": "Cyclists and pedestrians only",
+    "imageAssetKey": "signs/r113.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R114",
+    "description": "Cyclists and pedestrians only",
+    "imageAssetKey": "signs/r114.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R115",
+    "description": "Cyclists and pedestrians only",
+    "imageAssetKey": "signs/r115.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R116",
+    "description": "Motorcycles only",
+    "imageAssetKey": "signs/r116.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R117",
+    "description": "Motorcars only",
+    "imageAssetKey": "signs/r117.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R118",
+    "description": "Taxis only",
+    "imageAssetKey": "signs/r118.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R119",
+    "description": "Mini-buses only",
+    "imageAssetKey": "signs/r119.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R120",
+    "description": "Midi-buses only",
+    "imageAssetKey": "signs/r120.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R121",
+    "description": "Buses only",
+    "imageAssetKey": "signs/r121.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R122",
+    "description": "Delivery vehicles only",
+    "imageAssetKey": "signs/r122.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R123",
+    "description": "Goods vehicles exceeding 3500 kg only",
+    "imageAssetKey": "signs/r123.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R124",
+    "description": "Goods vehicles exceeding 10 tonnes GVM only",
+    "imageAssetKey": "signs/r124.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R125",
+    "description": "Construction vehicles only",
+    "imageAssetKey": "signs/r125.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R126",
+    "description": "Vehicles transporting dangerous substances only",
+    "imageAssetKey": "signs/r126.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R127",
+    "description": "Abnormal vehicles only",
+    "imageAssetKey": "signs/r127.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R128",
+    "description": "Rickshaws only",
+    "imageAssetKey": "signs/r128.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R129",
+    "description": "Tour buses only",
+    "imageAssetKey": "signs/r129.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R130",
+    "description": "Agricultural vehicles only",
+    "imageAssetKey": "signs/r130.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R131",
+    "description": "Animal-drawn vehicles only",
+    "imageAssetKey": "signs/r131.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R132",
+    "description": "Toll road",
+    "imageAssetKey": "signs/r132.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R132-600",
+    "description": "End of toll road",
+    "imageAssetKey": "signs/r132-600.svg",
+    "confidence": "inferred-600-pattern"
+  },
+  {
+    "legislationCode": "R133",
+    "description": "Switch headlamps on",
+    "imageAssetKey": "signs/r133.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R133-600",
+    "description": "End of switch headlamps on",
+    "imageAssetKey": "signs/r133-600.svg",
+    "confidence": "inferred-600-pattern"
+  },
+  {
+    "legislationCode": "R134",
+    "description": "Buses and mini-buses only",
+    "imageAssetKey": "signs/r134.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R135",
+    "description": "Buses and midi-buses only",
+    "imageAssetKey": "signs/r135.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R136",
+    "description": "Buses, midi-buses and mini-buses only",
+    "imageAssetKey": "signs/r136.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R137",
+    "description": "Roundabout",
+    "imageAssetKey": "signs/r137.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R138",
+    "description": "Trams only",
+    "imageAssetKey": "signs/r138.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R139",
+    "description": "Buses and trams only",
+    "imageAssetKey": "signs/r139.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R140",
+    "description": "Buses, trams and mini-buses only",
+    "imageAssetKey": "signs/r140.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R2",
+    "description": "Give Way / Yield",
+    "imageAssetKey": "signs/r2.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R2.1",
+    "description": "Give Way / Yield to pedestrians",
+    "imageAssetKey": "signs/r2-1.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R2.2",
+    "description": "Give Way / Yield at roundabout",
+    "imageAssetKey": "signs/r2-2.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R201-10",
+    "description": "Speed limit of 10 km/h",
+    "imageAssetKey": "signs/r201-10.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R201-100",
+    "description": "Speed limit of 100 km/h",
+    "imageAssetKey": "signs/r201-100.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R201-120",
+    "description": "Speed limit of 120 km/h",
+    "imageAssetKey": "signs/r201-120.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R201-20",
+    "description": "Speed limit of 20 km/h",
+    "imageAssetKey": "signs/r201-20.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R201-30",
+    "description": "Speed limit of 30 km/h",
+    "imageAssetKey": "signs/r201-30.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R201-40",
+    "description": "Speed limit of 40 km/h",
+    "imageAssetKey": "signs/r201-40.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R201-5",
+    "description": "Speed limit of 5 km/h",
+    "imageAssetKey": "signs/r201-5.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R201-50",
+    "description": "Speed limit of 50 km/h",
+    "imageAssetKey": "signs/r201-50.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R201-60",
+    "description": "Speed limit of 60 km/h",
+    "imageAssetKey": "signs/r201-60.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R201-70",
+    "description": "Speed limit of 70 km/h",
+    "imageAssetKey": "signs/r201-70.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R201-75",
+    "description": "Speed limit of 75 km/h",
+    "imageAssetKey": "signs/r201-75.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R201-80",
+    "description": "Speed limit of 80 km/h",
+    "imageAssetKey": "signs/r201-80.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R201-90",
+    "description": "Speed limit of 90 km/h",
+    "imageAssetKey": "signs/r201-90.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R202",
+    "description": "Vehicles exceeding 12 tonnes GVM prohibited",
+    "imageAssetKey": "signs/r202.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R202-600",
+    "description": "End of weight limit",
+    "imageAssetKey": "signs/r202-600.svg",
+    "confidence": "inferred-600-pattern"
+  },
+  {
+    "legislationCode": "R203",
+    "description": "Vehicles exceeding 2 tonnes on a single axle prohibited",
+    "imageAssetKey": "signs/r203.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R204",
+    "description": "Vehicles exceeding 4.42 metres in height prohibited",
+    "imageAssetKey": "signs/r204.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R205",
+    "description": "Vehicles exceeding 15 metres in length prohibited",
+    "imageAssetKey": "signs/r205.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R206",
+    "description": "Excessive noise prohibited / Hooting prohibited",
+    "imageAssetKey": "signs/r206.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R207",
+    "description": "Hitch-hiking prohibited",
+    "imageAssetKey": "signs/r207.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R208",
+    "description": "Unauthorised vehicles prohibited",
+    "imageAssetKey": "signs/r208.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R209",
+    "description": "Left turn prohibited ahead",
+    "imageAssetKey": "signs/r209.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R210",
+    "description": "Right turn prohibited ahead",
+    "imageAssetKey": "signs/r210.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R211",
+    "description": "Left turn prohibited",
+    "imageAssetKey": "signs/r211.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R212",
+    "description": "Right turn prohibited",
+    "imageAssetKey": "signs/r212.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R213",
+    "description": "U-turn prohibited",
+    "imageAssetKey": "signs/r213.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R214",
+    "description": "Overtaking prohibited",
+    "imageAssetKey": "signs/r214.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R215",
+    "description": "Overtaking prohibited for heavy vehicles",
+    "imageAssetKey": "signs/r215.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R216",
+    "description": "Parking prohibited",
+    "imageAssetKey": "signs/r216.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R217",
+    "description": "Stopping prohibited",
+    "imageAssetKey": "signs/r217.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R218",
+    "description": "Pedestrians prohibited",
+    "imageAssetKey": "signs/r218.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R219",
+    "description": "Cyclists prohibited",
+    "imageAssetKey": "signs/r219.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R220",
+    "description": "Cyclists and pedestrians prohibited",
+    "imageAssetKey": "signs/r220.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R222",
+    "description": "Motorcycles prohibited",
+    "imageAssetKey": "signs/r222.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R223",
+    "description": "Motorcars prohibited",
+    "imageAssetKey": "signs/r223.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R224",
+    "description": "Taxis prohibited",
+    "imageAssetKey": "signs/r224.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R225",
+    "description": "Mini-buses prohibited",
+    "imageAssetKey": "signs/r225.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R226",
+    "description": "Midi-buses prohibited",
+    "imageAssetKey": "signs/r226.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R227",
+    "description": "Buses prohibited",
+    "imageAssetKey": "signs/r227.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R228",
+    "description": "Delivery vehicles prohibited",
+    "imageAssetKey": "signs/r228.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R229",
+    "description": "Goods vehicles exceeding 3500kg prohibited",
+    "imageAssetKey": "signs/r229.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R230",
+    "description": "Goods vehicles exceeding 10 tonnes GVM prohibited",
+    "imageAssetKey": "signs/r230.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R231",
+    "description": "Construction vehicles prohibited",
+    "imageAssetKey": "signs/r231.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R232",
+    "description": "Vehicles transporting dangerous substances prohibited",
+    "imageAssetKey": "signs/r232.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R233",
+    "description": "Abnormal vehicles prohibited",
+    "imageAssetKey": "signs/r233.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R234",
+    "description": "Rickshaws prohibited",
+    "imageAssetKey": "signs/r234.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R235",
+    "description": "Tour buses prohibited",
+    "imageAssetKey": "signs/r235.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R236",
+    "description": "Agricultural vehicles prohibited",
+    "imageAssetKey": "signs/r236.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R237",
+    "description": "Animal-drawn vehicles prohibited",
+    "imageAssetKey": "signs/r237.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R238",
+    "description": "Horses and riders prohibited",
+    "imageAssetKey": "signs/r238.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R239",
+    "description": "Vehicles exceeding 2.1 metres in width prohibited",
+    "imageAssetKey": "signs/r239.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R240",
+    "description": "Towed vehicles prohibited",
+    "imageAssetKey": "signs/r240.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R241",
+    "description": "Hawkers prohibited",
+    "imageAssetKey": "signs/r241.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R242",
+    "description": "Motorcycles and motorcars prohibited",
+    "imageAssetKey": "signs/r242.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R245",
+    "description": "Vehicles exceeding 12 tonnes on a tandem axle / bogie axle prohibited",
+    "imageAssetKey": "signs/r245.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R245-600",
+    "description": "Road sign R245-600 (description not found in source, needs verification)",
+    "imageAssetKey": "signs/r245-600.svg",
+    "confidence": "unverified"
+  },
+  {
+    "legislationCode": "R3",
+    "description": "No entry",
+    "imageAssetKey": "signs/r3.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R301",
+    "description": "Reserved for buses",
+    "imageAssetKey": "signs/r301.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R301-P",
+    "description": "Parking for buses",
+    "imageAssetKey": "signs/r301-p.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R302",
+    "description": "Reserved lane for buses",
+    "imageAssetKey": "signs/r302.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R303",
+    "description": "Start of a reserved lane for buses",
+    "imageAssetKey": "signs/r303.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R304",
+    "description": "Reserved lane for bicycles",
+    "imageAssetKey": "signs/r304.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R304-P",
+    "description": "Parking for bicycles",
+    "imageAssetKey": "signs/r304-p.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R305-P",
+    "description": "Parking",
+    "imageAssetKey": "signs/r305-p.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R306-P",
+    "description": "Parking with a 60-minute limit",
+    "imageAssetKey": "signs/r306-p.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R307",
+    "description": "Reserved for motorcycles",
+    "imageAssetKey": "signs/r307.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R307-P",
+    "description": "Parking for motorcycles",
+    "imageAssetKey": "signs/r307-p.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R308",
+    "description": "Reserved for motorcars",
+    "imageAssetKey": "signs/r308.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R308-P",
+    "description": "Parking for motorcars",
+    "imageAssetKey": "signs/r308-p.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R309",
+    "description": "Reserved for taxis",
+    "imageAssetKey": "signs/r309.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R309-P",
+    "description": "Parking for taxis",
+    "imageAssetKey": "signs/r309-p.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R310",
+    "description": "Reserved for mini-buses",
+    "imageAssetKey": "signs/r310.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R310-P",
+    "description": "Parking for mini-buses",
+    "imageAssetKey": "signs/r310-p.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R311",
+    "description": "Reserved for midi-buses",
+    "imageAssetKey": "signs/r311.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R311-P",
+    "description": "Parking for midi-buses",
+    "imageAssetKey": "signs/r311-p.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R312",
+    "description": "Reserved for delivery vehicles",
+    "imageAssetKey": "signs/r312.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R312-P",
+    "description": "Parking for delivery vehicles",
+    "imageAssetKey": "signs/r312-p.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R313",
+    "description": "Reserved for goods vehicles",
+    "imageAssetKey": "signs/r313.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R313-P",
+    "description": "Parking for goods vehicles",
+    "imageAssetKey": "signs/r313-p.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R314",
+    "description": "Reserved for goods vehicles exceeding 10 tonnes GVM",
+    "imageAssetKey": "signs/r314.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R314-P",
+    "description": "Parking for goods vehicles exceeding 10 tonnes GVM",
+    "imageAssetKey": "signs/r314-p.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R315",
+    "description": "Reserved for construction vehicles",
+    "imageAssetKey": "signs/r315.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R315-P",
+    "description": "Parking for construction vehicles",
+    "imageAssetKey": "signs/r315-p.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R316",
+    "description": "Reserved for vehicles transporting dangerous substances",
+    "imageAssetKey": "signs/r316.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R316-P",
+    "description": "Parking for vehicles transporting dangerous substances",
+    "imageAssetKey": "signs/r316-p.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R317",
+    "description": "Reserved for abnormal vehicles",
+    "imageAssetKey": "signs/r317.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R317-P",
+    "description": "Parking for abnormal vehicles",
+    "imageAssetKey": "signs/r317-p.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R318",
+    "description": "Reserved for rickshaws",
+    "imageAssetKey": "signs/r318.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R318-P",
+    "description": "Parking for rickshaws",
+    "imageAssetKey": "signs/r318-p.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R319",
+    "description": "Reserved for tour buses",
+    "imageAssetKey": "signs/r319.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R319-P",
+    "description": "Parking for tour buses",
+    "imageAssetKey": "signs/r319-p.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R320",
+    "description": "Reserved for high-occupancy vehicles",
+    "imageAssetKey": "signs/r320.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R320-P",
+    "description": "Parking for high-occupancy vehicles",
+    "imageAssetKey": "signs/r320-p.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R321",
+    "description": "Reserved for ambulances / emergency vehicles",
+    "imageAssetKey": "signs/r321.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R321-P",
+    "description": "Parking for ambulances / emergency vehicles",
+    "imageAssetKey": "signs/r321-p.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R322",
+    "description": "Road sign R322 (description not found in source, needs verification)",
+    "imageAssetKey": "signs/r322.svg",
+    "confidence": "unverified"
+  },
+  {
+    "legislationCode": "R322-P",
+    "description": "Road sign R322-P (description not found in source, needs verification)",
+    "imageAssetKey": "signs/r322-p.svg",
+    "confidence": "unverified"
+  },
+  {
+    "legislationCode": "R322-P-RSA",
+    "description": "Parking for police vehicles",
+    "imageAssetKey": "signs/r322-p-rsa.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R322-RSA",
+    "description": "Reserved for police vehicles",
+    "imageAssetKey": "signs/r322-rsa.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R323",
+    "description": "Reserved for vehicles carrying disabled passengers",
+    "imageAssetKey": "signs/r323.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R323-P",
+    "description": "Parking for vehicles carrying disabled passengers",
+    "imageAssetKey": "signs/r323-p.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R324",
+    "description": "Reserved for diplomatic vehicles",
+    "imageAssetKey": "signs/r324.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R324-P",
+    "description": "Parking for diplomatic vehicles",
+    "imageAssetKey": "signs/r324-p.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R325-1",
+    "description": "Bus stop",
+    "imageAssetKey": "signs/r325-1.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R325-2",
+    "description": "Bus stop for all buses",
+    "imageAssetKey": "signs/r325-2.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R325-3",
+    "description": "Road sign R325-3 (description not found in source, needs verification)",
+    "imageAssetKey": "signs/r325-3.svg",
+    "confidence": "unverified"
+  },
+  {
+    "legislationCode": "R325-4",
+    "description": "Road sign R325-4 (description not found in source, needs verification)",
+    "imageAssetKey": "signs/r325-4.svg",
+    "confidence": "unverified"
+  },
+  {
+    "legislationCode": "R326-1",
+    "description": "Road sign R326-1 (description not found in source, needs verification)",
+    "imageAssetKey": "signs/r326-1.svg",
+    "confidence": "unverified"
+  },
+  {
+    "legislationCode": "R326-2",
+    "description": "Road sign R326-2 (description not found in source, needs verification)",
+    "imageAssetKey": "signs/r326-2.svg",
+    "confidence": "unverified"
+  },
+  {
+    "legislationCode": "R326-3",
+    "description": "Mini-bus stop for authorised mini-buses with line number",
+    "imageAssetKey": "signs/r326-3.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R326-4",
+    "description": "Mini-bus stop for authorised mini-buses with line numbers",
+    "imageAssetKey": "signs/r326-4.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R327",
+    "description": "Reserved for buses and mini-buses",
+    "imageAssetKey": "signs/r327.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R327-P",
+    "description": "Parking for buses and mini-buses",
+    "imageAssetKey": "signs/r327-p.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R328",
+    "description": "Reserved lane for buses and mini-buses",
+    "imageAssetKey": "signs/r328.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R329",
+    "description": "Start of a reserved lane for buses and mini-buses",
+    "imageAssetKey": "signs/r329.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R330",
+    "description": "Reserved for buses and midi-buses",
+    "imageAssetKey": "signs/r330.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R330-P",
+    "description": "Parking for buses and midi-buses",
+    "imageAssetKey": "signs/r330-p.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R331",
+    "description": "Reserved lane for buses and midi-buses",
+    "imageAssetKey": "signs/r331.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R332",
+    "description": "Start of a reserved lane for buses and midi-buses",
+    "imageAssetKey": "signs/r332.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R333",
+    "description": "Reserved for buses, midi-buses and mini-buses",
+    "imageAssetKey": "signs/r333.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R333-P",
+    "description": "Parking for buses, midi-buses and mini-buses",
+    "imageAssetKey": "signs/r333-p.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R334",
+    "description": "Reserved lane for buses, midi-buses and mini-buses",
+    "imageAssetKey": "signs/r334.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R335",
+    "description": "Start of a reserved lane for buses, midi-buses and mini-buses",
+    "imageAssetKey": "signs/r335.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R336",
+    "description": "Reserved lane for high-occupancy vehicles",
+    "imageAssetKey": "signs/r336.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R337",
+    "description": "Start of a reserved lane for high-occupancy vehicles",
+    "imageAssetKey": "signs/r337.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R338",
+    "description": "Reserved for trams",
+    "imageAssetKey": "signs/r338.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R339",
+    "description": "Reserved lane for trams",
+    "imageAssetKey": "signs/r339.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R340",
+    "description": "Start of a reserved lane for trams",
+    "imageAssetKey": "signs/r340.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R341-2",
+    "description": "Road sign R341-2 (description not found in source, needs verification)",
+    "imageAssetKey": "signs/r341-2.svg",
+    "confidence": "unverified"
+  },
+  {
+    "legislationCode": "R342",
+    "description": "Reserved for buses and trams",
+    "imageAssetKey": "signs/r342.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R343",
+    "description": "Reserved lane for buses and trams",
+    "imageAssetKey": "signs/r343.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R344",
+    "description": "Start of a reserved lane for buses and trams",
+    "imageAssetKey": "signs/r344.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R345",
+    "description": "Reserved for buses, trams and mini-buses",
+    "imageAssetKey": "signs/r345.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R346",
+    "description": "Reserved lane for buses, trams and mini-buses",
+    "imageAssetKey": "signs/r346.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R347",
+    "description": "Start of a reserved lane for buses, trams and mini-buses",
+    "imageAssetKey": "signs/r347.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R348",
+    "description": "Reserved lane for buses",
+    "imageAssetKey": "signs/r348.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R349",
+    "description": "Reserved lane for buses and mini-buses",
+    "imageAssetKey": "signs/r349.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R350",
+    "description": "Reserved lane for buses and trams",
+    "imageAssetKey": "signs/r350.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R351",
+    "description": "Reserved lane for buses, trams and mini-buses",
+    "imageAssetKey": "signs/r351.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R352",
+    "description": "Reserved lane for high-occupancy vehicles",
+    "imageAssetKey": "signs/r352.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R353",
+    "description": "Reserved lane for authorised vehicles",
+    "imageAssetKey": "signs/r353.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R354",
+    "description": "Reserved lane for authorised vehicles",
+    "imageAssetKey": "signs/r354.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R360",
+    "description": "Road sign R360 (description not found in source, needs verification)",
+    "imageAssetKey": "signs/r360.svg",
+    "confidence": "unverified"
+  },
+  {
+    "legislationCode": "R4.1",
+    "description": "One-way roadway",
+    "imageAssetKey": "signs/r4-1.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R4.2",
+    "description": "One-way roadway",
+    "imageAssetKey": "signs/r4-2.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R4.3",
+    "description": "One-way roadway",
+    "imageAssetKey": "signs/r4-3.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R401",
+    "description": "Dual-carriageway freeway begins",
+    "imageAssetKey": "signs/r401.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R401-600",
+    "description": "Dual-carriageway freeway ends",
+    "imageAssetKey": "signs/r401-600.svg",
+    "confidence": "inferred-600-pattern"
+  },
+  {
+    "legislationCode": "R402",
+    "description": "Single-carriageway freeway begins",
+    "imageAssetKey": "signs/r402.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R402-600",
+    "description": "Single-carriageway freeway ends",
+    "imageAssetKey": "signs/r402-600.svg",
+    "confidence": "inferred-600-pattern"
+  },
+  {
+    "legislationCode": "R403",
+    "description": "Living Street / Woonerf begins",
+    "imageAssetKey": "signs/r403.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R403-600",
+    "description": "Living Street / Woonerf ends",
+    "imageAssetKey": "signs/r403-600.svg",
+    "confidence": "inferred-600-pattern"
+  },
+  {
+    "legislationCode": "R5",
+    "description": "Pedestrian priority zone",
+    "imageAssetKey": "signs/r5.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R501",
+    "description": "Applies during the specified hours",
+    "imageAssetKey": "signs/r501.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R501-B",
+    "description": "Applies during the specified hours",
+    "imageAssetKey": "signs/r501-b.svg",
+    "confidence": "inferred-same-as-base"
+  },
+  {
+    "legislationCode": "R502",
+    "description": "Applies during the specified hours",
+    "imageAssetKey": "signs/r502.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R502-B",
+    "description": "Applies during the specified hours",
+    "imageAssetKey": "signs/r502-b.svg",
+    "confidence": "inferred-same-as-base"
+  },
+  {
+    "legislationCode": "R503",
+    "description": "Applies during the specified days and hours",
+    "imageAssetKey": "signs/r503.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R503-B",
+    "description": "Applies during the specified days and hours",
+    "imageAssetKey": "signs/r503-b.svg",
+    "confidence": "inferred-same-as-base"
+  },
+  {
+    "legislationCode": "R504",
+    "description": "Applies during the specified days and hours",
+    "imageAssetKey": "signs/r504.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R504-B",
+    "description": "Applies during the specified days and hours",
+    "imageAssetKey": "signs/r504-b.svg",
+    "confidence": "inferred-same-as-base"
+  },
+  {
+    "legislationCode": "R505",
+    "description": "Parking is permitted within the days and hours specified, with a 30-minute limit",
+    "imageAssetKey": "signs/r505.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R506",
+    "description": "Parking is permitted within the hours specified, with a 60-minute limit",
+    "imageAssetKey": "signs/r506.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R511",
+    "description": "Applies during the day-time hours",
+    "imageAssetKey": "signs/r511.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R511-B",
+    "description": "Applies during the day-time hours",
+    "imageAssetKey": "signs/r511-b.svg",
+    "confidence": "inferred-same-as-base"
+  },
+  {
+    "legislationCode": "R512",
+    "description": "Applies during the night-time hours",
+    "imageAssetKey": "signs/r512.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R512-B",
+    "description": "Applies during the night-time hours",
+    "imageAssetKey": "signs/r512-b.svg",
+    "confidence": "inferred-same-as-base"
+  },
+  {
+    "legislationCode": "R520",
+    "description": "Applies to the left",
+    "imageAssetKey": "signs/r520.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R520-B",
+    "description": "Applies to the left",
+    "imageAssetKey": "signs/r520-b.svg",
+    "confidence": "inferred-same-as-base"
+  },
+  {
+    "legislationCode": "R521",
+    "description": "Applies to the right",
+    "imageAssetKey": "signs/r521.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R521-B",
+    "description": "Applies to the right",
+    "imageAssetKey": "signs/r521-b.svg",
+    "confidence": "inferred-same-as-base"
+  },
+  {
+    "legislationCode": "R522",
+    "description": "Applies to the left and right",
+    "imageAssetKey": "signs/r522.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R522-B",
+    "description": "Applies to the left and right",
+    "imageAssetKey": "signs/r522-b.svg",
+    "confidence": "inferred-same-as-base"
+  },
+  {
+    "legislationCode": "R523",
+    "description": "Pay and display parking",
+    "imageAssetKey": "signs/r523.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R530-B",
+    "description": "Road sign R530-B (description not found in source, needs verification)",
+    "imageAssetKey": "signs/r530-b.svg",
+    "confidence": "unverified"
+  },
+  {
+    "legislationCode": "R532",
+    "description": "Applies to vehicles exceeding 16 tonnes GVM",
+    "imageAssetKey": "signs/r532.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R532-B",
+    "description": "Applies to vehicles exceeding 16 tonnes GVM",
+    "imageAssetKey": "signs/r532-b.svg",
+    "confidence": "inferred-same-as-base"
+  },
+  {
+    "legislationCode": "R533",
+    "description": "Applies to motorcycles with an engine size up to 125 cc",
+    "imageAssetKey": "signs/r533.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R533-B",
+    "description": "Applies to motorcycles with an engine size up to 125 cc",
+    "imageAssetKey": "signs/r533-b.svg",
+    "confidence": "inferred-same-as-base"
+  },
+  {
+    "legislationCode": "R534",
+    "description": "Traffic requiring local access also permitted",
+    "imageAssetKey": "signs/r534.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R535",
+    "description": "Applies for 5 kilometres",
+    "imageAssetKey": "signs/r535.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R535-B",
+    "description": "Applies for 5 kilometres",
+    "imageAssetKey": "signs/r535-b.svg",
+    "confidence": "inferred-same-as-base"
+  },
+  {
+    "legislationCode": "R540",
+    "description": "Maximum number of spaces in a parking reservation",
+    "imageAssetKey": "signs/r540.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R560",
+    "description": "Applies to buses",
+    "imageAssetKey": "signs/r560.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R560-B",
+    "description": "Applies to buses",
+    "imageAssetKey": "signs/r560-b.svg",
+    "confidence": "inferred-same-as-base"
+  },
+  {
+    "legislationCode": "R561",
+    "description": "Applies to cyclists",
+    "imageAssetKey": "signs/r561.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R561-B",
+    "description": "Applies to cyclists",
+    "imageAssetKey": "signs/r561-b.svg",
+    "confidence": "inferred-same-as-base"
+  },
+  {
+    "legislationCode": "R562",
+    "description": "Applies to motorcycles",
+    "imageAssetKey": "signs/r562.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R562-B",
+    "description": "Applies to motorcycles",
+    "imageAssetKey": "signs/r562-b.svg",
+    "confidence": "inferred-same-as-base"
+  },
+  {
+    "legislationCode": "R563",
+    "description": "Applies to motorcars",
+    "imageAssetKey": "signs/r563.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R563-B",
+    "description": "Applies to motorcars",
+    "imageAssetKey": "signs/r563-b.svg",
+    "confidence": "inferred-same-as-base"
+  },
+  {
+    "legislationCode": "R564",
+    "description": "Applies to taxis",
+    "imageAssetKey": "signs/r564.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R564-B",
+    "description": "Applies to taxis",
+    "imageAssetKey": "signs/r564-b.svg",
+    "confidence": "inferred-same-as-base"
+  },
+  {
+    "legislationCode": "R565",
+    "description": "Applies to mini-buses",
+    "imageAssetKey": "signs/r565.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R565-B",
+    "description": "Applies to mini-buses",
+    "imageAssetKey": "signs/r565-b.svg",
+    "confidence": "inferred-same-as-base"
+  },
+  {
+    "legislationCode": "R566",
+    "description": "Applies to midi-buses",
+    "imageAssetKey": "signs/r566.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R566-B",
+    "description": "Applies to midi-buses",
+    "imageAssetKey": "signs/r566-b.svg",
+    "confidence": "inferred-same-as-base"
+  },
+  {
+    "legislationCode": "R567",
+    "description": "Applies to delivery vehicles",
+    "imageAssetKey": "signs/r567.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R567-B",
+    "description": "Applies to delivery vehicles",
+    "imageAssetKey": "signs/r567-b.svg",
+    "confidence": "inferred-same-as-base"
+  },
+  {
+    "legislationCode": "R568",
+    "description": "Applies to goods vehicles",
+    "imageAssetKey": "signs/r568.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R568-B",
+    "description": "Applies to goods vehicles",
+    "imageAssetKey": "signs/r568-b.svg",
+    "confidence": "inferred-same-as-base"
+  },
+  {
+    "legislationCode": "R569",
+    "description": "Applies to goods vehicles exceeding 10 tonnes GVM",
+    "imageAssetKey": "signs/r569.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R569-B",
+    "description": "Applies to goods vehicles exceeding 10 tonnes GVM",
+    "imageAssetKey": "signs/r569-b.svg",
+    "confidence": "inferred-same-as-base"
+  },
+  {
+    "legislationCode": "R570",
+    "description": "Applies to construction vehicles",
+    "imageAssetKey": "signs/r570.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R570-B",
+    "description": "Applies to construction vehicles",
+    "imageAssetKey": "signs/r570-b.svg",
+    "confidence": "inferred-same-as-base"
+  },
+  {
+    "legislationCode": "R571",
+    "description": "Applies to vehicles transporting dangerous substances",
+    "imageAssetKey": "signs/r571.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R571-B",
+    "description": "Applies to vehicles transporting dangerous substances",
+    "imageAssetKey": "signs/r571-b.svg",
+    "confidence": "inferred-same-as-base"
+  },
+  {
+    "legislationCode": "R572",
+    "description": "Applies to abnormal vehicles",
+    "imageAssetKey": "signs/r572.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R572-B",
+    "description": "Applies to abnormal vehicles",
+    "imageAssetKey": "signs/r572-b.svg",
+    "confidence": "inferred-same-as-base"
+  },
+  {
+    "legislationCode": "R573",
+    "description": "Applies to rickshaws",
+    "imageAssetKey": "signs/r573.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R573-B",
+    "description": "Applies to rickshaws",
+    "imageAssetKey": "signs/r573-b.svg",
+    "confidence": "inferred-same-as-base"
+  },
+  {
+    "legislationCode": "R574-B-RSA",
+    "description": "Applies to tour buses",
+    "imageAssetKey": "signs/r574-b-rsa.svg",
+    "confidence": "inferred-same-as-base"
+  },
+  {
+    "legislationCode": "R574-RSA",
+    "description": "Applies to tour buses",
+    "imageAssetKey": "signs/r574-rsa.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R575",
+    "description": "Applies to high-occupancy vehicles",
+    "imageAssetKey": "signs/r575.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R575-B",
+    "description": "Applies to high-occupancy vehicles",
+    "imageAssetKey": "signs/r575-b.svg",
+    "confidence": "inferred-same-as-base"
+  },
+  {
+    "legislationCode": "R576",
+    "description": "Applies to ambulances / emergency vehicles",
+    "imageAssetKey": "signs/r576.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R576-B",
+    "description": "Applies to ambulances / emergency vehicles",
+    "imageAssetKey": "signs/r576-b.svg",
+    "confidence": "inferred-same-as-base"
+  },
+  {
+    "legislationCode": "R577-B-RSA",
+    "description": "Applies to police vehicles",
+    "imageAssetKey": "signs/r577-b-rsa.svg",
+    "confidence": "inferred-same-as-base"
+  },
+  {
+    "legislationCode": "R577-RSA",
+    "description": "Applies to police vehicles",
+    "imageAssetKey": "signs/r577-rsa.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R578",
+    "description": "Applies to vehicles carrying disabled passengers",
+    "imageAssetKey": "signs/r578.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R578-B",
+    "description": "Applies to vehicles carrying disabled passengers",
+    "imageAssetKey": "signs/r578-b.svg",
+    "confidence": "inferred-same-as-base"
+  },
+  {
+    "legislationCode": "R579",
+    "description": "Applies to diplomatic vehicles",
+    "imageAssetKey": "signs/r579.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R579-B",
+    "description": "Applies to diplomatic vehicles",
+    "imageAssetKey": "signs/r579-b.svg",
+    "confidence": "inferred-same-as-base"
+  },
+  {
+    "legislationCode": "R580",
+    "description": "Applies to agricultural vehicles",
+    "imageAssetKey": "signs/r580.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R580-B",
+    "description": "Applies to agricultural vehicles",
+    "imageAssetKey": "signs/r580-b.svg",
+    "confidence": "inferred-same-as-base"
+  },
+  {
+    "legislationCode": "R581",
+    "description": "Applies to animal-drawn vehicles",
+    "imageAssetKey": "signs/r581.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R581-B",
+    "description": "Applies to animal-drawn vehicles",
+    "imageAssetKey": "signs/r581-b.svg",
+    "confidence": "inferred-same-as-base"
+  },
+  {
+    "legislationCode": "R582",
+    "description": "Applies to towed vehicles",
+    "imageAssetKey": "signs/r582.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R582-B",
+    "description": "Applies to towed vehicles",
+    "imageAssetKey": "signs/r582-b.svg",
+    "confidence": "inferred-same-as-base"
+  },
+  {
+    "legislationCode": "R583",
+    "description": "Applies to trams",
+    "imageAssetKey": "signs/r583.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "R583-B",
+    "description": "Applies to trams",
+    "imageAssetKey": "signs/r583-b.svg",
+    "confidence": "inferred-same-as-base"
+  },
+  {
+    "legislationCode": "R6",
+    "description": "Give Way / Yield to oncoming traffic",
+    "imageAssetKey": "signs/r6.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "TW214",
+    "description": "Road sign TW214 (description not found in source, needs verification)",
+    "imageAssetKey": "signs/tw214.svg",
+    "confidence": "unverified"
+  },
+  {
+    "legislationCode": "TW304",
+    "description": "Manual traffic control",
+    "imageAssetKey": "signs/tw304.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "TW305",
+    "description": "Scholar patrol",
+    "imageAssetKey": "signs/tw305.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "TW336",
+    "description": "Roadwork",
+    "imageAssetKey": "signs/tw336.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "TW337",
+    "description": "Grader work",
+    "imageAssetKey": "signs/tw337.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "TW338",
+    "description": "Loose surface",
+    "imageAssetKey": "signs/tw338.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "TW340",
+    "description": "Unlevel surface",
+    "imageAssetKey": "signs/tw340.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "TW341",
+    "description": "Unlevel surface",
+    "imageAssetKey": "signs/tw341.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "TW342",
+    "description": "Soft shoulder",
+    "imageAssetKey": "signs/tw342.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "TW343",
+    "description": "Stop / go manual traffic control",
+    "imageAssetKey": "signs/tw343.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "TW344",
+    "description": "Construction vehicles",
+    "imageAssetKey": "signs/tw344.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "TW345",
+    "description": "Construction vehicles",
+    "imageAssetKey": "signs/tw345.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "TW347",
+    "description": "Police flashing light sign",
+    "imageAssetKey": "signs/tw347.gif",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "TW353",
+    "description": "Accident",
+    "imageAssetKey": "signs/tw353.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "W101",
+    "description": "Crossroad ahead",
+    "imageAssetKey": "signs/w101.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "W102",
+    "description": "Crossroad ahead with priority",
+    "imageAssetKey": "signs/w102.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "W103",
+    "description": "Crossroad ahead without priority",
+    "imageAssetKey": "signs/w103.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "W104",
+    "description": "T-junction ahead",
+    "imageAssetKey": "signs/w104.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "W105",
+    "description": "Skewed T-junction ahead",
+    "imageAssetKey": "signs/w105.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "W106",
+    "description": "Skewed T-junction ahead",
+    "imageAssetKey": "signs/w106.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "W107",
+    "description": "Side-road junction ahead",
+    "imageAssetKey": "signs/w107.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "W108",
+    "description": "Side-road junction ahead",
+    "imageAssetKey": "signs/w108.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "W109",
+    "description": "Staggered side-road junctions ahead",
+    "imageAssetKey": "signs/w109.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "W110",
+    "description": "Staggered side-road junctions ahead",
+    "imageAssetKey": "signs/w110.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "W111",
+    "description": "Sharp junction ahead",
+    "imageAssetKey": "signs/w111.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "W112",
+    "description": "Sharp junction ahead",
+    "imageAssetKey": "signs/w112.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "W113",
+    "description": "Sharp junction ahead",
+    "imageAssetKey": "signs/w113.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "W114",
+    "description": "Sharp junction ahead",
+    "imageAssetKey": "signs/w114.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "W115",
+    "description": "Fork ahead",
+    "imageAssetKey": "signs/w115.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "W116",
+    "description": "Dual-carriageway ends ahead",
+    "imageAssetKey": "signs/w116.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "W117",
+    "description": "Dual-carriageway ends ahead",
+    "imageAssetKey": "signs/w117.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "W118",
+    "description": "Dual-carriageway begins ahead",
+    "imageAssetKey": "signs/w118.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "W119",
+    "description": "Dual-carriageway begins ahead",
+    "imageAssetKey": "signs/w119.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "W201",
+    "description": "Roundabout ahead",
+    "imageAssetKey": "signs/w201.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "W202",
+    "description": "Gentle curve ahead",
+    "imageAssetKey": "signs/w202.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "W203",
+    "description": "Gentle curve ahead",
+    "imageAssetKey": "signs/w203.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "W204",
+    "description": "Sharp curve ahead",
+    "imageAssetKey": "signs/w204.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "W205",
+    "description": "Sharp curve ahead",
+    "imageAssetKey": "signs/w205.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "W206",
+    "description": "Hairpin curve ahead",
+    "imageAssetKey": "signs/w206.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "W207",
+    "description": "Hairpin curve ahead",
+    "imageAssetKey": "signs/w207.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "W208",
+    "description": "Winding road ahead",
+    "imageAssetKey": "signs/w208.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "W209",
+    "description": "Winding road ahead",
+    "imageAssetKey": "signs/w209.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "W210",
+    "description": "Series of curves ahead",
+    "imageAssetKey": "signs/w210.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "W211",
+    "description": "Series of curves ahead",
+    "imageAssetKey": "signs/w211.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "W212",
+    "description": "Two-way traffic ahead",
+    "imageAssetKey": "signs/w212.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "W213",
+    "description": "Two-way traffic crossing ahead",
+    "imageAssetKey": "signs/w213.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "W214",
+    "description": "Right lane ends ahead",
+    "imageAssetKey": "signs/w214.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "W215",
+    "description": "Left lane ends ahead",
+    "imageAssetKey": "signs/w215.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "W216",
+    "description": "Concealed driveway ahead",
+    "imageAssetKey": "signs/w216.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "W217",
+    "description": "Concealed driveway ahead",
+    "imageAssetKey": "signs/w217.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "W218",
+    "description": "Concealed driveways ahead",
+    "imageAssetKey": "signs/w218.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "W301",
+    "description": "Traffic signal ahead",
+    "imageAssetKey": "signs/w301.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "W302",
+    "description": "Stop control ahead",
+    "imageAssetKey": "signs/w302.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "W303",
+    "description": "Give Way / Yield control ahead",
+    "imageAssetKey": "signs/w303.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "W306",
+    "description": "Pedestrian crossing ahead",
+    "imageAssetKey": "signs/w306.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "W307",
+    "description": "Pedestrians ahead",
+    "imageAssetKey": "signs/w307.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "W308",
+    "description": "Children ahead",
+    "imageAssetKey": "signs/w308.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "W309",
+    "description": "Cyclists ahead",
+    "imageAssetKey": "signs/w309.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "W310",
+    "description": "Cattle ahead",
+    "imageAssetKey": "signs/w310.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "W311",
+    "description": "Horses ahead",
+    "imageAssetKey": "signs/w311.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "W312",
+    "description": "Sheep ahead",
+    "imageAssetKey": "signs/w312.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "W313",
+    "description": "Wild animals ahead",
+    "imageAssetKey": "signs/w313.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "W314",
+    "description": "Gate ahead",
+    "imageAssetKey": "signs/w314.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "W315",
+    "description": "Motor gate ahead on right",
+    "imageAssetKey": "signs/w315.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "W316",
+    "description": "Motor gate ahead on left",
+    "imageAssetKey": "signs/w316.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "W317",
+    "description": "Motor gate ahead",
+    "imageAssetKey": "signs/w317.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "W318",
+    "description": "Railway crossing ahead",
+    "imageAssetKey": "signs/w318.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "W319",
+    "description": "Tunnel ahead",
+    "imageAssetKey": "signs/w319.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "W320",
+    "description": "Height restriction ahead",
+    "imageAssetKey": "signs/w320.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "W321",
+    "description": "Length restriction ahead",
+    "imageAssetKey": "signs/w321.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "W322",
+    "description": "Steep descent ahead",
+    "imageAssetKey": "signs/w322.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "W323",
+    "description": "Steep ascent ahead",
+    "imageAssetKey": "signs/w323.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "W324",
+    "description": "Slow moving heavy vehicles ahead",
+    "imageAssetKey": "signs/w324.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "W325",
+    "description": "Unpaved road surface ahead",
+    "imageAssetKey": "signs/w325.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "W326",
+    "description": "Narrow bridge ahead",
+    "imageAssetKey": "signs/w326.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "W327",
+    "description": "Single vehicle width passage ahead",
+    "imageAssetKey": "signs/w327.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "W328",
+    "description": "Roadway narrows from both sides ahead",
+    "imageAssetKey": "signs/w328.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "W329",
+    "description": "Roadway narrows from the right side ahead",
+    "imageAssetKey": "signs/w329.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "W330",
+    "description": "Roadway narrows from the left side ahead",
+    "imageAssetKey": "signs/w330.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "W331",
+    "description": "Uneven road surface ahead",
+    "imageAssetKey": "signs/w331.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "W332",
+    "description": "Speed hump ahead",
+    "imageAssetKey": "signs/w332.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "W333",
+    "description": "Slippery road ahead",
+    "imageAssetKey": "signs/w333.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "W334",
+    "description": "Falling rocks ahead",
+    "imageAssetKey": "signs/w334.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "W335",
+    "description": "Falling rocks ahead",
+    "imageAssetKey": "signs/w335.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "W339",
+    "description": "Other danger",
+    "imageAssetKey": "signs/w339.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "W346",
+    "description": "Danger flashing light sign",
+    "imageAssetKey": "signs/w346.gif",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "W348",
+    "description": "Unprotected jetty edge or river bank ahead",
+    "imageAssetKey": "signs/w348.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "W349",
+    "description": "Crosswinds ahead",
+    "imageAssetKey": "signs/w349.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "W350",
+    "description": "Drift / Ford ahead",
+    "imageAssetKey": "signs/w350.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "W351",
+    "description": "Low flying aircraft ahead",
+    "imageAssetKey": "signs/w351.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "W352",
+    "description": "Agricultural vehicles ahead",
+    "imageAssetKey": "signs/w352.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "W354",
+    "description": "Reduced visibility ahead",
+    "imageAssetKey": "signs/w354.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "W355",
+    "description": "Traffic congestion ahead",
+    "imageAssetKey": "signs/w355.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "W356",
+    "description": "Horse riders ahead",
+    "imageAssetKey": "signs/w356.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "W357",
+    "description": "Elephants ahead",
+    "imageAssetKey": "signs/w357.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "W358",
+    "description": "Warthogs ahead",
+    "imageAssetKey": "signs/w358.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "W359",
+    "description": "Hippos ahead",
+    "imageAssetKey": "signs/w359.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "W360",
+    "description": "Width restriction ahead",
+    "imageAssetKey": "signs/w360.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "W361",
+    "description": "Danger of electrical shock",
+    "imageAssetKey": "signs/w361.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "W362",
+    "description": "Trams ahead",
+    "imageAssetKey": "signs/w362.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "W363",
+    "description": "Paved road surface ahead",
+    "imageAssetKey": "signs/w363.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "W365",
+    "description": "Moveable bridge ahead",
+    "imageAssetKey": "signs/w365.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "W401",
+    "description": "Road sign W401 (marker/warning sign; exact meaning not found in source, needs verification)",
+    "imageAssetKey": "signs/w401.svg",
+    "confidence": "unverified"
+  },
+  {
+    "legislationCode": "W402",
+    "description": "Road sign W402 (marker/warning sign; exact meaning not found in source, needs verification)",
+    "imageAssetKey": "signs/w402.svg",
+    "confidence": "unverified"
+  },
+  {
+    "legislationCode": "W403",
+    "description": "Railway crossing",
+    "imageAssetKey": "signs/w403.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "W404",
+    "description": "Railway crossing with 2 or more tracks",
+    "imageAssetKey": "signs/w404.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "W405",
+    "description": "Sharp curve marker",
+    "imageAssetKey": "signs/w405.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "W406",
+    "description": "Sharp curve marker",
+    "imageAssetKey": "signs/w406.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "W407",
+    "description": "Sharp curve marker",
+    "imageAssetKey": "signs/w407.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "W408",
+    "description": "Sharp curve marker",
+    "imageAssetKey": "signs/w408.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "W409",
+    "description": "T-junction marker",
+    "imageAssetKey": "signs/w409.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "W410",
+    "description": "Dead end or road closure marker",
+    "imageAssetKey": "signs/w410.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "W411",
+    "description": "Road sign W411 (marker/warning sign; exact meaning not found in source, needs verification)",
+    "imageAssetKey": "signs/w411.svg",
+    "confidence": "unverified"
+  },
+  {
+    "legislationCode": "W413",
+    "description": "Gore marker",
+    "imageAssetKey": "signs/w413.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "W414",
+    "description": "Gore marker",
+    "imageAssetKey": "signs/w414.svg",
+    "confidence": "confirmed"
+  },
+  {
+    "legislationCode": "W415",
+    "description": "Road sign W415 (marker/warning sign; exact meaning not found in source, needs verification)",
+    "imageAssetKey": "signs/w415.svg",
+    "confidence": "unverified"
+  }
+]

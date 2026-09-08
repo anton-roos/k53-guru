@@ -7,14 +7,12 @@ using K53Guru.Application.Common.Interfaces; // IDataSourceService
 using K53Guru.Application.Common.Models;
 using K53Guru.Application.Common.Security;
 using K53Guru.Application.Features.Identity.DTOs;
-using K53Guru.Application.Features.PicklistSets.DTOs;
 using K53Guru.Application.Features.Tenants.DTOs;
 using K53Guru.Domain.Identity;
 using K53Guru.Infrastructure.Configurations;
 using K53Guru.Infrastructure.Persistence.Interceptors;
 using K53Guru.Infrastructure.Services;
 using K53Guru.Infrastructure.Services.Circuits;
-using K53Guru.Infrastructure.Services.Gemini;
 using K53Guru.Infrastructure.Services.Identity;
 using K53Guru.Infrastructure.Services.MultiTenant;
 using MaxMind.GeoIP2;
@@ -189,8 +187,7 @@ public static class DependencyInjection
             .AddScoped<IDateTime, DateTimeService>()
             .AddScoped<IExcelService, ExcelService>()
             .AddScoped<IUploadService, MinioUploadService>()
-            .AddScoped<IPDFService, PDFService>()
-            .AddTransient<IDocumentOcrJob, DocumentOcrJob>();
+            .AddScoped<IPDFService, PDFService>();
     }
     #endregion
 

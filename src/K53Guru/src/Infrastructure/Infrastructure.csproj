@@ -24,4 +24,7 @@
     <ItemGroup>
         <ProjectReference Include="..\Application\Application.csproj" />
     </ItemGroup>
+    <ItemGroup>
+        <EmbeddedResource Include="Persistence\SeedData\road-signs-catalog.json" />
+    </ItemGroup>
 </Project>

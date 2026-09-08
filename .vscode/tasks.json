@@ -1,0 +1,68 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "build-server",
+      "type": "process",
+      "command": "dotnet",
+      "args": [
+        "build",
+        "${workspaceFolder}/src/K53Guru/src/Server.UI/Server.UI.csproj",
+        "/property:GenerateFullPaths=true",
+        "/consoleloggerparameters:NoSummary"
+      ],
+      "problemMatcher": "$msCompile",
+      "group": "build"
+    },
+    {
+      "label": "watch-server",
+      "type": "process",
+      "command": "dotnet",
+      "args": [
+        "watch",
+        "run",
+        "--project",
+        "${workspaceFolder}/src/K53Guru/src/Server.UI/Server.UI.csproj"
+      ],
+      "problemMatcher": "$msCompile",
+      "isBackground": true,
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated",
+        "group": "fullstack"
+      }
+    },
+    {
+      "label": "flutter-pub-get",
+      "type": "process",
+      "command": "flutter",
+      "args": ["pub", "get"],
+      "options": {
+        "cwd": "${workspaceFolder}/src/k53_guru_app"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "flutter-run-windows",
+      "type": "process",
+      "command": "flutter",
+      "args": ["run", "-d", "windows"],
+      "options": {
+        "cwd": "${workspaceFolder}/src/k53_guru_app"
+      },
+      "isBackground": true,
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated",
+        "group": "fullstack"
+      }
+    },
+    {
+      "label": "run-full-stack",
+      "dependsOn": ["watch-server", "flutter-run-windows"],
+      "dependsOrder": "parallel",
+      "problemMatcher": []
+    }
+  ]
+}
