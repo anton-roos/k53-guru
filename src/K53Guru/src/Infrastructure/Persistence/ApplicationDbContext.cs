@@ -32,7 +32,6 @@ public class ApplicationDbContext : IdentityDbContext<
     public DbSet<Question> Questions { get; set; }
     public DbSet<AnswerOption> AnswerOptions { get; set; }
     public DbSet<Test> Tests { get; set; }
-    public DbSet<TestQuestion> TestQuestions { get; set; }
     public DbSet<TestConfig> TestConfigs { get; set; }
     public DbSet<SectionRule> SectionRules { get; set; }
     public DbSet<LearnerProfile> LearnerProfiles { get; set; }

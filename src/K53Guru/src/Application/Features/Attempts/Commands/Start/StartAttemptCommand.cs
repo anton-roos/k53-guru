@@ -86,15 +86,18 @@ public class StartAttemptCommandHandler : IRequestHandler<StartAttemptCommand, R
             return await Result<AttemptDto>.FailureAsync(
                 $"Test configuration for code [{primaryCode}] is missing section rule(s) for: {string.Join(", ", missingPrimarySections)}.");
 
-        // (3) Load Test.TestQuestions - the curated pool for this Test - grouped by section. A
-        // pool question can legitimately carry more than one code's flag (shared-content edge
-        // case); VehicleControls filters this pool per constituent code via HasFlag below, not
-        // exact equality, so such a question is independently eligible for every code it flags.
-        var pool = await db.TestQuestions
-            .Where(tq => tq.TestId == test.Id)
-            .Include(tq => tq.Question).ThenInclude(q => q.AnswerOptions)
-            .Select(tq => tq.Question)
+        // (3) Load this sitting's pool straight from the question bank - no admin-curated
+        // per-Test selection exists any more. Filtering by Codes (a HasFlag check) is done
+        // in-memory rather than in the EF query itself, since Codes is stored as a converted
+        // string and HasFlag over it cannot be translated to SQL. Rules/Signs are shared across
+        // every constituent code, so a question is pool-eligible there if it carries ANY
+        // constituent code's flag; VehicleControls is filtered per constituent code below via
+        // HasFlag, so a question carrying more than one code's flag is independently eligible for
+        // every code it flags.
+        var allQuestions = await db.Questions
+            .Include(q => q.AnswerOptions)
             .ToListAsync(cancellationToken);
+        var pool = allQuestions.Where(q => constituentCodes.Any(code => q.Codes.HasFlag(code))).ToList();
         var poolBySection = pool.GroupBy(q => q.Section).ToDictionary(g => g.Key, g => g.ToList());
 
         var selections = new List<(SectionType Section, LicenceCode Code, List<Question> Questions)>();

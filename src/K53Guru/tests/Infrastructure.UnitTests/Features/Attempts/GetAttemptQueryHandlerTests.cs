@@ -96,18 +96,17 @@ public class GetAttemptQueryHandlerTests : IDisposable
         await using (var context = new ApplicationDbContext(_options))
         {
             var rulesQuestion = NewQuestion("Original stem", SectionType.Rules);
+            context.Questions.AddRange(
+                rulesQuestion,
+                NewQuestion("Signs Q", SectionType.Signs),
+                NewQuestion("Controls Q", SectionType.VehicleControls));
+
             var test = new Test
             {
                 Name = "Sample Test",
                 Codes = LicenceCode.Code1,
                 Sections = TestSectionScope.Rules | TestSectionScope.Signs | TestSectionScope.VehicleControls,
-                Status = TestStatus.Published,
-                TestQuestions = new List<TestQuestion>
-                {
-                    new() { Question = rulesQuestion },
-                    new() { Question = NewQuestion("Signs Q", SectionType.Signs) },
-                    new() { Question = NewQuestion("Controls Q", SectionType.VehicleControls) }
-                }
+                Status = TestStatus.Published
             };
             context.Tests.Add(test);
 
@@ -221,18 +220,17 @@ public class GetAttemptQueryHandlerTests : IDisposable
         int testId;
         await using (var context = new ApplicationDbContext(_options))
         {
+            context.Questions.AddRange(
+                NewQuestion("Rules Q", SectionType.Rules),
+                NewQuestion("Signs Q", SectionType.Signs),
+                NewQuestion("Controls Q", SectionType.VehicleControls));
+
             var test = new Test
             {
                 Name = "Explicit Mode Test",
                 Codes = LicenceCode.Code1,
                 Sections = TestSectionScope.Rules | TestSectionScope.Signs | TestSectionScope.VehicleControls,
-                Status = TestStatus.Published,
-                TestQuestions = new List<TestQuestion>
-                {
-                    new() { Question = NewQuestion("Rules Q", SectionType.Rules) },
-                    new() { Question = NewQuestion("Signs Q", SectionType.Signs) },
-                    new() { Question = NewQuestion("Controls Q", SectionType.VehicleControls) }
-                }
+                Status = TestStatus.Published
             };
             context.Tests.Add(test);
 

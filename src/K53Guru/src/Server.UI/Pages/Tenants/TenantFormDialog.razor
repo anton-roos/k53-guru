@@ -53,7 +53,12 @@
         try
         {
             _saving = true;
-            await _form.Validate().ConfigureAwait(false);
+            // Not .ConfigureAwait(false) -- Submit closes the dialog and shows a Snackbar
+            // after this, both of which need Blazor Server's synchronization context
+            // (the "Dispatcher"). ConfigureAwait(false) here would cause every
+            // continuation after this line, including the dialog close, to run off that
+            // context, throwing "The current thread is not associated with the Dispatcher."
+            await _form.Validate();
 
             if (!_form.IsValid)
                 return;

@@ -9,6 +9,4 @@ public class Test : BaseAuditableEntity
     public LicenceCode Codes { get; set; }
     public TestSectionScope Sections { get; set; }
     public TestStatus Status { get; set; } = TestStatus.Draft;
-
-    public List<TestQuestion> TestQuestions { get; set; } = new();
 }

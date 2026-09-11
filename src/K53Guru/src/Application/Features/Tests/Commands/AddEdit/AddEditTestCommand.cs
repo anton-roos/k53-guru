@@ -5,6 +5,13 @@ using K53Guru.Domain.Enums;
 
 namespace K53Guru.Application.Features.Tests.Commands.AddEdit;
 
+/// <summary>
+/// Creates or edits a Test's scope only (Name/Codes/Sections) - a Test no longer curates an
+/// explicit question pool. Attempt composition (<c>StartAttemptCommand</c>) draws its questions
+/// directly from the bank, filtered by this Test's Codes/Sections, at the moment a learner starts
+/// a sitting - see the removal of <c>TestQuestion</c>/<c>QuestionIds</c> and StartAttemptCommand's
+/// pool query.
+/// </summary>
 [RequestAuthorize(Roles = Roles.Admin)]
 public class AddEditTestCommand : ICacheInvalidatorRequest<Result<int>>
 {
@@ -12,7 +19,6 @@ public class AddEditTestCommand : ICacheInvalidatorRequest<Result<int>>
     public string? Name { get; set; }
     public LicenceCode Codes { get; set; }
     public TestSectionScope Sections { get; set; }
-    public List<int> QuestionIds { get; set; } = new();
 
     public string CacheKey => TestCacheKey.GetAllCacheKey;
     public IEnumerable<string>? Tags => TestCacheKey.Tags;
@@ -21,16 +27,11 @@ public class AddEditTestCommand : ICacheInvalidatorRequest<Result<int>>
     {
         public Mapping()
         {
-            // TestQuestions is reconciled explicitly in the handler (diff submitted QuestionIds
-            // against tracked join rows - add missing, remove extra) - it must never be diffed
-            // automatically by AutoMapper. Status is likewise never touched by this mapping: it
-            // has no source member on this command, so only the handler's explicit
-            // "Status = TestStatus.Draft on create" ever sets it.
-            CreateMap<AddEditTestCommand, Test>(MemberList.None)
-                .ForMember(d => d.TestQuestions, opt => opt.Ignore());
+            // Status is never touched by this mapping: it has no source member on this command, so
+            // only the handler's explicit "Status = TestStatus.Draft on create" ever sets it.
+            CreateMap<AddEditTestCommand, Test>(MemberList.None);
 
-            CreateMap<TestDto, AddEditTestCommand>(MemberList.None)
-                .ForMember(d => d.QuestionIds, opt => opt.MapFrom(s => s.Questions.Select(q => q.Id)));
+            CreateMap<TestDto, AddEditTestCommand>(MemberList.None);
         }
     }
 }
@@ -54,21 +55,18 @@ public class AddEditTestCommandHandler : IRequestHandler<AddEditTestCommand, Res
         await using var db = await _dbContextFactory.CreateAsync(cancellationToken);
         if (request.Id > 0)
         {
-            var item = await db.Tests
-                .Include(t => t.TestQuestions)
-                .SingleOrDefaultAsync(x => x.Id == request.Id, cancellationToken);
+            var item = await db.Tests.SingleOrDefaultAsync(x => x.Id == request.Id, cancellationToken);
             if (item == null) return await Result<int>.FailureAsync($"Test with id: [{request.Id}] not found.");
 
             // Editing a Test must never change its Status - the command carries no Status
             // property, so this mapping cannot touch it; only Story 2.3's publish/unpublish
             // command ever transitions it away from whatever it already is.
             item = _mapper.Map(request, item);
-            ReconcileTestQuestions(item, request.QuestionIds);
 
-            // An edit that only touches TestQuestions (every scalar field unchanged) leaves the
-            // change tracker's Test entry at Unchanged - force it to Modified on every edit so
-            // any future SaveChangesAsync-time safety net always runs (same fix Story 2.1 needed
-            // for Question/AnswerOptions).
+            // An edit that only re-saves scalar fields to the same values leaves the change
+            // tracker's Test entry at Unchanged - force it to Modified on every edit so any future
+            // SaveChangesAsync-time safety net always runs (same fix Story 2.1 needed for
+            // Question/AnswerOptions).
             db.ChangeTracker.Entries<Test>().Single(e => ReferenceEquals(e.Entity, item)).State = EntityState.Modified;
 
             await db.SaveChangesAsync(cancellationToken);
@@ -78,36 +76,10 @@ public class AddEditTestCommandHandler : IRequestHandler<AddEditTestCommand, Res
         {
             var item = _mapper.Map<Test>(request);
             item.Status = TestStatus.Draft;
-            item.TestQuestions = request.QuestionIds
-                .Distinct()
-                .Select(id => new TestQuestion { QuestionId = id })
-                .ToList();
 
             db.Tests.Add(item);
             await db.SaveChangesAsync(cancellationToken);
             return await Result<int>.SuccessAsync(item.Id);
-        }
-    }
-
-    /// <summary>
-    /// Reconciles the tracked Test's TestQuestions join rows against the submitted QuestionIds:
-    /// rows whose QuestionId is no longer submitted are removed (and deleted by EF Core on
-    /// save), and submitted ids with no existing row are added as new join rows. Never diffed via
-    /// AutoMapper.
-    /// </summary>
-    private static void ReconcileTestQuestions(Test item, List<int> submittedQuestionIds)
-    {
-        var submittedIds = submittedQuestionIds.ToHashSet();
-        var toRemove = item.TestQuestions.Where(tq => !submittedIds.Contains(tq.QuestionId)).ToList();
-        foreach (var remove in toRemove)
-        {
-            item.TestQuestions.Remove(remove);
-        }
-
-        var existingIds = item.TestQuestions.Select(tq => tq.QuestionId).ToHashSet();
-        foreach (var id in submittedIds.Where(id => !existingIds.Contains(id)))
-        {
-            item.TestQuestions.Add(new TestQuestion { QuestionId = id });
         }
     }
 }

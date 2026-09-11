@@ -117,13 +117,14 @@ public class SubmitAttemptCommandHandlerTests : IDisposable
             }
         }
 
+        context.Questions.AddRange(questions);
+
         var test = new Test
         {
             Name = "Sample Test",
             Codes = code,
             Sections = TestSectionScope.Rules | TestSectionScope.Signs | TestSectionScope.VehicleControls,
-            Status = TestStatus.Published,
-            TestQuestions = questions.Select(q => new TestQuestion { Question = q }).ToList()
+            Status = TestStatus.Published
         };
         context.Tests.Add(test);
 
@@ -171,13 +172,14 @@ public class SubmitAttemptCommandHandlerTests : IDisposable
             }
         }
 
+        context.Questions.AddRange(questions);
+
         var test = new Test
         {
             Name = "Combination Test",
             Codes = testCodes,
             Sections = TestSectionScope.Rules | TestSectionScope.Signs | TestSectionScope.VehicleControls,
-            Status = TestStatus.Published,
-            TestQuestions = questions.Select(q => new TestQuestion { Question = q }).ToList()
+            Status = TestStatus.Published
         };
         context.Tests.Add(test);
 

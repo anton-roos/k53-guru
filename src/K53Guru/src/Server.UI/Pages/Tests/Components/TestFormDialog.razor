@@ -1,7 +1,5 @@
 @using K53Guru.Application.Features.Tests
 @using K53Guru.Application.Features.Tests.Commands.AddEdit
-@using K53Guru.Application.Features.Questions.DTOs
-@using K53Guru.Application.Features.Questions.Queries.GetAll
 @using K53Guru.Domain.Enums
 
 @inject IStringLocalizer<Tests> L
@@ -45,50 +43,9 @@
                     </MudSelect>
                 </MudItem>
                 <MudItem xs="12">
-                    <MudSelect T="int"
-                               Label="@L["Questions"]"
-                               MultiSelection="true"
-                               SelectedValues="@_model.QuestionIds"
-                               SelectedValuesChanged="@OnQuestionIdsChanged"
-                               Required="true">
-                        @foreach (var question in _allQuestions)
-                        {
-                            <MudSelectItem Value="@question.Id">@question.Stem</MudSelectItem>
-                        }
-                    </MudSelect>
-                    @if (_questionIdsError is not null)
-                    {
-                        <MudText Color="Color.Error" Typo="Typo.caption" Class="d-block mt-1">
-                            @_questionIdsError
-                        </MudText>
-                    }
-                </MudItem>
-                <MudItem xs="12">
-                    <MudText Typo="Typo.body2" Class="mb-2">@L["Associated Questions"]</MudText>
-                    @{
-                        var groupedQuestions = TestQuestionGrouping.GroupBySectionWithCodeCounts(_associatedQuestions);
-                    }
-                    @if (!groupedQuestions.Any())
-                    {
-                        <MudText Typo="Typo.caption">@L["No questions selected yet."]</MudText>
-                    }
-                    else
-                    {
-                        @foreach (var sectionGroup in groupedQuestions)
-                        {
-                            <MudPaper Class="pa-2 mb-2" Outlined="true">
-                                <MudText Typo="Typo.subtitle2">
-                                    @sectionGroup.Section (@sectionGroup.Count)
-                                </MudText>
-                                @foreach (var codeCount in sectionGroup.CodeCounts)
-                                {
-                                    <MudText Typo="Typo.caption" Class="d-block">
-                                        @codeCount.Code: @codeCount.Count
-                                    </MudText>
-                                }
-                            </MudPaper>
-                        }
-                    }
+                    <MudAlert Severity="Severity.Info" Variant="Variant.Text">
+                        @L["Questions are drawn at random from the question bank matching these codes and sections each time a learner starts this test - there is nothing to curate here."]
+                    </MudAlert>
                 </MudItem>
             </MudGrid>
         </MudForm>
@@ -106,19 +63,8 @@
 
     private MudForm? _form;
     private bool _saving;
-    private string? _questionIdsError;
-    private List<QuestionDto> _allQuestions = new();
     private IEnumerable<LicenceCode> _selectedCodes = Array.Empty<LicenceCode>();
     private IEnumerable<TestSectionScope> _selectedSections = Array.Empty<TestSectionScope>();
-
-    private IEnumerable<QuestionDto> _associatedQuestions =>
-        _allQuestions.Where(q => _model.QuestionIds.Contains(q.Id));
-
-    protected override async Task OnInitializedAsync()
-    {
-        var questions = await Mediator.Send(new GetAllQuestionsQuery());
-        _allQuestions = questions.ToList();
-    }
 
     protected override void OnParametersSet()
     {
@@ -154,27 +100,19 @@
         _model.Sections = _selectedSections.Aggregate(TestSectionScope.None, (acc, v) => acc | v);
     }
 
-    private async Task OnQuestionIdsChanged(IEnumerable<int> values)
-    {
-        _model.QuestionIds = values.ToList();
-        await ValidateQuestionIds();
-    }
-
-    private async Task ValidateQuestionIds()
-    {
-        var errors = (await Validator.ValidatePropertyAsync(_model, nameof(AddEditTestCommand.QuestionIds))).ToList();
-        _questionIdsError = errors.Count > 0 ? string.Join(" ", errors) : null;
-    }
-
     private async Task Submit()
     {
         try
         {
             _saving = true;
-            await _form!.Validate().ConfigureAwait(false);
-            await ValidateQuestionIds();
+            // Not .ConfigureAwait(false) -- Submit closes the dialog and shows a Snackbar
+            // after this, both of which need Blazor Server's synchronization context
+            // (the "Dispatcher"). ConfigureAwait(false) here would cause every
+            // continuation after this line, including the dialog close, to run off that
+            // context, throwing "The current thread is not associated with the Dispatcher."
+            await _form!.Validate();
 
-            if (!_form!.IsValid || _questionIdsError is not null)
+            if (!_form!.IsValid)
                 return;
 
             var result = await Mediator.Send(_model);

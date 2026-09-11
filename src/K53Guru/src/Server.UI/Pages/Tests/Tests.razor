@@ -87,11 +87,6 @@
         <PropertyColumn Property="x => x.Codes" Title="@L[_currentDto.GetMemberDescription(x => x.Codes)]" />
         <PropertyColumn Property="x => x.Sections" Title="@L[_currentDto.GetMemberDescription(x => x.Sections)]" />
         <PropertyColumn Property="x => x.Status" Title="@L[_currentDto.GetMemberDescription(x => x.Status)]" />
-        <TemplateColumn Title="@L["Questions"]" Sortable="false">
-            <CellTemplate>
-                @context.Item.Questions.Count
-            </CellTemplate>
-        </TemplateColumn>
     </Columns>
     <NoRecordsContent>
         <MudText>@AppStrings.NoRecords</MudText>

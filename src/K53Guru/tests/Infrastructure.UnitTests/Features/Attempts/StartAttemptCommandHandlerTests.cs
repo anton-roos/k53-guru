@@ -96,10 +96,11 @@ public class StartAttemptCommandHandlerTests : IDisposable
     };
 
     /// <summary>
-    /// Seeds a published, single-code (Code1) Test whose curated TestQuestions pool has
+    /// Seeds a published, single-code (Code1) Test and a question bank pool with
     /// <paramref name="perSectionCount"/> questions in each of Rules/Signs/VehicleControls, plus a
     /// matching TestConfig requiring exactly <paramref name="required"/> per section
-    /// (required &lt;= perSectionCount).
+    /// (required &lt;= perSectionCount). The pool is drawn straight from the bank at attempt-start
+    /// time - there is no per-Test curation any more - so seeding the Questions is sufficient.
     /// </summary>
     private async Task<int> SeedPublishedTestAsync(int perSectionCount, int required, TestStatus status = TestStatus.Published)
     {
@@ -114,13 +115,14 @@ public class StartAttemptCommandHandlerTests : IDisposable
             }
         }
 
+        context.Questions.AddRange(questions);
+
         var test = new Test
         {
             Name = "Sample Test",
             Codes = LicenceCode.Code1,
             Sections = TestSectionScope.Rules | TestSectionScope.Signs | TestSectionScope.VehicleControls,
-            Status = status,
-            TestQuestions = questions.Select(q => new TestQuestion { Question = q }).ToList()
+            Status = status
         };
         context.Tests.Add(test);
 
@@ -141,9 +143,9 @@ public class StartAttemptCommandHandlerTests : IDisposable
     }
 
     /// <summary>
-    /// Seeds a published, single-code (Code1) Test whose curated TestQuestions pool has a
-    /// PER-SECTION pool count taken from <paramref name="poolCountsBySection"/> (so different
-    /// sections can be provisioned differently), plus a matching TestConfig requiring exactly
+    /// Seeds a published, single-code (Code1) Test and a question bank pool with a PER-SECTION
+    /// pool count taken from <paramref name="poolCountsBySection"/> (so different sections can be
+    /// provisioned differently), plus a matching TestConfig requiring exactly
     /// <paramref name="required"/> per section for all three sections.
     /// </summary>
     private async Task<int> SeedPublishedTestWithPerSectionPoolAsync(
@@ -160,13 +162,14 @@ public class StartAttemptCommandHandlerTests : IDisposable
             }
         }
 
+        context.Questions.AddRange(questions);
+
         var test = new Test
         {
             Name = "Sample Test",
             Codes = LicenceCode.Code1,
             Sections = TestSectionScope.Rules | TestSectionScope.Signs | TestSectionScope.VehicleControls,
-            Status = TestStatus.Published,
-            TestQuestions = questions.Select(q => new TestQuestion { Question = q }).ToList()
+            Status = TestStatus.Published
         };
         context.Tests.Add(test);
 
@@ -188,10 +191,10 @@ public class StartAttemptCommandHandlerTests : IDisposable
 
     /// <summary>
     /// Seeds a published COMBINATION Test (Codes = the bitwise-OR of <paramref name="constituentCodes"/>)
-    /// whose curated TestQuestions pool has <paramref name="rulesSignsPoolCount"/> Rules and Signs
+    /// and a question bank pool with <paramref name="rulesSignsPoolCount"/> Rules and Signs
     /// questions each (shared - not filtered by code), plus a per-constituent-code VehicleControls
     /// pool sized from <paramref name="vehicleControlsPoolCountByCode"/> (each such question is
-    /// tagged with ONLY that one code, mirroring properly-curated admin content). A matching
+    /// tagged with ONLY that one code). A matching
     /// TestConfig (Rules/Signs requiring <paramref name="rulesSignsRequired"/>, VehicleControls
     /// requiring that code's own value from <paramref name="vehicleControlsRequiredByCode"/>) is
     /// seeded for EVERY constituent code, since composition looks up each constituent code's own
@@ -228,13 +231,14 @@ public class StartAttemptCommandHandlerTests : IDisposable
             }
         }
 
+        context.Questions.AddRange(questions);
+
         var test = new Test
         {
             Name = "Combination Test",
             Codes = testCodes,
             Sections = TestSectionScope.Rules | TestSectionScope.Signs | TestSectionScope.VehicleControls,
-            Status = TestStatus.Published,
-            TestQuestions = questions.Select(q => new TestQuestion { Question = q }).ToList()
+            Status = TestStatus.Published
         };
         context.Tests.Add(test);
 
@@ -425,7 +429,7 @@ public class StartAttemptCommandHandlerTests : IDisposable
 
     /// <summary>
     /// Seeds a published Test whose Codes is an UNSUPPORTED combination (Code2+3 or all-three) -
-    /// used only to exercise the allowlist rejection path, so no TestConfig/TestQuestions pool is
+    /// used only to exercise the allowlist rejection path, so no TestConfig/question pool is
     /// needed (rejection happens before either is read).
     /// </summary>
     private async Task<int> SeedPublishedTestWithUnsupportedCodesAsync(LicenceCode codes)
@@ -778,13 +782,14 @@ public class StartAttemptCommandHandlerTests : IDisposable
                 NewQuestion("Signs Q0", SectionType.Signs, explanation: "Signs explanation"),
                 NewQuestion("VehicleControls Q0", SectionType.VehicleControls, explanation: null)
             };
+            context.Questions.AddRange(questions);
+
             var test = new Test
             {
                 Name = "Explanation Test",
                 Codes = LicenceCode.Code1,
                 Sections = TestSectionScope.Rules | TestSectionScope.Signs | TestSectionScope.VehicleControls,
-                Status = TestStatus.Published,
-                TestQuestions = questions.Select(q => new TestQuestion { Question = q }).ToList()
+                Status = TestStatus.Published
             };
             context.Tests.Add(test);
             context.TestConfigs.Add(new TestConfig

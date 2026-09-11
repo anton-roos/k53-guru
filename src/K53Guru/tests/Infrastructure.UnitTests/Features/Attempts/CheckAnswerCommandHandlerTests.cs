@@ -106,13 +106,14 @@ public class CheckAnswerCommandHandlerTests : IDisposable
             NewQuestion("VehicleControls Q0", SectionType.VehicleControls, explanation: "Because the rule says so.")
         };
 
+        context.Questions.AddRange(questions);
+
         var test = new Test
         {
             Name = "Sample Test",
             Codes = LicenceCode.Code1,
             Sections = TestSectionScope.Rules | TestSectionScope.Signs | TestSectionScope.VehicleControls,
-            Status = TestStatus.Published,
-            TestQuestions = questions.Select(q => new TestQuestion { Question = q }).ToList()
+            Status = TestStatus.Published
         };
         context.Tests.Add(test);
 

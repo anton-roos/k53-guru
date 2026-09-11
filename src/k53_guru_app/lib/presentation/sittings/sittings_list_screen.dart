@@ -6,12 +6,15 @@ import '../../domain/licence_code.dart';
 import '../../theme/app_colors_extension.dart';
 import '../../theme/app_spacing.dart';
 import '../../theme/app_typography.dart';
+import '../attempt/attempt_screen.dart';
 import 'sittings_list_provider.dart';
 
-/// Minimal proof screen for the layered architecture: widget ->
+/// Originally a minimal proof screen for the layered architecture: widget ->
 /// [availableSittingsProvider] -> `SittingsRepository` -> `K53ApiClient` ->
-/// HTTP. Intentionally plain, unstyled beyond the shared theme -- real UI
-/// is Epic 5/6's job.
+/// HTTP. Now also the entry point into [AttemptScreen]'s minimal
+/// interactive attempt flow -- tapping a sitting starts a Practice-mode
+/// attempt for it. Still deliberately plain -- the full Epic 5/6 home
+/// experience (tiles, mastery bars, resume-in-place) is not built here.
 class SittingsListScreen extends ConsumerWidget {
   const SittingsListScreen({super.key});
 
@@ -70,21 +73,29 @@ class _SittingsList extends StatelessWidget {
                 .join(' + ');
 
         return Card(
-          child: Padding(
-            padding: const EdgeInsets.all(AppSpacing.space16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Text(
-                  sitting.name ?? 'Sitting #${sitting.id}',
-                  style: AppTypography.option.copyWith(color: palette.ink),
-                ),
-                const SizedBox(height: AppSpacing.space4),
-                Text(
-                  codes,
-                  style: AppTypography.label.copyWith(color: palette.muted),
-                ),
-              ],
+          clipBehavior: Clip.antiAlias,
+          child: InkWell(
+            onTap: () => Navigator.of(context).push(
+              MaterialPageRoute<void>(
+                builder: (_) => AttemptScreen(sitting: sitting),
+              ),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(AppSpacing.space16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Text(
+                    sitting.name ?? 'Sitting #${sitting.id}',
+                    style: AppTypography.option.copyWith(color: palette.ink),
+                  ),
+                  const SizedBox(height: AppSpacing.space4),
+                  Text(
+                    codes,
+                    style: AppTypography.label.copyWith(color: palette.muted),
+                  ),
+                ],
+              ),
             ),
           ),
         );

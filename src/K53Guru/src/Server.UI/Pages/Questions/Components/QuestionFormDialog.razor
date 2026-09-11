@@ -64,28 +64,32 @@
                 <MudItem xs="12">
                     <MudText Typo="Typo.body2" Class="mb-2">@L["Answer Options"]</MudText>
                     <MudRadioGroup T="int" Value="@_correctIndex" ValueChanged="@OnCorrectIndexChanged">
-                        @for (var i = 0; i < _model.AnswerOptions.Count; i++)
-                        {
-                            var index = i;
-                            <MudStack Row AlignItems="AlignItems.Center" Spacing="2" Class="mb-2">
-                                <MudRadio T="int" Value="@index" Color="Color.Primary" Dense="true">
-                                    @L["Correct"]
-                                </MudRadio>
-                                <MudTextField T="string"
-                                              @bind-Value="_model.AnswerOptions[index].Text"
-                                              Label="@($"{L["Option"]} {index + 1}")"
-                                              Class="flex-grow-1"
-                                              Required="true">
-                                </MudTextField>
-                                <MudIconButton Icon="@Icons.Material.Outlined.Delete"
-                                               Color="Color.Error"
-                                               Disabled="@(_model.AnswerOptions.Count <= 2)"
-                                               OnClick="@(() => RemoveOption(index))">
-                                </MudIconButton>
-                            </MudStack>
-                        }
+                        <MudGrid Spacing="2">
+                            @for (var i = 0; i < _model.AnswerOptions.Count; i++)
+                            {
+                                var index = i;
+                                <MudItem xs="12">
+                                    <MudStack Row AlignItems="AlignItems.Center" Spacing="2">
+                                        <MudRadio T="int" Value="@index" Color="Color.Primary" Dense="true">
+                                            @L["Correct"]
+                                        </MudRadio>
+                                        <MudTextField T="string"
+                                                      @bind-Value="_model.AnswerOptions[index].Text"
+                                                      Label="@($"{L["Option"]} {index + 1}")"
+                                                      Class="flex-grow-1"
+                                                      Required="true">
+                                        </MudTextField>
+                                        <MudIconButton Icon="@Icons.Material.Outlined.Delete"
+                                                       Color="Color.Error"
+                                                       Disabled="@(_model.AnswerOptions.Count <= 2)"
+                                                       OnClick="@(() => RemoveOption(index))">
+                                        </MudIconButton>
+                                    </MudStack>
+                                </MudItem>
+                            }
+                        </MudGrid>
                     </MudRadioGroup>
-                    <MudButton StartIcon="@Icons.Material.Outlined.Add" OnClick="AddOption">
+                    <MudButton StartIcon="@Icons.Material.Outlined.Add" OnClick="AddOption" Class="mt-2">
                         @L["Add option"]
                     </MudButton>
                     @if (_answerOptionsError is not null)
@@ -174,7 +178,12 @@
         try
         {
             _saving = true;
-            await _form!.Validate().ConfigureAwait(false);
+            // Not .ConfigureAwait(false) -- Submit closes the dialog and shows a Snackbar
+            // after this, both of which need Blazor Server's synchronization context
+            // (the "Dispatcher"). ConfigureAwait(false) here previously caused every
+            // continuation after this line, including the dialog close, to run off that
+            // context, throwing "The current thread is not associated with the Dispatcher."
+            await _form!.Validate();
             await ValidateAnswerOptions();
 
             if (!_form!.IsValid || _answerOptionsError is not null)

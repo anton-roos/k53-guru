@@ -199,7 +199,18 @@ public static class DependencyInjection
         app.UseAuthentication();
         app.UseAuthorization();
         app.UseAntiforgery();
-        app.UseHttpsRedirection();
+
+        // The learner-facing API (Epic 3, /api/v1/*) is deliberately consumed over plain HTTP
+        // by the Flutter client (ApiConfig.baseUrl -- no dev/staging/prod split, no cert
+        // trust story for the client's HTTP stack). Redirecting it to HTTPS breaks that: a
+        // browser fetch() to the HTTP port that gets 307'd to the HTTPS dev-cert port fails
+        // outright in some contexts even when the HTTPS endpoint itself is reachable
+        // (confirmed: direct HTTPS fetch succeeds, the same call via the HTTP->HTTPS redirect
+        // does not) -- so only the human-facing Blazor Admin UI gets the redirect.
+        app.UseWhen(
+            context => !context.Request.Path.StartsWithSegments("/api"),
+            branch => branch.UseHttpsRedirection());
+
         app.MapStaticAssets();
         
 

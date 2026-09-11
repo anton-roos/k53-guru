@@ -190,6 +190,7 @@ public class ApplicationDbContextInitializer
 
         await SeedRoadSignsAsync();
         await SeedQuestionsAsync();
+        await SeedMoreQuestionsAsync();
         await SeedTestConfigsAsync();
     }
 
@@ -285,8 +286,10 @@ public class ApplicationDbContextInitializer
     /// catalog rather than invented text. Rules/VehicleControls content is limited to
     /// well-established, low-risk-of-error general road-rule/vehicle-operation knowledge.
     /// Tagged for all three licence codes (Code1|Code2|Code3) since none of this content is
-    /// code-specific. Not yet linked to any <see cref="Test"/> via <see cref="TestQuestion"/>
-    /// -- that composition step is separate (Epic 2 admin authoring).
+    /// code-specific. <see cref="Test"/>s no longer curate an explicit question pool -- attempt
+    /// composition (<c>StartAttemptCommand</c>) draws directly from this bank, filtered by
+    /// <see cref="Question.Section"/>/<see cref="Question.Codes"/>, so a seeded question is
+    /// immediately eligible for every matching sitting.
     /// </summary>
     /// <summary>
     /// Stem of the first question in this seed batch, used as a sentinel to detect whether
@@ -486,6 +489,293 @@ public class ApplicationDbContextInitializer
         await _context.Questions.AddRangeAsync(questions);
         await _context.SaveChangesAsync();
         _logger.LogInformation("Seeded {Count} starter questions.", questions.Count);
+    }
+
+    /// <summary>
+    /// Sentinel for the second question batch (see <see cref="SeedMoreQuestionsAsync"/>) --
+    /// same technique as <see cref="SeedQuestionsSentinelStem"/>, a separate sentinel because
+    /// this batch was added after the first one had already been seeded on a live database.
+    /// </summary>
+    private const string SeedMoreQuestionsSentinelStem =
+        "At a railway level crossing with flashing lights or a lowered boom, what must a driver do?";
+
+    /// <summary>
+    /// Tops up the question bank to the real minimums <see cref="SeedTestConfigsAsync"/>'s
+    /// SectionRules require to actually start an attempt (30 Rules, 30 Signs, 12
+    /// VehicleControls -- see <c>StartAttemptCommand</c>'s pool-sufficiency check, which
+    /// applies to Practice attempts exactly the same as Test attempts). The first batch (see
+    /// <see cref="SeedQuestionsAsync"/>) only had 10/15/6 -- nowhere near enough for any
+    /// attempt to ever start; this batch adds the remaining 20/15/6 needed to exactly meet
+    /// the minimum (no slack for shuffle variety yet -- every attempt draws the same set,
+    /// just reordered -- until the bank grows further via real content authoring, Epic 2).
+    /// Same sourcing standard as the first batch: Signs questions reference a real, verified
+    /// <see cref="RoadSign.LegislationCode"/>; Rules/VehicleControls content is limited to
+    /// well-established, low-risk-of-error general road-rule/vehicle-operation knowledge.
+    /// </summary>
+    private async Task SeedMoreQuestionsAsync()
+    {
+        var alreadySeeded =
+            await _context.Questions.AnyAsync(q => q.Stem == SeedMoreQuestionsSentinelStem);
+        if (alreadySeeded) return;
+
+        _logger.LogInformation("Seeding additional starter questions...");
+        const LicenceCode allCodes = LicenceCode.Code1 | LicenceCode.Code2 | LicenceCode.Code3;
+
+        Question Q(string stem, SectionType section, string? signRef, string? explanation,
+            params (string Text, bool IsCorrect)[] options) => new()
+        {
+            Stem = stem,
+            Codes = allCodes,
+            Section = section,
+            SignRef = signRef,
+            Explanation = explanation,
+            AnswerOptions = options.Select((o, i) => new AnswerOption
+            {
+                Text = o.Text,
+                IsCorrect = o.IsCorrect,
+                Order = i
+            }).ToList()
+        };
+
+        var questions = new List<Question>
+        {
+            // Rules (20)
+            Q("What must a driver do when an emergency vehicle approaches with its siren and lights on?",
+                SectionType.Rules, null,
+                "Emergency vehicles need a clear path -- pull over safely and let them pass.",
+                ("Move out of the way and give way as soon as it's safe to do so", true),
+                ("Speed up to clear the intersection first", false),
+                ("Ignore it if you have right of way", false),
+                ("Stop immediately wherever you are", false)),
+            Q("May a driver use a hand-held mobile phone while driving?",
+                SectionType.Rules, null,
+                "Using a hand-held phone while driving is illegal and a major distraction.",
+                ("No, it is illegal", true),
+                ("Yes, as long as the call is short", false),
+                ("Yes, but only for texting", false),
+                ("Yes, if driving below the speed limit", false)),
+            Q("Is it legal to drive under the influence of alcohol or drugs?",
+                SectionType.Rules, null,
+                "Driving under the influence is illegal and one of the leading causes of serious accidents.",
+                ("No, it is illegal", true),
+                ("Yes, if driving carefully", false),
+                ("Yes, on quiet roads only", false),
+                ("Only during the day", false)),
+            Q("At a railway level crossing with flashing lights or a lowered boom, what must a driver do?",
+                SectionType.Rules, null,
+                "Flashing lights or a lowered boom mean a train is approaching -- always stop and wait.",
+                ("Stop and wait until it is safe to proceed", true),
+                ("Proceed quickly before the train arrives", false),
+                ("Sound the hooter and continue", false),
+                ("Reverse away from the crossing", false)),
+            Q("At a roundabout, who must give way?",
+                SectionType.Rules, null,
+                "Traffic entering a roundabout must give way to vehicles already circulating in it.",
+                ("Traffic entering the roundabout gives way to traffic already circulating", true),
+                ("Traffic already circulating always gives way to entering traffic", false),
+                ("Whoever arrives first, regardless of position", false),
+                ("The largest vehicle has right of way", false)),
+            Q("How should a driver behave in a marked school zone?",
+                SectionType.Rules, null,
+                "School zones need reduced speed and extra caution for children near the road.",
+                ("Reduce speed and take extra care", true),
+                ("Maintain normal speed", false),
+                ("Speed up to clear the zone quickly", false),
+                ("School zones only apply on weekends", false)),
+            Q("Should a driver follow closely behind an emergency vehicle using its siren?",
+                SectionType.Rules, null,
+                "Following an emergency vehicle closely is dangerous -- it may stop or turn suddenly.",
+                ("No, keep a safe distance behind it", true),
+                ("Yes, to get through traffic faster", false),
+                ("Yes, but only in heavy traffic", false),
+                ("It doesn't matter", false)),
+            Q("When must a driver use headlights?",
+                SectionType.Rules, null,
+                "Headlights are required whenever natural light isn't enough to see and be seen clearly.",
+                ("From sunset to sunrise and in poor visibility (fog, heavy rain)", true),
+                ("Only on freeways", false),
+                ("Only when it is completely dark", false),
+                ("Headlights are optional at all times", false)),
+            Q("What does a solid double line in the centre of the road mean?",
+                SectionType.Rules, null,
+                "A solid double centre line means no overtaking is allowed from either direction.",
+                ("Overtaking is prohibited in both directions", true),
+                ("Overtaking is allowed if the road is clear", false),
+                ("It marks a pedestrian crossing", false),
+                ("It only applies to heavy vehicles", false)),
+            Q("What does a single broken (dashed) centre line mean?",
+                SectionType.Rules, null,
+                "A dashed centre line means overtaking is permitted when it can be done safely.",
+                ("Overtaking is permitted when it is safe to do so", true),
+                ("Overtaking is never permitted", false),
+                ("It marks a one-way road", false),
+                ("It applies only to cyclists", false)),
+            Q("When merging onto a freeway, who must give way?",
+                SectionType.Rules, null,
+                "A merging driver must fit into the existing flow of freeway traffic, not the other way round.",
+                ("The merging driver gives way to traffic already on the freeway", true),
+                ("Freeway traffic must give way to merging traffic", false),
+                ("Whoever is travelling faster has right of way", false),
+                ("Merging vehicles always have right of way", false)),
+            Q("What must a driver do at a red traffic light?",
+                SectionType.Rules, null,
+                "A red light always means a full stop before the line, held until it turns green.",
+                ("Stop completely before the stop line and wait for green", true),
+                ("Slow down and proceed if the road is clear", false),
+                ("Stop only if other traffic is present", false),
+                ("Treat it the same as a yield sign", false)),
+            Q("Why must high beam headlights be dimmed for oncoming traffic?",
+                SectionType.Rules, null,
+                "High beams can temporarily blind oncoming drivers, which is dangerous for everyone.",
+                ("To avoid blinding the oncoming driver", true),
+                ("To save fuel", false),
+                ("It is only a courtesy, not a rule", false),
+                ("High beams must never be dimmed", false)),
+            Q("Is it legal to drive with a suspended or expired driving licence?",
+                SectionType.Rules, null,
+                "Driving without a valid licence is illegal regardless of prior driving experience.",
+                ("No, it is illegal", true),
+                ("Yes, for short trips only", false),
+                ("Yes, if accompanied by a licensed driver", false),
+                ("Only illegal if involved in a collision", false)),
+            Q("How should a driver reverse on a public road?",
+                SectionType.Rules, null,
+                "Reversing is inherently risky -- keep it brief and check all around before and during.",
+                ("Only for a short distance, with extreme care and full awareness of surroundings", true),
+                ("As far as needed, at normal driving speed", false),
+                ("Reversing on a public road is never allowed", false),
+                ("Only at night", false)),
+            Q("What should a driver do before pulling away from a parked position?",
+                SectionType.Rules, null,
+                "Checking mirrors and indicating before pulling off protects both you and other road users.",
+                ("Check mirrors, indicate, and confirm it's safe before moving off", true),
+                ("Pull away immediately once the engine starts", false),
+                ("No checks are required if no cars are visible", false),
+                ("Only check the mirror on the driver's side", false)),
+            Q("Where may a vehicle not be parked?",
+                SectionType.Rules, null,
+                "Parking that blocks an intersection or driveway endangers and obstructs other road users.",
+                ("In a way that obstructs an intersection or driveway", true),
+                ("Anywhere there is space, regardless of visibility", false),
+                ("Parking restrictions only apply to trucks", false),
+                ("Parking restrictions only apply at night", false)),
+            Q("May a driver overtake a vehicle that has stopped at a marked pedestrian crossing?",
+                SectionType.Rules, null,
+                "A stopped vehicle at a crossing may be giving way to a pedestrian you can't yet see -- never overtake it there.",
+                ("No, overtaking there is not allowed", true),
+                ("Yes, if no pedestrians are visible", false),
+                ("Yes, if travelling slowly", false),
+                ("Only motorcycles may overtake there", false)),
+            Q("On a multi-lane road, where should slower-moving traffic keep, other than when overtaking?",
+                SectionType.Rules, null,
+                "Keeping left except when overtaking keeps faster lanes clear for passing traffic.",
+                ("In the left-hand lane", true),
+                ("In the right-hand lane", false),
+                ("In whichever lane has less traffic", false),
+                ("Lane position doesn't matter for slower traffic", false)),
+            Q("What should a driver or passenger do before opening a car door?",
+                SectionType.Rules, null,
+                "A carelessly opened door can hit a passing cyclist or vehicle -- always check first.",
+                ("Check for approaching traffic and cyclists", true),
+                ("Open it quickly to avoid blocking the pavement", false),
+                ("No check is needed if the car is parked", false),
+                ("Only the driver needs to check, not passengers", false)),
+
+            // Signs (15 more, all referencing a real, verified sign)
+            Q("What does this road sign mean?", SectionType.Signs, "R6", null,
+                ("Give Way / Yield to oncoming traffic", true), ("Stop", false),
+                ("No entry", false), ("Keep Right", false)),
+            Q("What does this road sign mean?", SectionType.Signs, "R104", null,
+                ("Keep Right", true), ("Keep Left", false),
+                ("Turn Right", false), ("Proceed Straight", false)),
+            Q("What does this road sign mean?", SectionType.Signs, "R105", null,
+                ("Turn Left", true), ("Turn Right", false),
+                ("Keep Left", false), ("Proceed Straight", false)),
+            Q("What does this road sign mean?", SectionType.Signs, "R106", null,
+                ("Turn Right", true), ("Turn Left", false),
+                ("Keep Right", false), ("Roundabout", false)),
+            Q("What does this road sign mean?", SectionType.Signs, "R110", null,
+                ("Pedestrians only", true), ("Cyclists only", false),
+                ("Pedestrians prohibited", false), ("Motorcycles only", false)),
+            Q("What does this road sign mean?", SectionType.Signs, "R209", null,
+                ("Left turn prohibited ahead", true), ("Right turn prohibited ahead", false),
+                ("Left turn prohibited", false), ("U-turn prohibited", false)),
+            Q("What does this road sign mean?", SectionType.Signs, "R211", null,
+                ("Left turn prohibited", true), ("Right turn prohibited", false),
+                ("Left turn prohibited ahead", false), ("Overtaking prohibited", false)),
+            Q("What does this road sign mean?", SectionType.Signs, "R212", null,
+                ("Right turn prohibited", true), ("Left turn prohibited", false),
+                ("Right turn prohibited ahead", false), ("U-turn prohibited", false)),
+            Q("What does this road sign mean?", SectionType.Signs, "R214", null,
+                ("Overtaking prohibited", true), ("Parking prohibited", false),
+                ("Stopping prohibited", false), ("U-turn prohibited", false)),
+            Q("What does this road sign mean?", SectionType.Signs, "R218", null,
+                ("Pedestrians prohibited", true), ("Pedestrians only", false),
+                ("Cyclists prohibited", false), ("Cyclists and pedestrians prohibited", false)),
+            Q("What does this road sign mean?", SectionType.Signs, "W102", null,
+                ("Crossroad ahead with priority", true), ("Crossroad ahead without priority", false),
+                ("T-junction ahead", false), ("Roundabout ahead", false)),
+            Q("What does this road sign mean?", SectionType.Signs, "W104", null,
+                ("T-junction ahead", true), ("Crossroad ahead", false),
+                ("Fork ahead", false), ("Side-road junction ahead", false)),
+            Q("What does this road sign mean?", SectionType.Signs, "W115", null,
+                ("Fork ahead", true), ("T-junction ahead", false),
+                ("Crossroad ahead", false), ("Dual-carriageway begins ahead", false)),
+            Q("What does this road sign mean?", SectionType.Signs, "W301", null,
+                ("Traffic signal ahead", true), ("Stop control ahead", false),
+                ("Give Way / Yield control ahead", false), ("Railway crossing ahead", false)),
+            Q("What does this road sign mean?", SectionType.Signs, "W318", null,
+                ("Railway crossing ahead", true), ("Tunnel ahead", false),
+                ("Traffic signal ahead", false), ("Gate ahead", false)),
+
+            // VehicleControls (6 more)
+            Q("How should the steering wheel be held for full control of the vehicle?",
+                SectionType.VehicleControls, null,
+                "Hands on opposite sides of the wheel give the most control and the safest range of movement.",
+                ("With hands placed on opposite sides of the wheel", true),
+                ("With one hand only, resting on the gear lever", false),
+                ("With both hands crossed over each other", false),
+                ("Grip only matters when reversing", false)),
+            Q("How should the accelerator be used for smooth driving?",
+                SectionType.VehicleControls, null,
+                "Smooth, progressive acceleration is safer and easier on the vehicle than sudden bursts of speed.",
+                ("Applied smoothly and progressively, avoiding sudden acceleration", true),
+                ("Pressed as hard as possible when moving off", false),
+                ("Acceleration technique doesn't matter", false),
+                ("Only relevant on a freeway", false)),
+            Q("How should the brakes normally be applied?",
+                SectionType.VehicleControls, null,
+                "Smooth, progressive braking (except in a genuine emergency) is safer and more comfortable for everyone in the vehicle.",
+                ("Smoothly and progressively, except in a genuine emergency", true),
+                ("As hard as possible every time", false),
+                ("Braking technique doesn't matter at low speed", false),
+                ("Only the handbrake should be used to slow down", false)),
+            Q("What is the purpose of the clutch pedal in a manual vehicle?",
+                SectionType.VehicleControls, null,
+                "The clutch disengages the engine from the gearbox so gears can be changed, or the car can stop, without stalling.",
+                ("To disengage the engine from the gearbox for gear changes or stopping", true),
+                ("To control the vehicle's speed directly", false),
+                ("To operate the brake lights", false),
+                ("It has no function once the vehicle is moving", false)),
+            Q("Besides checking mirrors, what else should a driver do before changing lanes?",
+                SectionType.VehicleControls, null,
+                "Mirrors don't show everything -- a quick glance over the shoulder checks the blind spot.",
+                ("Check the blind spot with a glance over the shoulder", true),
+                ("Nothing else is necessary if mirrors were checked", false),
+                ("Sound the hooter instead", false),
+                ("Flash the headlights instead", false)),
+            Q("What should a driver do if a tyre bursts while driving?",
+                SectionType.VehicleControls, null,
+                "Sudden hard braking or sharp steering after a blowout can cause loss of control -- ease off gradually instead.",
+                ("Grip the wheel firmly, ease off the accelerator gradually, and avoid harsh braking", true),
+                ("Brake as hard as possible immediately", false),
+                ("Steer sharply to the side of the road", false),
+                ("Accelerate to reach a safe stopping point faster", false)),
+        };
+
+        await _context.Questions.AddRangeAsync(questions);
+        await _context.SaveChangesAsync();
+        _logger.LogInformation("Seeded {Count} additional starter questions.", questions.Count);
     }
 
     /// <summary>

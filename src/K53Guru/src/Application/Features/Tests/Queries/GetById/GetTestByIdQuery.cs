@@ -29,8 +29,6 @@ public class GetTestByIdQueryHandler :
     public async Task<Result<TestDto>> Handle(GetTestByIdQuery request, CancellationToken cancellationToken)
     {
         await using var db = await _dbContextFactory.CreateAsync(cancellationToken);
-        // TestByIdSpecification includes TestQuestions.Question so the associated-questions list
-        // (grouped/counted client-side by the Razor code-behind) is returned flat and complete.
         var data = await db.Tests.ApplySpecification(new TestByIdSpecification(request.Id))
                                   .ProjectTo<TestDto>(_mapper.ConfigurationProvider)
                                   .FirstOrDefaultAsync(cancellationToken)

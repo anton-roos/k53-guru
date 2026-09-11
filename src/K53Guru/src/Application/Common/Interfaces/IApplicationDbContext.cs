@@ -22,7 +22,6 @@ public interface IApplicationDbContext: IAsyncDisposable
     DbSet<Question> Questions { get; set; }
     DbSet<AnswerOption> AnswerOptions { get; set; }
     DbSet<Test> Tests { get; set; }
-    DbSet<TestQuestion> TestQuestions { get; set; }
     DbSet<TestConfig> TestConfigs { get; set; }
     DbSet<SectionRule> SectionRules { get; set; }
     DbSet<LearnerProfile> LearnerProfiles { get; set; }
