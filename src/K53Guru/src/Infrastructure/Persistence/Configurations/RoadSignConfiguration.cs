@@ -11,6 +11,7 @@ public class RoadSignConfiguration : IEntityTypeConfiguration<RoadSign>
         builder.HasIndex(t => t.LegislationCode).IsUnique();
         builder.Property(t => t.Description).HasMaxLength(500).IsRequired();
         builder.Property(t => t.ImageAssetKey).HasMaxLength(500);
+        builder.Property(t => t.ComponentSignCodes).HasMaxLength(200);
         builder.Ignore(e => e.DomainEvents);
     }
 }

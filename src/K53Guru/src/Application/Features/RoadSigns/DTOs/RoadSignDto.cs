@@ -11,6 +11,8 @@ public class RoadSignDto
 
     [Description("Image")] public string? ImageAssetKey { get; set; }
 
+    [Description("Component Sign Codes")] public string? ComponentSignCodes { get; set; }
+
     private class Mapping : Profile
     {
         public Mapping()

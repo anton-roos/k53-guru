@@ -3,6 +3,7 @@
 @using K53Guru.Application.Features.RoadSigns.Queries.Pagination
 @using K53Guru.Application.Features.RoadSigns.Queries.GetById
 @using K53Guru.Application.Features.RoadSigns.Caching
+@using K53Guru.Application.Features.RoadSigns.Commands.AddEdit
 @using K53Guru.Server.UI.Pages.RoadSigns.Components
 
 @attribute [Authorize(Policy = Permissions.RoadSigns.View)]
@@ -30,6 +31,13 @@
                                StartIcon="@Icons.Material.Outlined.Refresh">
                         @AppStrings.Refresh
                     </MudButton>
+                    @if (_accessRights.Create)
+                    {
+                        <MudButton StartIcon="@Icons.Material.Outlined.Add"
+                                   OnClick="OnCreateRoadSign">
+                            @AppStrings.New
+                        </MudButton>
+                    }
                 </MudStack>
                 <MudTextField T="string"
                                ValueChanged="@(s => OnSearch(s))"
@@ -43,7 +51,7 @@
         </MudStack>
     </ToolBarContent>
     <Columns>
-        <TemplateColumn HeaderStyle="width:60px" Title="@AppStrings.Actions" Sortable="false">
+        <TemplateColumn HeaderStyle="width:100px" Title="@AppStrings.Actions" Sortable="false">
             <CellTemplate>
                 <MudTooltip Text="@L["View details"]" Delay="300">
                     <MudIconButton Icon="@Icons.Material.Filled.Visibility"
@@ -52,6 +60,16 @@
                                    OnClick="@(() => OnViewRoadSign(context.Item))">
                     </MudIconButton>
                 </MudTooltip>
+                @if (_accessRights.Edit)
+                {
+                    <MudTooltip Text="@AppStrings.Edit" Delay="300">
+                        <MudIconButton Icon="@Icons.Material.Filled.Edit"
+                                       Size="Size.Small"
+                                       Color="Color.Info"
+                                       OnClick="@(() => OnEditRoadSign(context.Item))">
+                        </MudIconButton>
+                    </MudTooltip>
+                }
             </CellTemplate>
         </TemplateColumn>
         <TemplateColumn Title="@L[_currentDto.GetMemberDescription(x => x.ImageAssetKey)]" Sortable="false">
@@ -80,6 +98,14 @@
         </TemplateColumn>
         <PropertyColumn Property="x => x.LegislationCode" Title="@L[_currentDto.GetMemberDescription(x => x.LegislationCode)]" />
         <PropertyColumn Property="x => x.Description" Title="@L[_currentDto.GetMemberDescription(x => x.Description)]" />
+        <TemplateColumn Title="@L["Combination"]" Sortable="false">
+            <CellTemplate>
+                @if (!string.IsNullOrWhiteSpace(context.Item.ComponentSignCodes))
+                {
+                    <MudChip T="string" Color="Color.Secondary" Size="Size.Small">@L["Combination"]</MudChip>
+                }
+            </CellTemplate>
+        </TemplateColumn>
     </Columns>
     <NoRecordsContent>
         <MudText>@AppStrings.NoRecords</MudText>
@@ -96,6 +122,7 @@
     public string? Title { get; private set; }
     private MudDataGrid<RoadSignDto> _roadSignsGrid = default!;
     private readonly RoadSignDto _currentDto = new();
+    private RoadSignsAccessRights _accessRights = new();
     private bool _loading;
     private int _defaultPageSize = 15;
 
@@ -104,7 +131,7 @@
     protected override async Task OnInitializedAsync()
     {
         Title = $"{ApplicationSettings.AppName} - {L[_currentDto.GetClassDescription()]}";
-        await Task.CompletedTask;
+        _accessRights = await PermissionService.GetAccessRightsAsync<RoadSignsAccessRights>();
     }
 
     private async Task<GridData<RoadSignDto>> ServerReload(GridState<RoadSignDto> state)
@@ -163,6 +190,41 @@
         }, errors =>
         {
             Snackbar.Add(errors, Severity.Error);
+        });
+    }
+
+    private async Task ShowRoadSignFormDialog(string title, AddEditRoadSignCommand command)
+    {
+        var parameters = new DialogParameters<RoadSignFormDialog>
+        {
+            { x => x._model, command }
+        };
+        var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Medium, FullWidth = true };
+        var dialog = await DialogService.ShowAsync<RoadSignFormDialog>(title, parameters, options);
+        var state = await dialog.Result;
+        if (state is not null && !state.Canceled)
+        {
+            await _roadSignsGrid.ReloadServerData();
+        }
+    }
+
+    private async Task OnCreateRoadSign()
+    {
+        var command = new AddEditRoadSignCommand();
+        await ShowRoadSignFormDialog(L["New road sign"], command);
+    }
+
+    private async Task OnEditRoadSign(RoadSignDto dto)
+    {
+        var result = await Mediator.Send(new GetRoadSignByIdQuery { Id = dto.Id });
+        await result.MatchAsync(async data =>
+        {
+            var command = Mapper.Map<AddEditRoadSignCommand>(data);
+            await ShowRoadSignFormDialog(L["Edit the road sign"], command);
+        }, errors =>
+        {
+            Snackbar.Add(errors, Severity.Error);
+            return Task.CompletedTask;
         });
     }
 }

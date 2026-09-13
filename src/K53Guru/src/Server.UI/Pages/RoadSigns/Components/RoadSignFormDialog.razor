@@ -1,0 +1,188 @@
+@using K53Guru.Application.Features.RoadSigns.Commands.AddEdit
+@using K53Guru.Application.Features.RoadSigns.DTOs
+@using K53Guru.Application.Features.RoadSigns.Queries.Pagination
+
+@inject IStringLocalizer<RoadSigns> L
+
+<MudDialog>
+    <DialogContent>
+        <MudForm Model="@_model" @ref="@_form" Validation="@(Validator.ValidateValue(_model))">
+            <MudGrid Spacing="2">
+                <MudItem xs="12" sm="6">
+                    <MudTextField Label="@L["Legislation Code"]"
+                                  @bind-Value="_model.LegislationCode"
+                                  For="@(() => _model.LegislationCode)"
+                                  Placeholder="@L["e.g. R1, or R3+R531 for a composite"]"
+                                  HelperText="@L["A composite's code is synthetic - join its component codes with '+'"]"
+                                  Required="true">
+                    </MudTextField>
+                </MudItem>
+                <MudItem xs="12" sm="6">
+                    <MudTextField Label="@L["Description"]"
+                                  @bind-Value="_model.Description"
+                                  For="@(() => _model.Description)"
+                                  Placeholder="@L["Enter a description"]"
+                                  Required="true">
+                    </MudTextField>
+                </MudItem>
+                <MudItem xs="12" Class="d-flex flex-column align-center">
+                    @if (_imagePreviewUrl is not null)
+                    {
+                        <MudImage Src="@_imagePreviewUrl"
+                                  Width="120"
+                                  Height="120"
+                                  ObjectFit="ObjectFit.ScaleDown"
+                                  Class="rounded-lg mb-2">
+                        </MudImage>
+                    }
+                    else
+                    {
+                        <MudPaper Outlined="true"
+                                  Class="d-flex align-center justify-center rounded-lg mb-2"
+                                  Style="width:120px;height:120px;">
+                            <MudIcon Icon="@Icons.Material.Filled.Image" Size="Size.Large" Color="Color.Default" />
+                        </MudPaper>
+                    }
+                    <MudFileUpload T="IBrowserFile" Accept=".svg,.png,.jpg,.jpeg,.webp" FilesChanged="OnImagePicked">
+                        <ActivatorContent>
+                            <MudButton StartIcon="@Icons.Material.Outlined.UploadFile" Variant="Variant.Outlined">
+                                @L["Upload image"]
+                            </MudButton>
+                        </ActivatorContent>
+                    </MudFileUpload>
+                    @if (!string.IsNullOrWhiteSpace(_model.ImageAssetKey) && _model.ImageBytes is null)
+                    {
+                        <MudText Typo="Typo.caption" Class="mt-1">@L["Current image kept - pick a new file to replace it."]</MudText>
+                    }
+                </MudItem>
+                <MudItem xs="12">
+                    <MudText Typo="Typo.body2" Class="mb-2">@L["Component Signs"]</MudText>
+                    <MudAutocomplete T="RoadSignDto"
+                                     Value="@_pickedComponent"
+                                     ValueChanged="@OnComponentSelected"
+                                     SearchFunc="@SearchRoadSigns"
+                                     ToStringFunc="@(s => s == null ? null : $"{s.LegislationCode} - {s.Description}")"
+                                     Label="@L["Search catalog to add a component"]"
+                                     HelperText="@L["Provenance only - never shown to learners"]"
+                                     ResetValueOnEmptyText="true"
+                                     CoerceText="false"
+                                     Clearable="true">
+                    </MudAutocomplete>
+                    @if (_componentCodes.Count > 0)
+                    {
+                        <MudStack Row Wrap="Wrap.Wrap" Class="mt-2" Spacing="1">
+                            @foreach (var componentCode in _componentCodes)
+                            {
+                                <MudChip T="string" OnClose="@(() => RemoveComponentCode(componentCode))">@componentCode</MudChip>
+                            }
+                        </MudStack>
+                    }
+                </MudItem>
+            </MudGrid>
+        </MudForm>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">@AppStrings.Cancel</MudButton>
+        <MudLoadingButton Loading="@_saving" OnClick="Submit">@AppStrings.Save</MudLoadingButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter] private IMudDialogInstance MudDialog { get; set; } = default!;
+
+    [EditorRequired][Parameter] public AddEditRoadSignCommand _model { get; set; } = default!;
+
+    private MudForm? _form;
+    private bool _saving;
+    private string? _imagePreviewUrl;
+    private List<string> _componentCodes = new();
+    private RoadSignDto? _pickedComponent;
+
+    protected override void OnParametersSet()
+    {
+        _componentCodes = SplitCodes(_model.ComponentSignCodes);
+        _imagePreviewUrl = _model.ImageAssetKey.ToImageUrl();
+    }
+
+    private static List<string> SplitCodes(string? codes)
+    {
+        return string.IsNullOrWhiteSpace(codes)
+            ? new List<string>()
+            : codes.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries).ToList();
+    }
+
+    private async Task<IEnumerable<RoadSignDto>> SearchRoadSigns(string? value, CancellationToken cancellationToken)
+    {
+        var result = await Mediator.Send(new RoadSignsWithPaginationQuery
+        {
+            Keyword = value ?? string.Empty,
+            PageNumber = 1,
+            PageSize = 10
+        }, cancellationToken);
+        return result.Items.Where(r => r.LegislationCode != _model.LegislationCode);
+    }
+
+    private void OnComponentSelected(RoadSignDto? dto)
+    {
+        // Reset immediately so the autocomplete clears and is ready for the next search - the
+        // chosen code lives only in _componentCodes/_model.ComponentSignCodes from here on.
+        _pickedComponent = null;
+
+        if (dto?.LegislationCode is null) return;
+        if (_componentCodes.Contains(dto.LegislationCode)) return;
+
+        _componentCodes.Add(dto.LegislationCode);
+        _model.ComponentSignCodes = string.Join(",", _componentCodes);
+    }
+
+    private void RemoveComponentCode(string code)
+    {
+        _componentCodes.Remove(code);
+        _model.ComponentSignCodes = _componentCodes.Count > 0 ? string.Join(",", _componentCodes) : null;
+    }
+
+    private async Task OnImagePicked(IBrowserFile file)
+    {
+        using var ms = new MemoryStream();
+        await file.OpenReadStream(GlobalVariables.MaxAllowedSize).CopyToAsync(ms);
+        _model.ImageBytes = ms.ToArray();
+        _model.ImageFileName = file.Name;
+        _imagePreviewUrl = $"data:{file.ContentType};base64,{Convert.ToBase64String(_model.ImageBytes)}";
+    }
+
+    private async Task Submit()
+    {
+        try
+        {
+            _saving = true;
+            // Not .ConfigureAwait(false) -- Submit closes the dialog and shows a Snackbar after
+            // this, both of which need Blazor Server's synchronization context (mirrors
+            // QuestionFormDialog.razor's Submit).
+            await _form!.Validate();
+
+            if (!_form!.IsValid)
+                return;
+
+            var result = await Mediator.Send(_model);
+            result.Match(
+                data =>
+                {
+                    MudDialog.Close(DialogResult.Ok(true));
+                    Snackbar.Add(AppStrings.SaveSuccess, Severity.Info);
+                },
+                errors =>
+                {
+                    Snackbar.Add(errors, Severity.Error);
+                });
+        }
+        finally
+        {
+            _saving = false;
+        }
+    }
+
+    private void Cancel()
+    {
+        MudDialog.Cancel();
+    }
+}

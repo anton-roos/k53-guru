@@ -50,11 +50,15 @@ A vision to realize: give South African learner-driver candidates a practice too
   - **intent:** A learner establishes and restores their identity via a self-custodied UUID — on launch, generate a new profile or link an existing one by pasting its UUID — with no account, password, or personal data.
   - **success:** Generating a profile issues a UUID; pasting that UUID into a freshly installed app restores the same profile and its data, and no PII is ever collected.
 
+- **CAP-10**
+  - **intent:** The road-sign catalog can hold a combination sign — a primary sign mounted with one or more supplementary qualifier plates (e.g. No Entry restricted to a weight class) — as a single catalog entry, so a question references the combined signpost exactly like any other sign.
+  - **success:** An admin adds a composite catalog row (its own code, description, and one pre-composited image showing the primary sign stacked with its plate(s)); a question's `sign_ref` resolves and renders it identically to a single sign.
+
 ## Constraints
 
 - The system spans a .NET backend (Admin Panel + API) and a Flutter mobile client; the app pulls tests from the .NET API rather than bundling its own content.
 - Fidelity to the official computerised K53 learner's test — format, question mix, scoring, and pass/fail rules — is the primary quality bar every design decision resolves against.
-- Road signs must be stored with their official legislative codes, not ad-hoc labels, so questions and study material reference the same authoritative source.
+- Road signs must be stored with their official legislative codes, not ad-hoc labels, so questions and study material reference the same authoritative source. A combination sign is the one exception: since the gazette codes only the individual primary sign and plate, never the pairing, its catalog code is synthetic and human-assigned (component codes joined, e.g. `R3+R531`) and must stay visually distinguishable from a single gazetted code.
 - Question selection and ordering are randomised per attempt; no attempt may serve a fixed, memorisable sequence. Randomisation is intra-section only: order is shuffled within each section while the section order stays fixed (Rules of the Road → Road Signs → Vehicle Controls, with code-specific blocks kept in order).
 - The test-taking UI presents progress by section (e.g. "Section 2 of 4"), not a single flat question counter, so long combined papers stay legible.
 - The faithful-simulation rules (timing, no hints/feedback until the end, section blocking, per-section scoring, intra-section randomisation) are the definition of Test mode. Practice mode may relax any of them to teach (immediate feedback, hints, retry, untimed); fidelity is fenced inside Test mode, and the surrounding app is designed for a nervous first-time human.
@@ -67,12 +71,15 @@ A vision to realize: give South African learner-driver candidates a practice too
 - Within a single code, the three sections (Rules, Signs, Controls) are independent cut-offs: failing any one section's minimum fails that code. In a combination, each code is graded independently — a learner may pass one code and fail the other, keeps the passed code, and re-tests only the failed code (partial pass).
 - Per-code question counts, pass marks, and time limits are configurable data, not hardcoded logic; the current best-known defaults (official ranges, per the CLLT description) live in `test-structure.md` and should be confirmed against a live DLTC/CLLT terminal before production.
 - Learner identity is an anonymous, self-custodied UUID: no authentication, no accounts, no PII. The UUID is the sole key to a profile — pasting it into a fresh install restores that profile, and losing it loses access, so keeping it safe is the learner's responsibility.
+- A combination sign is an ordinary `RoadSign` catalog row (same code/description/image shape as any sign) carrying one pre-composited image the admin/designer produced; the API and client render it exactly like any other sign, with no run-time stacking of separate primary+plate images.
+- A composite catalog row records which component legislation codes it was assembled from (e.g. `["R3","R531"]`), for admin traceability and reuse only — the learner-facing API and client are never given the components, only the finished image.
 
 ## Non-goals
 
 - The K53 practical / yard / on-road driving test is out of scope; this system covers the theory learner's license test only.
 - This is a practice and simulation tool, not an official or government-certified examination; passing here confers no legal credential.
 - The app does not replicate the real test's biometric / eNaTIS identity verification (fingerprint login against the national database); learner identity is instead an anonymous self-custodied UUID (CAP-9), with no accounts or PII.
+- The Flutter client and API never dynamically compose or stack separate sign images at render or serve time; every combination sign is a pre-composited catalog entry authored up front (CAP-10).
 
 ## Success signal
 
@@ -83,6 +90,7 @@ A learner opens the Flutter app, picks a single code or a valid combination (Cod
 - Assumed a mobile-first learner experience (native Flutter app) with the .NET API as the sole content source, since the brief names Flutter pulling tests from the .NET API.
 - Assumed the Admin Panel is part of the .NET backend rather than a separate product.
 - Assumed the Admin Panel's primary author is a K53 domain expert (e.g. an examiner/instructor) writing original content, since the legal constraint rules out reproducing the official question bank; the authoring UI and CSV/JSON import both serve that expert.
+- Assumed a combination sign's catalog row records the component legislation codes it was assembled from, purely for admin traceability and reuse (so a future admin can find/avoid re-creating the same pairing) — not confirmed with Anton, and not consumed by the learner-facing API or client.
 
 ## Open Questions
 

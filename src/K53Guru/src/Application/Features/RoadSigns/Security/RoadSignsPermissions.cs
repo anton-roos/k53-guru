@@ -10,10 +10,18 @@ public static partial class Permissions
     {
         [Description("Allows viewing the road sign catalog")]
         public const string View = "Permissions.RoadSigns.View";
+
+        [Description("Allows creating new road signs")]
+        public const string Create = "Permissions.RoadSigns.Create";
+
+        [Description("Allows editing existing road signs")]
+        public const string Edit = "Permissions.RoadSigns.Edit";
     }
 }
 
 public class RoadSignsAccessRights
 {
     public bool View { get; set; }
+    public bool Create { get; set; }
+    public bool Edit { get; set; }
 }

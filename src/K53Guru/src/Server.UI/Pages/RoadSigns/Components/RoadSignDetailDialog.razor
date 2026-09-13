@@ -31,6 +31,12 @@
             <MudItem xs="12">
                 <ReadOnlyField Label="@Model.GetMemberDescription(x => x.ImageAssetKey)" Value="Model.ImageAssetKey"></ReadOnlyField>
             </MudItem>
+            @if (!string.IsNullOrWhiteSpace(Model.ComponentSignCodes))
+            {
+                <MudItem xs="12">
+                    <ReadOnlyField Label="@Model.GetMemberDescription(x => x.ComponentSignCodes)" Value="Model.ComponentSignCodes"></ReadOnlyField>
+                </MudItem>
+            }
         </MudGrid>
     </DialogContent>
     <DialogActions>

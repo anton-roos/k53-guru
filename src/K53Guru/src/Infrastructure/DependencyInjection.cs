@@ -187,6 +187,7 @@ public static class DependencyInjection
             .AddScoped<IDateTime, DateTimeService>()
             .AddScoped<IExcelService, ExcelService>()
             .AddScoped<IUploadService, MinioUploadService>()
+            .AddScoped<IRoadSignImageStore, RoadSignImageStore>()
             .AddScoped<IPDFService, PDFService>();
     }
     #endregion
