@@ -9,5 +9,6 @@
 class ApiConfig {
   const ApiConfig._();
 
-  static const String baseUrl = 'http://localhost:5056/api/v1';
+  static const String origin = 'http://localhost:5056';
+  static const String baseUrl = '$origin/api/v1';
 }

@@ -211,13 +211,19 @@ public class StartAttemptCommandHandler : IRequestHandler<StartAttemptCommand, R
                     Stem = question.Stem,
                     SignRef = question.SignRef,
                     Explanation = question.Explanation,
+                    // Shuffled per attempt (not just re-sorted by the source Order) so the
+                    // admin-authored order -- which tends to place the correct option first --
+                    // isn't visible to the learner. Re-numbered 0..n-1 here rather than carrying
+                    // the source Order along, since that source order is exactly what's being
+                    // discarded. Frozen once saved: a resume (GetAttemptQuery) re-reads this same
+                    // AttemptAnswerOption.Order, never reshuffles.
                     AttemptAnswerOptions = question.AnswerOptions
-                        .OrderBy(a => a.Order)
-                        .Select(a => new AttemptAnswerOption
+                        .OrderBy(_ => Random.Shared.Next())
+                        .Select((a, index) => new AttemptAnswerOption
                         {
                             Text = a.Text,
                             IsCorrect = a.IsCorrect,
-                            Order = a.Order
+                            Order = index
                         })
                         .ToList()
                 });
@@ -251,7 +257,10 @@ public class StartAttemptCommandHandler : IRequestHandler<StartAttemptCommand, R
             await db.SaveChangesAsync(cancellationToken);
         }
 
-        return await Result<AttemptDto>.SuccessAsync(_mapper.Map<AttemptDto>(attempt));
+        var dto = _mapper.Map<AttemptDto>(attempt);
+        await db.PopulateSignImageUrlsAsync(dto.AttemptQuestions, cancellationToken);
+
+        return await Result<AttemptDto>.SuccessAsync(dto);
     }
 
     /// <summary>

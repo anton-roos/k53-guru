@@ -22,6 +22,7 @@ class AttemptQuestion {
     required this.displayOrder,
     required this.stem,
     required this.signRef,
+    required this.signImageUrl,
     required this.attemptAnswerOptions,
   });
 
@@ -31,6 +32,13 @@ class AttemptQuestion {
   final int displayOrder;
   final String? stem;
   final String? signRef;
+
+  /// Path (relative to `ApiConfig.origin`, e.g. "/img/signs/r2.svg") to this question's road
+  /// sign image, resolved server-side from the RoadSigns catalog -- see
+  /// `AttemptQuestionDto.SignImageUrl`. Null whenever [signRef] is null, or (rarely) if the
+  /// catalog has no image for it. Not a full URL: callers must prepend `ApiConfig.origin`, not
+  /// `ApiConfig.baseUrl` (which carries the `/api/v1` suffix `/img` doesn't sit under).
+  final String? signImageUrl;
   final List<AttemptAnswerOption> attemptAnswerOptions;
 
   factory AttemptQuestion.fromJson(Map<String, dynamic> json) {
@@ -41,6 +49,7 @@ class AttemptQuestion {
       displayOrder: json['displayOrder'] as int,
       stem: json['stem'] as String?,
       signRef: json['signRef'] as String?,
+      signImageUrl: json['signImageUrl'] as String?,
       attemptAnswerOptions: (json['attemptAnswerOptions'] as List<dynamic>)
           .map((dynamic e) =>
               AttemptAnswerOption.fromJson(e as Map<String, dynamic>))
@@ -55,6 +64,7 @@ class AttemptQuestion {
         'displayOrder': displayOrder,
         'stem': stem,
         'signRef': signRef,
+        'signImageUrl': signImageUrl,
         'attemptAnswerOptions':
             attemptAnswerOptions.map((AttemptAnswerOption o) => o.toJson()).toList(),
       };

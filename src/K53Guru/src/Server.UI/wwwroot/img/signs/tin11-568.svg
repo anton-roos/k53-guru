@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="900mm"
+   height="364mm"
+   viewBox="0 0 900 364"
+   version="1.1"
+   id="svg8"
+   inkscape:version="0.92.2 (5c3e80d, 2017-08-06)"
+   sodipodi:docname="22.svg">
+  <defs
+     id="defs2" />
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="0.17500001"
+     inkscape:cx="1707.5179"
+     inkscape:cy="137.68954"
+     inkscape:document-units="mm"
+     inkscape:current-layer="layer1"
+     showgrid="false"
+     fit-margin-top="0"
+     fit-margin-left="0"
+     fit-margin-right="0"
+     fit-margin-bottom="0"
+     inkscape:window-width="1920"
+     inkscape:window-height="1057"
+     inkscape:window-x="-8"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
+     inkscape:snap-global="false" />
+  <metadata
+     id="metadata5">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(0,67)">
+    <rect
+       style="opacity:1;fill:#ffd70a;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.99077666;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:0;stroke-dasharray:0.99077657, 0.99077656999999997;stroke-dashoffset:21.31999969;stroke-opacity:1;paint-order:stroke fill markers"
+       id="rect815"
+       width="900"
+       height="364"
+       x="0"
+       y="-67" />
+    <rect
+       y="-67"
+       x="0"
+       height="364"
+       width="900"
+       id="rect817"
+       style="opacity:1;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.99077666;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:0;stroke-dasharray:0.99077657, 0.99077657;stroke-dashoffset:21.31999969;stroke-opacity:1;paint-order:stroke fill markers"
+       rx="50"
+       ry="50" />
+    <rect
+       ry="25"
+       rx="25"
+       style="opacity:1;fill:#ffd70a;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.89428943;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:0;stroke-dasharray:0.89428937, 0.89428936999999997;stroke-dashoffset:21.31999969;stroke-opacity:1;paint-order:stroke fill markers"
+       id="rect819"
+       width="850"
+       height="314"
+       x="25"
+       y="-42.000061" />
+    <g
+       aria-label="Acidente"
+       style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:194.9150238px;line-height:0;font-family:'DIN 1451 Engschrift';-inkscape-font-specification:'DIN 1451 Engschrift Bold';letter-spacing:0.06879167px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1.01518238"
+       id="text848" />
+    <path
+       inkscape:connector-curvature="0"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:236.25559998px;line-height:125%;font-family:'DIN 1451 Engschrift';-inkscape-font-specification:'DIN 1451 Engschrift';letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.75949359px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="m 367.67059,-2.7224159 c -7.57368,0 -13.67088,6.0972 -13.67088,13.6708799 V 117.27759 h -15.7966 V 62.365584 c 0,-7.1529 -5.75848,-12.90991 -12.91138,-12.90991 h -70.86134 c -17.97025,0 -20.50633,15.72093 -20.50633,15.72093 l -15.72094,62.429806 v 47.23989 c -4.54421,0 -8.20312,3.65895 -8.20312,8.20313 v 9.72064 c 0,4.54419 3.65891,8.20311 8.20312,8.20311 h 38.91663 a 47.088615,47.088615 0 0 1 47.05744,-46.48041 47.088615,47.088615 0 0 1 47.06638,46.48041 h 218.78757 a 47.088615,47.088615 0 0 1 47.05747,-46.48041 47.088615,47.088615 0 0 1 47.06782,46.48041 h 12.17268 c 7.57365,0 13.67088,-6.0972 13.67088,-13.67089 V 10.948464 c 0,-7.5736799 -6.09723,-13.6708799 -13.67088,-13.6708799 z"
+       id="path16184" />
+    <path
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:236.25559998px;line-height:125%;font-family:'DIN 1451 Engschrift';-inkscape-font-specification:'DIN 1451 Engschrift';letter-spacing:0px;word-spacing:0px;fill:#ffd70a;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:19.74683571;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       d="m 262.23839,65.175774 h 49.55862 c 5.87698,0 10.60829,4.74228 10.60829,10.63292 v 30.835436 c 0,5.89063 -4.73131,10.63291 -10.60829,10.63291 h -63.99267 c -7.45487,0 -8.94037,-7.40667 -8.1436,-10.63291 l 7.61545,-30.835436 c 1.34583,-5.44929 6.97005,-10.63292 14.9622,-10.63292 z"
+       id="rect16251"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="ssssscsss" />
+    <circle
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:236.25559998px;line-height:125%;font-family:'DIN 1451 Engschrift';-inkscape-font-specification:'DIN 1451 Engschrift';letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:19.74683571;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       id="circle16293"
+       cx="304.17715"
+       cy="201.58076"
+       r="31.139242" />
+    <circle
+       r="31.139242"
+       cy="201.58076"
+       cx="617.08875"
+       id="circle16335"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:236.25559998px;line-height:125%;font-family:'DIN 1451 Engschrift';-inkscape-font-specification:'DIN 1451 Engschrift';letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:19.74683571;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+  </g>
+</svg>

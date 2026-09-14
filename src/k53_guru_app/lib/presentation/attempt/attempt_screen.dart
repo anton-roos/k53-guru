@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
+import '../../data/api/api_config.dart';
 import '../../data/api/attempt_answer_submission.dart';
 import '../../data/repository/attempts_repository.dart';
 import '../../domain/attempt.dart';
@@ -23,10 +25,12 @@ import 'attempt_result_screen.dart';
 /// experience (warm feedback animations, resume-in-place, streaks/XP,
 /// Test-mode timing and answer confidentiality) is not built here. This
 /// exists so the real backend content (questions, sittings) already
-/// seeded has something to exercise end-to-end from the app; the sign
-/// image itself isn't shown (no public API exposes a road sign's image by
-/// code yet -- only the Admin Panel can see it), just the sign's
-/// legislation code and the question stem.
+/// seeded has something to exercise end-to-end from the app. A sign
+/// question's image is fetched from `AttemptQuestion.signImageUrl` (the
+/// backend resolves it from the RoadSigns catalog) and rendered alongside
+/// the sign's legislation code and the question stem; it falls back to
+/// just the code when a question has a [AttemptQuestion.signRef] but no
+/// resolvable image.
 ///
 /// Always starts a fresh attempt rather than resuming one in progress --
 /// resume-in-place is Epic 5/6 scope (see `GetAttemptQuery`, unused by
@@ -262,18 +266,44 @@ class _QuestionView extends StatelessWidget {
           const SizedBox(height: AppSpacing.space12),
           if (question.signRef != null) ...<Widget>[
             Container(
-              padding: const EdgeInsets.symmetric(
-                horizontal: AppSpacing.space12,
-                vertical: AppSpacing.space8,
-              ),
+              padding: const EdgeInsets.all(AppSpacing.space12),
               decoration: BoxDecoration(
                 color: palette.card,
                 borderRadius: BorderRadius.circular(AppRadius.sm),
                 border: Border.all(color: palette.line),
               ),
-              child: Text(
-                'Sign: ${question.signRef}',
-                style: AppTypography.label.copyWith(color: palette.muted),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: <Widget>[
+                  if (question.signImageUrl != null) ...<Widget>[
+                    SizedBox(
+                      height: 96,
+                      child: SvgPicture.network(
+                        '${ApiConfig.origin}${question.signImageUrl}',
+                        placeholderBuilder: (BuildContext context) => const Center(
+                          child: SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          ),
+                        ),
+                        // A dead/unreachable image URL shouldn't take the whole question down --
+                        // fall back to an icon and let the "Sign: {code}" text below still carry
+                        // the content.
+                        errorBuilder: (BuildContext context, Object error, StackTrace? stackTrace) =>
+                            Center(
+                          child: Icon(Icons.broken_image_outlined, color: palette.muted),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: AppSpacing.space8),
+                  ],
+                  Text(
+                    'Sign: ${question.signRef}',
+                    style: AppTypography.label.copyWith(color: palette.muted),
+                    textAlign: TextAlign.center,
+                  ),
+                ],
               ),
             ),
             const SizedBox(height: AppSpacing.space12),

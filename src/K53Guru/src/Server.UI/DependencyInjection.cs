@@ -206,9 +206,13 @@ public static class DependencyInjection
         // browser fetch() to the HTTP port that gets 307'd to the HTTPS dev-cert port fails
         // outright in some contexts even when the HTTPS endpoint itself is reachable
         // (confirmed: direct HTTPS fetch succeeds, the same call via the HTTP->HTTPS redirect
-        // does not) -- so only the human-facing Blazor Admin UI gets the redirect.
+        // does not) -- so only the human-facing Blazor Admin UI gets the redirect. /img is
+        // exempted alongside /api for the same reason: AttemptQuestionDto.SignImageUrl points
+        // the Flutter client at road sign SVGs under /img/signs/*.svg on this same plain-HTTP
+        // host.
         app.UseWhen(
-            context => !context.Request.Path.StartsWithSegments("/api"),
+            context => !context.Request.Path.StartsWithSegments("/api")
+                       && !context.Request.Path.StartsWithSegments("/img"),
             branch => branch.UseHttpsRedirection());
 
         app.MapStaticAssets();

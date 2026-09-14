@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="900.79999"
+   height="900.79999"
+   viewBox="0 0 900.8 900.8"
+   id="svg4240"
+   version="1.1"
+   inkscape:version="0.91 r13725"
+   sodipodi:docname="22.svg">
+  <defs
+     id="defs4242">
+    <pattern
+       y="0"
+       x="0"
+       height="6"
+       width="6"
+       patternUnits="userSpaceOnUse"
+       id="EMFhbasepattern" />
+    <pattern
+       y="0"
+       x="0"
+       height="6"
+       width="6"
+       patternUnits="userSpaceOnUse"
+       id="EMFhbasepattern-4" />
+    <pattern
+       y="0"
+       x="0"
+       height="6"
+       width="6"
+       patternUnits="userSpaceOnUse"
+       id="EMFhbasepattern-5" />
+  </defs>
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="0.57443122"
+     inkscape:cx="547.65151"
+     inkscape:cy="376.00139"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer1"
+     showgrid="false"
+     units="px"
+     inkscape:window-width="1920"
+     inkscape:window-height="1057"
+     inkscape:window-x="-8"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1" />
+  <metadata
+     id="metadata4245">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(0,-151.56208)">
+    <circle
+       r="450"
+       cy="601.9621"
+       cx="450.39999"
+       id="circle4138"
+       style="fill:#e20a16;fill-opacity:1;stroke:none;stroke-width:10;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+    <circle
+       style="fill:#ffd70a;fill-opacity:1;stroke:none;stroke-width:10;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       id="circle4140"
+       cx="450.39999"
+       cy="601.9621"
+       r="375" />
+    <path
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:236.25559998px;line-height:125%;font-family:'DIN 1451 Engschrift';-inkscape-font-specification:'DIN 1451 Engschrift';letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="m 333.19955,434.36215 c -9.972,0 -18,8.028 -18,18 l 0,140 -20.7996,0 0,-72.3 c 0,-9.418 -7.582,-16.998 -17,-16.998 l -93.3,0 c -23.6608,0 -27,20.6992 -27,20.6992 l -20.7,82.1992 0,62.1992 c -5.9832,0 -10.8,4.8176 -10.8,10.8008 l 0,12.7996 c 0,5.9832 4.8168,10.8 10.8,10.8 l 603.2,0 c 9.972,0 18,-8.028 18,-18 l 0,-232.2 c 0,-9.972 -8.028,-18 -18,-18 z"
+       id="path16184"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="ssccssscccssssssss" />
+    <path
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:236.25559998px;line-height:125%;font-family:'DIN 1451 Engschrift';-inkscape-font-specification:'DIN 1451 Engschrift';letter-spacing:0px;word-spacing:0px;fill:#ffd70a;fill-opacity:1;stroke:none;stroke-width:26;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       d="m 194.38015,523.76215 65.2522,0 c 7.738,0 13.9676,6.244 13.9676,14 l 0,40.6 c 0,7.756 -6.2296,14 -13.9676,14 l -84.257,0 c -9.8156,0 -11.7715,-9.7521 -10.7224,-14 l 10.027,-40.6 c 1.772,-7.1749 9.1772,-14 19.7002,-14 z"
+       id="rect16251"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="ssssscsss" />
+    <circle
+       r="62.000008"
+       cy="703.362"
+       cx="249.59956"
+       id="circle16291"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:236.25559998px;line-height:125%;font-family:'DIN 1451 Engschrift';-inkscape-font-specification:'DIN 1451 Engschrift';letter-spacing:0px;word-spacing:0px;fill:#ffd70a;fill-opacity:1;stroke:none;stroke-width:26;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+    <circle
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:236.25559998px;line-height:125%;font-family:'DIN 1451 Engschrift';-inkscape-font-specification:'DIN 1451 Engschrift';letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:26;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       id="circle16293"
+       cx="249.59956"
+       cy="703.362"
+       r="41.000004" />
+    <circle
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:236.25559998px;line-height:125%;font-family:'DIN 1451 Engschrift';-inkscape-font-specification:'DIN 1451 Engschrift';letter-spacing:0px;word-spacing:0px;fill:#ffd70a;fill-opacity:1;stroke:none;stroke-width:26;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       id="circle16333"
+       cx="661.59985"
+       cy="703.362"
+       r="62.000008" />
+    <circle
+       r="41.000004"
+       cy="703.362"
+       cx="661.59985"
+       id="circle16335"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:236.25559998px;line-height:125%;font-family:'DIN 1451 Engschrift';-inkscape-font-specification:'DIN 1451 Engschrift';letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:26;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+    <rect
+       y="-133.88554"
+       x="653.53888"
+       height="860"
+       width="75"
+       id="rect4281"
+       style="fill:#e20a16;fill-opacity:1;stroke:none;stroke-width:26;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       transform="matrix(0.8660254,0.5,-0.5,0.8660254,0,0)" />
+  </g>
+</svg>

@@ -46,6 +46,9 @@ public class GetAttemptQueryHandler : IRequestHandler<GetAttemptQuery, Result<At
                 cancellationToken)
             ?? throw new NotFoundException($"Attempt with id: [{request.AttemptId}] not found.");
 
-        return await Result<AttemptDto>.SuccessAsync(_mapper.Map<AttemptDto>(attempt));
+        var dto = _mapper.Map<AttemptDto>(attempt);
+        await db.PopulateSignImageUrlsAsync(dto.AttemptQuestions, cancellationToken);
+
+        return await Result<AttemptDto>.SuccessAsync(dto);
     }
 }

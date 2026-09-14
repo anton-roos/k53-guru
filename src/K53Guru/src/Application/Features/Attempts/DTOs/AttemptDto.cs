@@ -67,6 +67,17 @@ public class AttemptQuestionDto
 
     [Description("Sign Ref")] public string? SignRef { get; set; }
 
+    /// <summary>
+    /// The URL (relative to the API host, e.g. "/img/signs/r2.svg") for <see cref="SignRef"/>'s
+    /// road sign image, resolved at read time from <see cref="Domain.Entities.RoadSign.ImageAssetKey"/>
+    /// via <see cref="Common.Extensions.RoadSignExtensions.ToImageUrl"/> -- not part of the
+    /// AutoMapper map below (RoadSign isn't reachable from AttemptQuestion), set explicitly by
+    /// StartAttemptCommandHandler/GetAttemptQueryHandler after mapping. Null whenever
+    /// <see cref="SignRef"/> is null, or (defensively) if it can't be resolved to a catalog sign
+    /// with an image.
+    /// </summary>
+    [Description("Sign Image Url")] public string? SignImageUrl { get; set; }
+
     [Description("Answer Options")] public List<AttemptAnswerOptionDto> AttemptAnswerOptions { get; set; } = new();
 }
 

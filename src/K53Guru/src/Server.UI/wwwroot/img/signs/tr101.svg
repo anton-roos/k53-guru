@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="900.79999"
+   height="900.79999"
+   viewBox="0 0 900.8 900.8"
+   id="svg5532"
+   version="1.1"
+   inkscape:version="0.91 r13725"
+   sodipodi:docname="SADC_road_sign_TR101.svg">
+  <defs
+     id="defs5534" />
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="0.49497475"
+     inkscape:cx="40.533202"
+     inkscape:cy="255.59132"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer1"
+     showgrid="false"
+     units="px"
+     inkscape:window-width="1920"
+     inkscape:window-height="1057"
+     inkscape:window-x="-8"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
+     fit-margin-top="0"
+     fit-margin-left="0"
+     fit-margin-right="0"
+     fit-margin-bottom="0" />
+  <metadata
+     id="metadata5537">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(-0.3999939,-151.16214)">
+    <circle
+       style="fill:#ffd70a;fill-opacity:1;stroke:none;stroke-width:10;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       id="path6080"
+       cx="450.79999"
+       cy="601.56213"
+       r="450" />
+    <circle
+       r="435"
+       cy="601.56213"
+       cx="450.79999"
+       id="circle6082"
+       style="fill:#000000;fill-opacity:1;stroke:none;stroke-width:10;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+    <circle
+       style="fill:#ffd70a;fill-opacity:1;stroke:none;stroke-width:12;stroke-miterlimit:2.61299992;stroke-dasharray:none;stroke-opacity:1"
+       id="circle4140"
+       cx="450.79999"
+       cy="601.56213"
+       r="405" />
+    <rect
+       ry="122"
+       rx="122.00002"
+       y="386.56216"
+       x="490.79993"
+       height="430"
+       width="244"
+       id="rect13386"
+       style="opacity:1;fill:#000000;fill-opacity:1;stroke:none;stroke-width:2.4000001;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1" />
+    <rect
+       style="opacity:1;fill:#ffd70a;fill-opacity:1;stroke:none;stroke-width:2.4000001;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="rect13388"
+       width="100"
+       height="286"
+       x="562.79999"
+       y="458.56216"
+       rx="49.999992"
+       ry="50" />
+    <path
+       inkscape:connector-curvature="0"
+       id="path4147"
+       style="fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
+       d="m 410.53359,390.82688 -225.61357,0 0,226.51565 76.71945,0 8.09798,-9.04399 c 2.29409,-2.61809 5.13201,-4.96426 8.13557,-7.22761 1.4284,-1.08797 6.38079,-3.45301 9.46118,-4.5477 2.94671,-1.35577 7.25396,-2.04502 10.40542,-2.6799 3.94483,-0.73092 7.54299,-0.83733 10.94859,-0.56821 26.6734,1.95875 34.38298,20.57569 37.11181,37.57659 0.25345,4.75603 16.20534,88.58475 -30.91843,109.20885 -28.79707,11.23873 -57.2533,-5.10854 -64.97285,-34.28386 l -73.10872,0 c 13.24445,116.51212 161.42937,151.66632 223.79109,51.42577 53.80975,-109.96564 5.41124,-282.78505 -143.45476,-222.88289 l 0,-71.32486 153.39724,0"
+       sodipodi:nodetypes="ccccccccccccccccc" />
+  </g>
+</svg>
